@@ -18,6 +18,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class WeekOverviewRequest extends XTimeRequest {
@@ -25,6 +27,12 @@ public class WeekOverviewRequest extends XTimeRequest {
     private static final String URL = "https://xtime.xebia" +
             ".com/xtime/dwr/call/plaincall/TimeEntryServiceBean.getWeekOverview.dwr";
     private static final String TAG = "WeekOverviewRequest";
+    private final Date mDate;
+
+    public WeekOverviewRequest(Date date) {
+        super();
+        mDate = date;
+    }
 
     public String submit() {
         HttpURLConnection urlConnection = null;
@@ -37,8 +45,8 @@ public class WeekOverviewRequest extends XTimeRequest {
             urlConnection = (HttpURLConnection) url.openConnection();
 
             CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
-            List<HttpCookie> cookies = cookieManager.getCookieStore().get(new URI("https://xtime" +
-                    ".xebia.com/"));
+            URI cookieUri = new URI("https://xtime.xebia.com/");
+            List<HttpCookie> cookies = cookieManager.getCookieStore().get(cookieUri);
             urlConnection.setRequestProperty("Cookie", cookies.get(0).toString());
 
             // do not follow redirects, we need the Location header to see if the login worked
@@ -71,7 +79,7 @@ public class WeekOverviewRequest extends XTimeRequest {
             Log.e(TAG, "Security problem performing request", e);
             return null;
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            // impossible
             return null;
         } finally {
             if (urlConnection != null) {
@@ -81,14 +89,17 @@ public class WeekOverviewRequest extends XTimeRequest {
     }
 
     private String getRequestData() {
+
+        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(mDate);
+
         String data = "callCount=1" + "\n";
         data += "scriptSessionId=" + System.currentTimeMillis() + "\n";
         data += "c0-scriptName=TimeEntryServiceBean" + "\n";
         data += "c0-methodName=getWeekOverview" + "\n";
-        data += "c0-id=" + System.currentTimeMillis() + "\n";
-        data += "c0-param0=string:2013-12-09" + "\n";
-        data += "c0-param1=boolean:true" + "\n";
-        data += "batchId=5" + "\n";
+        data += "c0-id=0" + "\n"; // only used for JSONP callback
+        data += "c0-param0=string:" + dateString + "\n";
+        data += "c0-param1=boolean:true" + "\n"; // TODO: find out what this param does
+        data += "batchId=0" + "\n"; // only used for JSONP callback
         return data;
     }
 

@@ -1,6 +1,7 @@
 package com.xebia.xtime.weekoverview;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.xebia.xtime.weekoverview.model.Project;
 import com.xebia.xtime.weekoverview.model.TimeCell;
@@ -15,8 +16,11 @@ import java.util.regex.Pattern;
 
 public class WeekOverviewParser {
 
+    private static final String TAG = "WeekOverviewParser";
+
     public static WeekOverview parse(String input) {
         if (TextUtils.isEmpty(input)) {
+            Log.d(TAG, "No input to parse");
             return null;
         }
 
@@ -26,7 +30,7 @@ public class WeekOverviewParser {
         regex += ",.*monthDaysCount:(\\d*)";
         regex += ",.*monthlyDataApproved:(\\w*)";
         regex += ",.*monthlyDataTransferred:(\\w*)";
-        regex += ",.*userName:\"([\\w\\s]*)\"";
+        regex += ",.*userName:\"?([\\w\\s]*)\"?";
         regex += ",.*weekEndDates:(\\w*)";
         regex += ",.*weekStart:(\\w*)\\}\\);";
         Pattern pattern = Pattern.compile(regex);
@@ -45,6 +49,7 @@ public class WeekOverviewParser {
                     monthlyDataApproved, monthlyDataTransferred, projects, timeSheetRows, username);
 
         } else {
+            Log.d(TAG, "Failed to parse input '" + input + "'");
             return null;
         }
     }

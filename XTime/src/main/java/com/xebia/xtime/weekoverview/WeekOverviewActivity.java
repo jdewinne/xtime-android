@@ -18,7 +18,7 @@ public class WeekOverviewActivity extends ActionBarActivity implements WeekOverv
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(new WeekOverviewAdapter(getSupportFragmentManager()));
-        pager.setCurrentItem(4);
+        pager.setCurrentItem(WeekOverviewAdapter.START_INDEX);
     }
 
     @Override

@@ -15,20 +15,20 @@ import android.widget.TextView;
 import com.xebia.xtime.R;
 import com.xebia.xtime.weekoverview.model.WeekOverview;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 public class WeekOverviewFragment extends Fragment implements LoaderManager
         .LoaderCallbacks<WeekOverview> {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_DATE = "date";
     private static final String TAG = "WeekOverviewFragment";
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private Date mDate;
     private OnFragmentInteractionListener mListener;
-    private TextView mCount;
+    private TextView mCountView;
 
     public WeekOverviewFragment() {
         // Required empty public constructor
@@ -38,16 +38,13 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param date Date indicating the week to display
      * @return A new instance of fragment WeekOverviewFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static WeekOverviewFragment newInstance(String param1, String param2) {
+    public static WeekOverviewFragment newInstance(Date date) {
         WeekOverviewFragment fragment = new WeekOverviewFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putLong(ARG_DATE, date.getTime());
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,8 +60,7 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mDate = new Date(getArguments().getLong(ARG_DATE));
         }
     }
 
@@ -73,7 +69,11 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_week_overview, container, false);
-        mCount = (TextView) view.findViewById(R.id.count);
+
+        TextView titleView = (TextView) view.findViewById(R.id.title);
+        titleView.setText(new SimpleDateFormat("yyyy-MM-dd").format(mDate));
+
+        mCountView = (TextView) view.findViewById(R.id.count);
         return view;
     }
 
@@ -96,17 +96,16 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
 
     @Override
     public Loader<WeekOverview> onCreateLoader(int i, Bundle bundle) {
-        return new WeekOverviewLoader(getActivity());
+        return new WeekOverviewLoader(getActivity(), mDate);
     }
 
     @Override
     public void onLoadFinished(Loader<WeekOverview> loader, WeekOverview overview) {
         if (null == overview) {
-            Log.d(TAG, "Loading week " + mParam1 + " failed");
-            mCount.setText("Loading week " + mParam1 + " failed");
+            Log.d(TAG, "Loading week " + mDate + " failed");
         } else {
-            Log.d(TAG, "Loaded overview data for week " + mParam1);
-            mCount.setText("Loaded overview data for week " + mParam1);
+            Log.d(TAG, "Loaded overview data for week " + mDate);
+            mCountView.setText(overview.toString());
         }
     }
 

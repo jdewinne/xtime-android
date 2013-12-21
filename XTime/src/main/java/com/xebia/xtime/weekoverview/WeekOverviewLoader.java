@@ -5,15 +5,20 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import com.xebia.xtime.weekoverview.model.WeekOverview;
 
+import java.util.Date;
+
 public class WeekOverviewLoader extends AsyncTaskLoader<WeekOverview> {
 
-    public WeekOverviewLoader(Context context) {
+    private final Date mDate;
+
+    public WeekOverviewLoader(Context context, Date date) {
         super(context);
+        mDate = date;
     }
 
     @Override
     public WeekOverview loadInBackground() {
-        String response = new WeekOverviewRequest().submit();
+        String response = new WeekOverviewRequest(mDate).submit();
         return WeekOverviewParser.parse(response);
     }
 
