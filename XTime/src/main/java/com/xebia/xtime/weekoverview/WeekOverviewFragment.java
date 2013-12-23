@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.xebia.xtime.R;
 import com.xebia.xtime.weekoverview.model.WeekOverview;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -22,31 +24,34 @@ import java.util.Date;
 public class WeekOverviewFragment extends Fragment implements LoaderManager
         .LoaderCallbacks<WeekOverview> {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_DATE = "date";
+    private static final String ARG_START_DATE = "start_date";
     private static final String TAG = "WeekOverviewFragment";
-    private Date mDate;
+    private Date mStartDate;
     private OnFragmentInteractionListener mListener;
-    private TextView mCountView;
+    private TextView mContentView;
+    private View mBusyIndicator;
+    private View mMainView;
 
     public WeekOverviewFragment() {
         // Required empty public constructor
     }
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
      * @param date Date indicating the week to display
      * @return A new instance of fragment WeekOverviewFragment.
      */
     public static WeekOverviewFragment newInstance(Date date) {
         WeekOverviewFragment fragment = new WeekOverviewFragment();
         Bundle args = new Bundle();
-        args.putLong(ARG_DATE, date.getTime());
+        args.putLong(ARG_START_DATE, date.getTime());
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static String getTitle(Date startDate) {
+        Date endDate = new Date(startDate.getTime() + 6 * DateUtils.DAY_IN_MILLIS);
+        DateFormat formatter = new SimpleDateFormat("dd/MM");
+        return formatter.format(startDate) + " - " + formatter.format(endDate);
     }
 
     @Override
@@ -60,20 +65,17 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mDate = new Date(getArguments().getLong(ARG_DATE));
+            mStartDate = new Date(getArguments().getLong(ARG_START_DATE, -1));
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_week_overview, container, false);
-
-        TextView titleView = (TextView) view.findViewById(R.id.title);
-        titleView.setText(new SimpleDateFormat("yyyy-MM-dd").format(mDate));
-
-        mCountView = (TextView) view.findViewById(R.id.count);
+        mBusyIndicator = view.findViewById(R.id.week_overview_busy);
+        mMainView = view.findViewById(R.id.week_overview_main);
+        mContentView = (TextView) view.findViewById(R.id.content);
         return view;
     }
 
@@ -96,22 +98,36 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
 
     @Override
     public Loader<WeekOverview> onCreateLoader(int i, Bundle bundle) {
-        return new WeekOverviewLoader(getActivity(), mDate);
+        setBusy(true);
+        return new WeekOverviewLoader(getActivity(), mStartDate);
     }
 
     @Override
     public void onLoadFinished(Loader<WeekOverview> loader, WeekOverview overview) {
+        setBusy(false);
         if (null == overview) {
-            Log.d(TAG, "Loading week " + mDate + " failed");
+            Log.d(TAG, "Loading week " + mStartDate + " failed");
         } else {
-            Log.d(TAG, "Loaded overview data for week " + mDate);
-            mCountView.setText(overview.toString());
+            Log.d(TAG, "Loaded overview data for week " + mStartDate);
+            mContentView.setText(overview.toString());
         }
     }
 
     @Override
     public void onLoaderReset(Loader<WeekOverview> loader) {
         // nothing to do
+    }
+
+    private void setBusy(final boolean busy) {
+        if (null != getActivity()) {
+            getActivity().runOnUiThread(new Thread() {
+                @Override
+                public void run() {
+                    mMainView.setVisibility(busy ? View.GONE : View.VISIBLE);
+                    mBusyIndicator.setVisibility(busy ? View.VISIBLE : View.GONE);
+                }
+            });
+        }
     }
 
     /**
