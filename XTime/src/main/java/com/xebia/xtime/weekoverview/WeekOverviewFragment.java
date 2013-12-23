@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.weekoverview.model.TimeCell;
+import com.xebia.xtime.weekoverview.model.TimeSheetRow;
 import com.xebia.xtime.weekoverview.model.WeekOverview;
 
 import java.text.DateFormat;
@@ -27,6 +29,7 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
     private static final String ARG_START_DATE = "start_date";
     private static final String TAG = "WeekOverviewFragment";
     private Date mStartDate;
+    private WeekOverview mOverview;
     private OnFragmentInteractionListener mListener;
     private TextView mContentView;
     private View mBusyIndicator;
@@ -105,12 +108,32 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
     @Override
     public void onLoadFinished(Loader<WeekOverview> loader, WeekOverview overview) {
         setBusy(false);
-        if (null == overview) {
-            Log.d(TAG, "Loading week " + mStartDate + " failed");
-        } else {
-            Log.d(TAG, "Loaded overview data for week " + mStartDate);
-            mContentView.setText(overview.toString());
+
+        mOverview = overview;
+        showRows();
+    }
+
+    private void showRows() {
+        if (null == mOverview || null == mOverview.getTimeSheetRows()) {
+            // no data to show
+            Log.d(TAG, "No overview data to show");
+            return;
         }
+
+        String content = "";
+        double totalHours = 0;
+        for (TimeSheetRow row : mOverview.getTimeSheetRows()) {
+            content += row.getClientName() + " " + row.getProjectName();
+            double hours = 0;
+            for (TimeCell timeCell : row.getTimeCells()) {
+                hours += timeCell.getHour();
+            }
+            totalHours += hours;
+            content += ": " + hours + "h\n";
+        }
+        content += "Total: " + totalHours;
+
+        mContentView.setText(content);
     }
 
     @Override
