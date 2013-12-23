@@ -1,5 +1,6 @@
 package com.xebia.xtime.weekoverview;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -8,17 +9,41 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.login.LoginActivity;
 
 public class WeekOverviewActivity extends ActionBarActivity implements WeekOverviewFragment.OnFragmentInteractionListener {
+
+    private static final int REQ_CODE_LOGIN = 1;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQ_CODE_LOGIN) {
+            if (resultCode != RESULT_OK) {
+                finish();
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!isLoggedIn()) {
+            Intent login = new Intent(this, LoginActivity.class);
+            startActivityForResult(login, REQ_CODE_LOGIN);
+        }
+
         setContentView(R.layout.activity_week_overview);
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         pager.setAdapter(new WeekOverviewAdapter(getSupportFragmentManager()));
         pager.setCurrentItem(WeekOverviewAdapter.START_INDEX);
+    }
+
+    public boolean isLoggedIn() {
+        return false;
     }
 
     @Override
