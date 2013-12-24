@@ -1,7 +1,6 @@
 package com.xebia.xtime.weekoverview;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -10,8 +9,10 @@ import android.view.MenuItem;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.login.LoginActivity;
+import com.xebia.xtime.weekoverview.model.DailyHours;
 
-public class WeekOverviewActivity extends ActionBarActivity implements WeekOverviewFragment.OnFragmentInteractionListener {
+public class WeekOverviewActivity extends ActionBarActivity implements WeekOverviewFragment
+        .WeekOverviewListener {
 
     private static final int REQ_CODE_LOGIN = 1;
 
@@ -67,7 +68,7 @@ public class WeekOverviewActivity extends ActionBarActivity implements WeekOverv
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onItemClicked(DailyHours dailyHours) {
 
     }
 }

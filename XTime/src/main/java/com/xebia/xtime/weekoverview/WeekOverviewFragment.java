@@ -1,9 +1,9 @@
 package com.xebia.xtime.weekoverview;
 
 import android.app.Activity;
-import android.net.Uri;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.format.DateUtils;
@@ -11,29 +11,31 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.weekoverview.model.TimeCell;
-import com.xebia.xtime.weekoverview.model.TimeSheetRow;
+import com.xebia.xtime.weekoverview.model.DailyHours;
 import com.xebia.xtime.weekoverview.model.WeekOverview;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
-public class WeekOverviewFragment extends Fragment implements LoaderManager
+public class WeekOverviewFragment extends ListFragment implements LoaderManager
         .LoaderCallbacks<WeekOverview> {
 
     private static final String ARG_START_DATE = "start_date";
     private static final String TAG = "WeekOverviewFragment";
     private Date mStartDate;
     private WeekOverview mOverview;
-    private OnFragmentInteractionListener mListener;
-    private TextView mContentView;
+    private WeekOverviewListener mListener;
     private View mBusyIndicator;
-    private View mMainView;
+    private List<DailyHours> mDailyHours;
 
     public WeekOverviewFragment() {
         // Required empty public constructor
@@ -61,6 +63,9 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mDailyHours = new ArrayList<DailyHours>();
+        setListAdapter(new DailyHoursAdapter(getActivity(), mDailyHours));
+
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -77,8 +82,6 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_week_overview, container, false);
         mBusyIndicator = view.findViewById(R.id.week_overview_busy);
-        mMainView = view.findViewById(R.id.week_overview_main);
-        mContentView = (TextView) view.findViewById(R.id.content);
         return view;
     }
 
@@ -86,10 +89,10 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (WeekOverviewListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement " +
-                    "OnFragmentInteractionListener");
+                    "WeekOverviewListener");
         }
     }
 
@@ -97,6 +100,13 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        DailyHours item = (DailyHours) getListView().getItemAtPosition(position);
+        // notify handler
+        mListener.onItemClicked(item);
     }
 
     @Override
@@ -110,30 +120,18 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
         setBusy(false);
 
         mOverview = overview;
-        showRows();
+        updateList();
     }
 
-    private void showRows() {
+    private void updateList() {
+        mDailyHours.clear();
         if (null == mOverview || null == mOverview.getTimeSheetRows()) {
             // no data to show
             Log.d(TAG, "No overview data to show");
-            return;
+        } else {
+            mDailyHours.addAll(TimeSheetUtils.dailyHours(mOverview, mStartDate));
         }
-
-        String content = "";
-        double totalHours = 0;
-        for (TimeSheetRow row : mOverview.getTimeSheetRows()) {
-            content += row.getClientName() + " " + row.getProjectName();
-            double hours = 0;
-            for (TimeCell timeCell : row.getTimeCells()) {
-                hours += timeCell.getHour();
-            }
-            totalHours += hours;
-            content += ": " + hours + "h\n";
-        }
-        content += "Total: " + totalHours;
-
-        mContentView.setText(content);
+        ((ArrayAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
     @Override
@@ -146,26 +144,45 @@ public class WeekOverviewFragment extends Fragment implements LoaderManager
             getActivity().runOnUiThread(new Thread() {
                 @Override
                 public void run() {
-                    mMainView.setVisibility(busy ? View.GONE : View.VISIBLE);
+                    getListView().setVisibility(busy ? View.GONE : View.VISIBLE);
                     mBusyIndicator.setVisibility(busy ? View.VISIBLE : View.GONE);
                 }
             });
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+    public interface WeekOverviewListener {
+        public void onItemClicked(DailyHours dailyHours);
     }
 
+    private static class DailyHoursAdapter extends ArrayAdapter<DailyHours> {
+
+        public DailyHoursAdapter(Context context, List<DailyHours> data) {
+            super(context, android.R.layout.simple_list_item_2, android.R.id.text1, data);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            // try to re-use the view instead of inflating a new one
+            View row = convertView;
+            if (row == null) {
+                LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
+                row = inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
+                if (null == row) {
+                    Log.e(TAG, "Failed to inflate list row!");
+                    return null;
+                }
+            }
+
+            // set up row views
+            DailyHours item = getItem(position);
+            TextView text1 = (TextView) row.findViewById(android.R.id.text1);
+            text1.setText(new SimpleDateFormat("EEE dd MMM yyyy").format(item.date));
+            TextView text2 = (TextView) row.findViewById(android.R.id.text2);
+            text2.setText(item.hours + " hours");
+
+            return row;
+        }
+    }
 }
