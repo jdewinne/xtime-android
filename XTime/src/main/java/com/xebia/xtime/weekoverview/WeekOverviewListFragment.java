@@ -1,7 +1,6 @@
 package com.xebia.xtime.weekoverview;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.weekoverview.model.DailyHours;
@@ -26,33 +24,37 @@ import java.util.Date;
 import java.util.List;
 
 
-public class WeekOverviewFragment extends ListFragment implements LoaderManager
+public class WeekOverviewListFragment extends ListFragment implements LoaderManager
         .LoaderCallbacks<WeekOverview> {
 
     private static final String ARG_START_DATE = "start_date";
-    private static final String TAG = "WeekOverviewFragment";
+    private static final String TAG = "WeekOverviewListFragment";
     private Date mStartDate;
     private WeekOverview mOverview;
     private WeekOverviewListener mListener;
     private View mBusyIndicator;
     private List<DailyHours> mDailyHours;
 
-    public WeekOverviewFragment() {
+    public WeekOverviewListFragment() {
         // Required empty public constructor
     }
 
     /**
-     * @param date Date indicating the week to display
-     * @return A new instance of fragment WeekOverviewFragment.
+     * @param startDate Date indicating the week to display
+     * @return A new instance of fragment WeekOverviewListFragment
      */
-    public static WeekOverviewFragment newInstance(Date date) {
-        WeekOverviewFragment fragment = new WeekOverviewFragment();
+    public static WeekOverviewListFragment newInstance(Date startDate) {
+        WeekOverviewListFragment fragment = new WeekOverviewListFragment();
         Bundle args = new Bundle();
-        args.putLong(ARG_START_DATE, date.getTime());
+        args.putLong(ARG_START_DATE, startDate.getTime());
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * @param startDate Date indicating the start of the week
+     * @return Title String of this fragment
+     */
     public static String getTitle(Date startDate) {
         Date endDate = new Date(startDate.getTime() + 6 * DateUtils.DAY_IN_MILLIS);
         DateFormat formatter = new SimpleDateFormat("dd/MM");
@@ -64,7 +66,7 @@ public class WeekOverviewFragment extends ListFragment implements LoaderManager
         super.onActivityCreated(savedInstanceState);
 
         mDailyHours = new ArrayList<DailyHours>();
-        setListAdapter(new DailyHoursAdapter(getActivity(), mDailyHours));
+        setListAdapter(new DailyHoursListAdapter(getActivity(), mDailyHours));
 
         getLoaderManager().initLoader(0, null, this);
     }
@@ -81,7 +83,9 @@ public class WeekOverviewFragment extends ListFragment implements LoaderManager
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_week_overview, container, false);
-        mBusyIndicator = view.findViewById(R.id.week_overview_busy);
+        if (null != view) {
+            mBusyIndicator = view.findViewById(R.id.week_overview_busy);
+        }
         return view;
     }
 
@@ -155,34 +159,4 @@ public class WeekOverviewFragment extends ListFragment implements LoaderManager
         public void onItemClicked(DailyHours dailyHours);
     }
 
-    private static class DailyHoursAdapter extends ArrayAdapter<DailyHours> {
-
-        public DailyHoursAdapter(Context context, List<DailyHours> data) {
-            super(context, android.R.layout.simple_list_item_2, android.R.id.text1, data);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            // try to re-use the view instead of inflating a new one
-            View row = convertView;
-            if (row == null) {
-                LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
-                row = inflater.inflate(android.R.layout.simple_list_item_2, parent, false);
-                if (null == row) {
-                    Log.e(TAG, "Failed to inflate list row!");
-                    return null;
-                }
-            }
-
-            // set up row views
-            DailyHours item = getItem(position);
-            TextView text1 = (TextView) row.findViewById(android.R.id.text1);
-            text1.setText(new SimpleDateFormat("EEE dd MMM yyyy").format(item.date));
-            TextView text2 = (TextView) row.findViewById(android.R.id.text2);
-            text2.setText(item.hours + " hours");
-
-            return row;
-        }
-    }
 }

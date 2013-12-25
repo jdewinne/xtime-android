@@ -11,7 +11,7 @@ import com.xebia.xtime.R;
 import com.xebia.xtime.login.LoginActivity;
 import com.xebia.xtime.weekoverview.model.DailyHours;
 
-public class WeekOverviewActivity extends ActionBarActivity implements WeekOverviewFragment
+public class WeekOverviewActivity extends ActionBarActivity implements WeekOverviewListFragment
         .WeekOverviewListener {
 
     private static final int REQ_CODE_LOGIN = 1;
@@ -39,8 +39,8 @@ public class WeekOverviewActivity extends ActionBarActivity implements WeekOverv
         setContentView(R.layout.activity_week_overview);
 
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
-        pager.setAdapter(new WeekOverviewAdapter(getSupportFragmentManager()));
-        pager.setCurrentItem(WeekOverviewAdapter.START_INDEX);
+        pager.setAdapter(new WeekPagerAdapter(getSupportFragmentManager()));
+        pager.setCurrentItem(WeekPagerAdapter.START_INDEX);
     }
 
     public boolean isLoggedIn() {
@@ -57,14 +57,10 @@ public class WeekOverviewActivity extends ActionBarActivity implements WeekOverv
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // Handle action bar item clicks here. The action bar will automatically handle clicks on
+        // the Home/Up button, so long as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="14"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        android:id="@+id/month"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Mar"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        android:id="@+id/hours"
+        android:layout_width="wrap_content"
+        android:minWidth="48dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/date"
+        android:layout_marginLeft="8dp"
+        android:layout_centerVertical="true"
+        android:gravity="right"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="8"
+        tools:ignore="HardcodedText"
+        android:maxLines="1"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/hours"
+        android:layout_centerVertical="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text=" hours"
+        tools:ignore="HardcodedText"/>
+</RelativeLayout>

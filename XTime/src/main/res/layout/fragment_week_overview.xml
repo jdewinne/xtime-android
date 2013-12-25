@@ -1,7 +1,7 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.xebia.xtime.weekoverview.WeekOverviewFragment"
+    tools:context="com.xebia.xtime.weekoverview.WeekOverviewListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -35,6 +35,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="left|top"
-        tools:listitem="@android:layout/simple_list_item_2"/>
+        tools:listitem="@layout/row_daily_hours"/>
 
 </FrameLayout>

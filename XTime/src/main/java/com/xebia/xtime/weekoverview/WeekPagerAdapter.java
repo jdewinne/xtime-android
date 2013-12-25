@@ -8,12 +8,15 @@ import android.util.SparseArray;
 import java.util.Calendar;
 import java.util.Date;
 
-public class WeekOverviewAdapter extends FragmentPagerAdapter {
+/**
+ * PagerAdapter for switching between WeekOverviewFragments.
+ */
+public class WeekPagerAdapter extends FragmentPagerAdapter {
 
     public static final int START_INDEX = 4;
     private SparseArray<Fragment> mFragments;
 
-    public WeekOverviewAdapter(FragmentManager fm) {
+    public WeekPagerAdapter(FragmentManager fm) {
         super(fm);
 
         mFragments = new SparseArray<Fragment>();
@@ -24,7 +27,7 @@ public class WeekOverviewAdapter extends FragmentPagerAdapter {
         Fragment f = mFragments.get(i);
         if (null == f) {
             Date date = getStartDate(i);
-            f = WeekOverviewFragment.newInstance(date);
+            f = WeekOverviewListFragment.newInstance(date);
             mFragments.put(i, f);
         }
         return f;
@@ -38,7 +41,7 @@ public class WeekOverviewAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         Date startDate = getStartDate(position);
-        return WeekOverviewFragment.getTitle(startDate);
+        return WeekOverviewListFragment.getTitle(startDate);
     }
 
     private Date getStartDate(int index) {
