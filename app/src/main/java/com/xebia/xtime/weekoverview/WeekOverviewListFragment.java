@@ -15,7 +15,7 @@ import android.widget.ListView;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.weekoverview.model.DailyHours;
-import com.xebia.xtime.weekoverview.model.WeekOverview;
+import com.xebia.xtime.shared.model.WeekOverview;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -110,7 +110,7 @@ public class WeekOverviewListFragment extends ListFragment implements LoaderMana
     public void onListItemClick(ListView l, View v, int position, long id) {
         DailyHours item = (DailyHours) getListView().getItemAtPosition(position);
         // notify handler
-        mListener.onItemClicked(item);
+        mListener.onItemClicked(mOverview, item.date);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class WeekOverviewListFragment extends ListFragment implements LoaderMana
     }
 
     public interface WeekOverviewListener {
-        public void onItemClicked(DailyHours dailyHours);
+        public void onItemClicked(WeekOverview overview, Date date);
     }
 
 }

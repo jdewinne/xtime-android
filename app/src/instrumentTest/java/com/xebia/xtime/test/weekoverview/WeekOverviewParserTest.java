@@ -1,8 +1,8 @@
 package com.xebia.xtime.test.weekoverview;
 
 import com.xebia.xtime.weekoverview.WeekOverviewParser;
-import com.xebia.xtime.weekoverview.model.TimeSheetRow;
-import com.xebia.xtime.weekoverview.model.WeekOverview;
+import com.xebia.xtime.shared.model.TimeSheetRow;
+import com.xebia.xtime.shared.model.WeekOverview;
 
 import junit.framework.TestCase;
 

@@ -1,14 +1,29 @@
-package com.xebia.xtime.weekoverview.model;
+package com.xebia.xtime.shared.model;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TimeSheetRow {
+public class TimeSheetRow implements Parcelable {
 
+    public static final Creator<TimeSheetRow> CREATOR = new Creator<TimeSheetRow>() {
+        @Override
+        public TimeSheetRow createFromParcel(Parcel parcel) {
+            return new TimeSheetRow(parcel);
+        }
+
+        @Override
+        public TimeSheetRow[] newArray(int size) {
+            return new TimeSheetRow[size];
+        }
+    };
     private String mClientName;
     private String mDescription;
     private String mProjectId;
@@ -29,6 +44,18 @@ public class TimeSheetRow {
         setUserId(userId);
         setWorkTypeDescription(workTypeDescription);
         setWorkTypeId(workTypeId);
+    }
+
+    protected TimeSheetRow(Parcel parcel) {
+        mClientName = parcel.readString();
+        mDescription = parcel.readString();
+        mProjectId = parcel.readString();
+        mProjectName = parcel.readString();
+        mTimeCells = new ArrayList<TimeCell>();
+        parcel.readTypedList(mTimeCells, TimeCell.CREATOR);
+        mUserId = parcel.readString();
+        mWorkTypeDescription = parcel.readString();
+        mWorkTypeId = parcel.readString();
     }
 
     public String getClientName() {
@@ -117,5 +144,22 @@ public class TimeSheetRow {
         map.put("timeCells", timeCells);
 
         return new JSONObject(map);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(getClientName());
+        parcel.writeString(getDescription());
+        parcel.writeString(getProjectId());
+        parcel.writeString(getProjectName());
+        parcel.writeTypedList(getTimeCells());
+        parcel.writeString(getUserId());
+        parcel.writeString(getWorkTypeDescription());
+        parcel.writeString(getWorkTypeId());
     }
 }

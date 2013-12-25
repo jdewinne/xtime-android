@@ -1,15 +1,32 @@
-package com.xebia.xtime.weekoverview.model;
+package com.xebia.xtime.shared.model;
 
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WeekOverview {
+public class WeekOverview implements Parcelable {
+
+    public static final Creator<WeekOverview> CREATOR = new Creator<WeekOverview>() {
+
+        @Override
+        public WeekOverview createFromParcel(Parcel parcel) {
+            return new WeekOverview(parcel);
+        }
+
+        @Override
+        public WeekOverview[] newArray(int size) {
+            return new WeekOverview[size];
+        }
+    };
 
     private Date mLastTransferredDate;
     private int mMonthDaysCount;
@@ -29,6 +46,19 @@ public class WeekOverview {
         setProjects(projects);
         setTimeSheetRows(timeSheetRows);
         setUsername(username);
+    }
+
+    protected WeekOverview(Parcel parcel) {
+        long lastTransferredMillis = parcel.readLong();
+        mLastTransferredDate = new Date(lastTransferredMillis);
+        mMonthDaysCount = parcel.readInt();
+        mMonthlyDataApproved = parcel.readInt() > 0;
+        mMonthlyDataTransferred = parcel.readInt() > 0;
+        mProjects = new ArrayList<Project>();
+        parcel.readTypedList(mProjects, Project.CREATOR);
+        mTimeSheetRows = new ArrayList<TimeSheetRow>();
+        parcel.readTypedList(mTimeSheetRows, TimeSheetRow.CREATOR);
+        mUsername = parcel.readString();
     }
 
     public List<Project> getProjects() {
@@ -90,10 +120,10 @@ public class WeekOverview {
     public JSONObject toJson() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("lastTransferredDate", getLastTransferredDate().getTime());
-        map.put("username", getUsername());
+        map.put("monthDaysCount", getMonthDaysCount());
         map.put("monthlyDataApproved", isMonthlyDataApproved());
         map.put("monthlyDataTransferred", isMonthlyDataTransferred());
-        map.put("monthDaysCount", getMonthDaysCount());
+        map.put("username", getUsername());
 
         JSONArray projects = new JSONArray();
         for (Project p : getProjects()) {
@@ -113,5 +143,21 @@ public class WeekOverview {
     @Override
     public String toString() {
         return toJson().toString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeLong(mLastTransferredDate.getTime());
+        parcel.writeInt(mMonthDaysCount);
+        parcel.writeInt(mMonthlyDataApproved ? 1 : 0);
+        parcel.writeInt(mMonthlyDataTransferred ? 1 : 0);
+        parcel.writeTypedList(mProjects);
+        parcel.writeTypedList(mTimeSheetRows);
+        parcel.writeString(mUsername);
     }
 }

@@ -4,9 +4,9 @@ import android.text.format.DateUtils;
 import android.util.SparseArray;
 
 import com.xebia.xtime.weekoverview.model.DailyHours;
-import com.xebia.xtime.weekoverview.model.TimeCell;
-import com.xebia.xtime.weekoverview.model.TimeSheetRow;
-import com.xebia.xtime.weekoverview.model.WeekOverview;
+import com.xebia.xtime.shared.model.TimeCell;
+import com.xebia.xtime.shared.model.TimeSheetRow;
+import com.xebia.xtime.shared.model.WeekOverview;
 
 import java.util.ArrayList;
 import java.util.Calendar;

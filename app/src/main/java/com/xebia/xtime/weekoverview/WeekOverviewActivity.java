@@ -8,8 +8,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.dayoverview.DayOverviewActivity;
 import com.xebia.xtime.login.LoginActivity;
-import com.xebia.xtime.weekoverview.model.DailyHours;
+import com.xebia.xtime.shared.model.WeekOverview;
+
+import java.util.Date;
 
 public class WeekOverviewActivity extends ActionBarActivity implements WeekOverviewListFragment
         .WeekOverviewListener {
@@ -77,7 +80,10 @@ public class WeekOverviewActivity extends ActionBarActivity implements WeekOverv
     }
 
     @Override
-    public void onItemClicked(DailyHours dailyHours) {
-
+    public void onItemClicked(WeekOverview overview, Date date) {
+        Intent dayOverview = new Intent(this, DayOverviewActivity.class);
+        dayOverview.putExtra(DayOverviewActivity.EXTRA_DATE, date.getTime());
+        dayOverview.putExtra(DayOverviewActivity.EXTRA_OVERVIEW, overview);
+        startActivity(dayOverview);
     }
 }

@@ -3,10 +3,10 @@ package com.xebia.xtime.weekoverview;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.xebia.xtime.weekoverview.model.Project;
-import com.xebia.xtime.weekoverview.model.TimeCell;
-import com.xebia.xtime.weekoverview.model.TimeSheetRow;
-import com.xebia.xtime.weekoverview.model.WeekOverview;
+import com.xebia.xtime.shared.model.Project;
+import com.xebia.xtime.shared.model.TimeCell;
+import com.xebia.xtime.shared.model.TimeSheetRow;
+import com.xebia.xtime.shared.model.WeekOverview;
 
 import java.util.ArrayList;
 import java.util.Date;

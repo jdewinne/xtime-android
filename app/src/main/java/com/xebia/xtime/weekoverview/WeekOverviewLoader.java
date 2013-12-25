@@ -3,7 +3,7 @@ package com.xebia.xtime.weekoverview;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.xebia.xtime.weekoverview.model.WeekOverview;
+import com.xebia.xtime.shared.model.WeekOverview;
 
 import java.util.Date;
 
