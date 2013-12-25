@@ -10,9 +10,8 @@ import android.view.MenuItem;
 import com.xebia.xtime.R;
 import com.xebia.xtime.dayoverview.DayOverviewActivity;
 import com.xebia.xtime.login.LoginActivity;
+import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.WeekOverview;
-
-import java.util.Date;
 
 public class WeekOverviewActivity extends ActionBarActivity implements WeekOverviewListFragment
         .WeekOverviewListener {
@@ -37,7 +36,7 @@ public class WeekOverviewActivity extends ActionBarActivity implements WeekOverv
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (null != savedInstanceState){
+        if (null != savedInstanceState) {
             mLoggedIn = savedInstanceState.getBoolean(KEY_LOGGED_IN, false);
         }
 
@@ -80,10 +79,10 @@ public class WeekOverviewActivity extends ActionBarActivity implements WeekOverv
     }
 
     @Override
-    public void onItemClicked(WeekOverview overview, Date date) {
-        Intent dayOverview = new Intent(this, DayOverviewActivity.class);
-        dayOverview.putExtra(DayOverviewActivity.EXTRA_DATE, date.getTime());
-        dayOverview.putExtra(DayOverviewActivity.EXTRA_OVERVIEW, overview);
-        startActivity(dayOverview);
+    public void onItemClicked(WeekOverview weekOverview, DayOverview dayOverview) {
+        Intent intent = new Intent(this, DayOverviewActivity.class);
+        intent.putExtra(DayOverviewActivity.EXTRA_DAY_OVERVIEW, dayOverview);
+        intent.putExtra(DayOverviewActivity.EXTRA_WEEK_OVERVIEW, weekOverview);
+        startActivity(intent);
     }
 }

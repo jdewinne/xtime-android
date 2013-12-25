@@ -14,9 +14,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.weekoverview.loader.WeekOverviewLoader;
-import com.xebia.xtime.weekoverview.model.DailyHours;
+import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.WeekOverview;
+import com.xebia.xtime.weekoverview.loader.WeekOverviewLoader;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,7 +34,7 @@ public class WeekOverviewListFragment extends ListFragment implements LoaderMana
     private WeekOverview mOverview;
     private WeekOverviewListener mListener;
     private View mBusyIndicator;
-    private List<DailyHours> mDailyHours;
+    private List<DayOverview> mDailyHours;
 
     public WeekOverviewListFragment() {
         // Required empty public constructor
@@ -66,7 +66,7 @@ public class WeekOverviewListFragment extends ListFragment implements LoaderMana
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mDailyHours = new ArrayList<DailyHours>();
+        mDailyHours = new ArrayList<DayOverview>();
         setListAdapter(new DailyHoursListAdapter(getActivity(), mDailyHours));
 
         getLoaderManager().initLoader(0, null, this);
@@ -109,9 +109,9 @@ public class WeekOverviewListFragment extends ListFragment implements LoaderMana
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        DailyHours item = (DailyHours) getListView().getItemAtPosition(position);
+        DayOverview item = (DayOverview) getListView().getItemAtPosition(position);
         // notify handler
-        mListener.onItemClicked(mOverview, item.date);
+        mListener.onItemClicked(mOverview, item);
     }
 
     @Override
@@ -157,7 +157,7 @@ public class WeekOverviewListFragment extends ListFragment implements LoaderMana
     }
 
     public interface WeekOverviewListener {
-        public void onItemClicked(WeekOverview overview, Date date);
+        public void onItemClicked(WeekOverview overview, DayOverview dayOverview);
     }
 
 }

@@ -9,19 +9,19 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.weekoverview.model.DailyHours;
+import com.xebia.xtime.shared.model.DayOverview;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
- * Adapter that displays DailyHours objects in a list. Each list row contains a date indicator
- * and a view that displays the total number of work hours registered.
+ * Adapter that displays DayOverview objects in a list. Each list row contains a date indicator
+ * and a view that displays the total number of work totalHours registered.
  */
-public class DailyHoursListAdapter extends ArrayAdapter<DailyHours> {
+public class DailyHoursListAdapter extends ArrayAdapter<DayOverview> {
 
-    public DailyHoursListAdapter(Context context, List<DailyHours> data) {
+    public DailyHoursListAdapter(Context context, List<DayOverview> data) {
         super(context, R.layout.row_daily_hours, R.id.hours, data);
     }
 
@@ -42,10 +42,10 @@ public class DailyHoursListAdapter extends ArrayAdapter<DailyHours> {
             TextView hoursView = (TextView) row.findViewById(R.id.hours);
 
             // update the view content
-            DailyHours item = getItem(position);
-            dateView.setText(new SimpleDateFormat("dd").format(item.date));
-            monthView.setText(new SimpleDateFormat("MMM").format(item.date));
-            hoursView.setText(NumberFormat.getNumberInstance().format(item.hours));
+            DayOverview item = getItem(position);
+            dateView.setText(new SimpleDateFormat("dd").format(item.getDate()));
+            monthView.setText(new SimpleDateFormat("MMM").format(item.getDate()));
+            hoursView.setText(NumberFormat.getNumberInstance().format(item.getTotalHours()));
         }
 
         return row;
