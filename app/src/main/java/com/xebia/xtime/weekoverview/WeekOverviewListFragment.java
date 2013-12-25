@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.weekoverview.loader.WeekOverviewLoader;
 import com.xebia.xtime.weekoverview.model.DailyHours;
 import com.xebia.xtime.shared.model.WeekOverview;
 

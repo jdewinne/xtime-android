@@ -1,4 +1,4 @@
-package com.xebia.xtime.weekoverview;
+package com.xebia.xtime.weekoverview.loader;
 
 import android.text.TextUtils;
 import android.util.Log;
