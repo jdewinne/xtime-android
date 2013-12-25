@@ -15,11 +15,14 @@ public class WeekOverviewActivity extends ActionBarActivity implements WeekOverv
         .WeekOverviewListener {
 
     private static final int REQ_CODE_LOGIN = 1;
+    private static final String KEY_LOGGED_IN = "logged_in";
+    private boolean mLoggedIn;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQ_CODE_LOGIN) {
-            if (resultCode != RESULT_OK) {
+            mLoggedIn = resultCode == RESULT_OK;
+            if (!mLoggedIn) {
                 finish();
             }
         } else {
@@ -30,6 +33,10 @@ public class WeekOverviewActivity extends ActionBarActivity implements WeekOverv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (null != savedInstanceState){
+            mLoggedIn = savedInstanceState.getBoolean(KEY_LOGGED_IN, false);
+        }
 
         if (!isLoggedIn()) {
             Intent login = new Intent(this, LoginActivity.class);
@@ -43,8 +50,14 @@ public class WeekOverviewActivity extends ActionBarActivity implements WeekOverv
         pager.setCurrentItem(WeekPagerAdapter.START_INDEX);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(KEY_LOGGED_IN, mLoggedIn);
+        super.onSaveInstanceState(outState);
+    }
+
     public boolean isLoggedIn() {
-        return false;
+        return mLoggedIn;
     }
 
     @Override
