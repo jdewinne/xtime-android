@@ -3,12 +3,12 @@ package com.xebia.xtime.login;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -22,7 +22,7 @@ import com.xebia.xtime.R;
 /**
  * Activity which displays a login screen to the user
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends ActionBarActivity {
 
     /**
      * The default email to populate the email field with.
