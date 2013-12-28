@@ -2,8 +2,17 @@
 <resources>
 
     <string name="app_name">XTime</string>
+    <!-- Strings related to login -->
+    <string name="title_activity_login">Sign in</string>
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="login_progress_signing_in">Signing in&#8230;</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_request_failed">Failed to connect to XTime server</string>
+    <string name="error_field_required">This field is required</string>
     <!-- week overview activity -->
-    <string name="week_overview_busy">Loading data…</string>
+    <string name="week_overview_busy">Loading data&#8230;</string>
     <!-- day overview activity -->
     <string name="title_activity_day_overview">Day Overview</string>
     <string name="hello_world">Hello world!</string>

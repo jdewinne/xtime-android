@@ -30,7 +30,13 @@ public class LoginRequest extends XTimeRequest {
         mPassword = password;
     }
 
-    public boolean submit() {
+    /**
+     * Submits the login request to the XTime backend.
+     *
+     * @return <code>true</code> if login was successful, <code>false</code> if the login was
+     * denied, or <code>null</code> if the request failed for another reason.
+     */
+    public Boolean submit() {
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(LOGIN_URL);
@@ -62,13 +68,13 @@ public class LoginRequest extends XTimeRequest {
 
         } catch (IOException e) {
             Log.w(TAG, "Login request failed", e);
-            return false;
+            return null;
         } catch (GeneralSecurityException e) {
             Log.e(TAG, "Security problem performing request", e);
-            return false;
+            return null;
         } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return false;
+            // impossibru!
+            return null;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();

@@ -11,11 +11,11 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xebia.xtime.R;
 
@@ -24,18 +24,12 @@ import com.xebia.xtime.R;
  */
 public class LoginActivity extends ActionBarActivity {
 
-    /**
-     * The default email to populate the email field with.
-     */
     public static final String PREF_USERNAME = "com.xebia.xtime.extra.USERNAME";
     public static final String PREF_PASSWORD = "com.xebia.xtime.extra.PASSWORD";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
-    // Values for username and password at the time of the login attempt.
-    private String mUsername;
-    private String mPassword;
     // UI references.
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -50,15 +44,17 @@ public class LoginActivity extends ActionBarActivity {
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mUsername = PreferenceManager.getDefaultSharedPreferences(this).getString(PREF_USERNAME,
-                null);
         mUsernameView = (EditText) findViewById(R.id.username);
-        mUsernameView.setText(mUsername);
+        String username = PreferenceManager.getDefaultSharedPreferences(this).getString
+                (PREF_USERNAME,
+                        null);
+        mUsernameView.setText(username);
 
-        mPassword = PreferenceManager.getDefaultSharedPreferences(this).getString(PREF_PASSWORD,
-                null);
         mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setText(mPassword);
+        String password = PreferenceManager.getDefaultSharedPreferences(this).getString
+                (PREF_PASSWORD,
+                        null);
+        mPasswordView.setText(password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -82,17 +78,10 @@ public class LoginActivity extends ActionBarActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.login, menu);
-        return true;
-    }
-
     /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
+     * Attempts to sign in or register the account specified by the login form. If there are form
+     * errors (invalid email, missing fields, etc.), the errors are presented and no actual login
+     * attempt is made.
      */
     public void attemptLogin() {
         if (mAuthTask != null) {
@@ -103,38 +92,36 @@ public class LoginActivity extends ActionBarActivity {
         mUsernameView.setError(null);
         mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
-        mUsername = mUsernameView.getText().toString();
-        mPassword = mPasswordView.getText().toString();
+        // get the username and password
+        String username = mUsernameView.getText().toString();
+        String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password.
-        if (TextUtils.isEmpty(mPassword)) {
+        if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid username.
-        if (TextUtils.isEmpty(mUsername)) {
+        if (TextUtils.isEmpty(username)) {
             mUsernameView.setError(getString(R.string.error_field_required));
             focusView = mUsernameView;
             cancel = true;
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
+            // There was an error; don't attempt login and focus the first form field with an error
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
+            // Show a progress spinner, and kick off a background task to perform the login attempt
             mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
             showProgress(true);
             mAuthTask = new UserLoginTask();
-            mAuthTask.execute((Void) null);
+            mAuthTask.execute(username, password);
         }
     }
 
@@ -143,29 +130,28 @@ public class LoginActivity extends ActionBarActivity {
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allows for very easy
+        // animations. If available, use these APIs to fade-in the progress spinner.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
             mLoginStatusView.setVisibility(View.VISIBLE);
             mLoginStatusView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0).setListener
                     (new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
+                        }
+                    });
 
             mLoginFormView.setVisibility(View.VISIBLE);
             mLoginFormView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener
                     (new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                        }
+                    });
         } else {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
@@ -175,22 +161,37 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     /**
-     * Represents an asynchronous login task used to authenticate the user.
+     * Represents an asynchronous login task used to authenticate the user. Expects Strings for
+     * username and password as execution parameters.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    private class UserLoginTask extends AsyncTask<String, Void, Boolean> {
+
+        private String mUsername;
+        private String mPassword;
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(String... params) {
+            if (null == params || params.length < 2) {
+                return null;
+            }
+
+            // get login arguments
+            mUsername = params[0];
+            mPassword = params[1];
+
             return new LoginRequest(mUsername, mPassword).submit();
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Boolean result) {
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
+            if (null == result) {
+                Toast.makeText(LoginActivity.this, R.string.error_request_failed,
+                        Toast.LENGTH_LONG).show();
 
+            } else if (result) {
                 SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
                         (LoginActivity.this).edit();
                 editor.putString(PREF_USERNAME, mUsername);
