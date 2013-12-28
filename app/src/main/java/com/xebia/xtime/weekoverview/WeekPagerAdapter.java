@@ -27,7 +27,7 @@ public class WeekPagerAdapter extends FragmentPagerAdapter {
         Fragment f = mFragments.get(i);
         if (null == f) {
             Date date = getStartDate(i);
-            f = WeekOverviewListFragment.newInstance(date);
+            f = DailyHoursListFragment.newInstance(date);
             mFragments.put(i, f);
         }
         return f;
@@ -41,7 +41,7 @@ public class WeekPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         Date startDate = getStartDate(position);
-        return WeekOverviewListFragment.getTitle(startDate);
+        return DailyHoursListFragment.getTitle(startDate);
     }
 
     private Date getStartDate(int index) {

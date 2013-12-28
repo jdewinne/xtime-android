@@ -25,27 +25,27 @@ import java.util.Date;
 import java.util.List;
 
 
-public class WeekOverviewListFragment extends ListFragment implements LoaderManager
+public class DailyHoursListFragment extends ListFragment implements LoaderManager
         .LoaderCallbacks<WeekOverview> {
 
     private static final String ARG_START_DATE = "start_date";
-    private static final String TAG = "WeekOverviewListFragment";
+    private static final String TAG = "DailyHoursListFragment";
     private Date mStartDate;
     private WeekOverview mOverview;
-    private WeekOverviewListener mListener;
+    private DailyHoursListener mListener;
     private View mBusyIndicator;
     private List<DayOverview> mDailyHours;
 
-    public WeekOverviewListFragment() {
+    public DailyHoursListFragment() {
         // Required empty public constructor
     }
 
     /**
      * @param startDate Date indicating the week to display
-     * @return A new instance of fragment WeekOverviewListFragment
+     * @return A new instance of fragment DailyHoursListFragment
      */
-    public static WeekOverviewListFragment newInstance(Date startDate) {
-        WeekOverviewListFragment fragment = new WeekOverviewListFragment();
+    public static DailyHoursListFragment newInstance(Date startDate) {
+        DailyHoursListFragment fragment = new DailyHoursListFragment();
         Bundle args = new Bundle();
         args.putLong(ARG_START_DATE, startDate.getTime());
         fragment.setArguments(args);
@@ -83,7 +83,7 @@ public class WeekOverviewListFragment extends ListFragment implements LoaderMana
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_week_overview, container, false);
+        View view = inflater.inflate(R.layout.list_daily_hours, container, false);
         if (null != view) {
             mBusyIndicator = view.findViewById(R.id.week_overview_busy);
         }
@@ -94,10 +94,10 @@ public class WeekOverviewListFragment extends ListFragment implements LoaderMana
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (WeekOverviewListener) activity;
+            mListener = (DailyHoursListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement " +
-                    "WeekOverviewListener");
+                    "DailyHoursListener");
         }
     }
 
@@ -156,7 +156,7 @@ public class WeekOverviewListFragment extends ListFragment implements LoaderMana
         }
     }
 
-    public interface WeekOverviewListener {
+    public interface DailyHoursListener {
         public void onItemClicked(WeekOverview overview, DayOverview dayOverview);
     }
 

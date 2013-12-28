@@ -11,8 +11,8 @@ import com.xebia.xtime.login.LoginActivity;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.WeekOverview;
 
-public class WeekOverviewActivity extends ActionBarActivity implements WeekOverviewListFragment
-        .WeekOverviewListener {
+public class WeekOverviewActivity extends ActionBarActivity implements DailyHoursListFragment
+        .DailyHoursListener {
 
     private static final int REQ_CODE_LOGIN = 1;
     private static final String KEY_LOGGED_IN = "logged_in";
