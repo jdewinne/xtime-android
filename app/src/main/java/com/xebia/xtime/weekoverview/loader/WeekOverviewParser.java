@@ -7,6 +7,7 @@ import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetRow;
 import com.xebia.xtime.shared.model.WeekOverview;
+import com.xebia.xtime.shared.model.WorkType;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,8 +81,10 @@ public class WeekOverviewParser {
             String userId = matcher.group(7);
             String workTypeDescription = matcher.group(8);
             String workTypeId = matcher.group(9);
-            timeSheetRows.add(new TimeSheetRow(clientName, description, projectId, projectName,
-                    timeCells, userId, workTypeDescription, workTypeId));
+            Project project = new Project(projectId, projectName);
+            WorkType workType = new WorkType(workTypeId, workTypeDescription);
+            timeSheetRows.add(new TimeSheetRow(clientName, description, project, timeCells,
+                    userId, workType));
         }
 
         return timeSheetRows;

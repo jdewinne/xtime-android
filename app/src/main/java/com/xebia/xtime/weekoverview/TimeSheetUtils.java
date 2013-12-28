@@ -34,13 +34,7 @@ public class TimeSheetUtils {
         for (TimeSheetRow row : overview.getTimeSheetRows()) {
 
             // find the project that is related to this row
-            String projectId = row.getProjectId();
-            Project rowProject = null;
-            for (Project project : overview.getProjects()) {
-                if (null != projectId && projectId.equals(project.getId())) {
-                    rowProject = project;
-                }
-            }
+            Project rowProject = row.getProject();
 
             for (TimeCell timeCell : row.getTimeCells()) {
                 // get day overview for this day from array

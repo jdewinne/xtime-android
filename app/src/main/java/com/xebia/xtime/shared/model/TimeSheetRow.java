@@ -26,36 +26,29 @@ public class TimeSheetRow implements Parcelable {
     };
     private String mClientName;
     private String mDescription;
-    private String mProjectId;
-    private String mProjectName;
+    private Project mProject;
     private List<TimeCell> mTimeCells;
     private String mUserId;
-    private String mWorkTypeDescription;
-    private String mWorkTypeId;
+    private WorkType mWorkType;
 
-    public TimeSheetRow(String clientName, String description, String projectId,
-                        String projectName, List<TimeCell> timeCells, String userId,
-                        String workTypeDescription, String workTypeId) {
+    public TimeSheetRow(String clientName, String description, Project project,
+                        List<TimeCell> timeCells, String userId, WorkType workType) {
         setClientName(clientName);
         setDescription(description);
-        setProjectId(projectId);
-        setProjectName(projectName);
+        setProject(project);
         setTimeCells(timeCells);
         setUserId(userId);
-        setWorkTypeDescription(workTypeDescription);
-        setWorkTypeId(workTypeId);
+        setWorkType(workType);
     }
 
     protected TimeSheetRow(Parcel parcel) {
         mClientName = parcel.readString();
         mDescription = parcel.readString();
-        mProjectId = parcel.readString();
-        mProjectName = parcel.readString();
+        mProject = parcel.readParcelable(getClass().getClassLoader());
         mTimeCells = new ArrayList<TimeCell>();
         parcel.readTypedList(mTimeCells, TimeCell.CREATOR);
         mUserId = parcel.readString();
-        mWorkTypeDescription = parcel.readString();
-        mWorkTypeId = parcel.readString();
+        mWorkType = parcel.readParcelable(getClass().getClassLoader());
     }
 
     public String getClientName() {
@@ -74,20 +67,12 @@ public class TimeSheetRow implements Parcelable {
         this.mDescription = description;
     }
 
-    public String getProjectId() {
-        return mProjectId;
+    public Project getProject() {
+        return mProject;
     }
 
-    public void setProjectId(String projectId) {
-        this.mProjectId = projectId;
-    }
-
-    public String getProjectName() {
-        return mProjectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.mProjectName = projectName;
+    public void setProject(Project project) {
+        this.mProject = project;
     }
 
     public List<TimeCell> getTimeCells() {
@@ -106,20 +91,12 @@ public class TimeSheetRow implements Parcelable {
         this.mUserId = userId;
     }
 
-    public String getWorkTypeDescription() {
-        return mWorkTypeDescription;
+    public WorkType getWorkType() {
+        return mWorkType;
     }
 
-    public void setWorkTypeDescription(String workTypeDescription) {
-        this.mWorkTypeDescription = workTypeDescription;
-    }
-
-    public String getWorkTypeId() {
-        return mWorkTypeId;
-    }
-
-    public void setWorkTypeId(String workTypeId) {
-        this.mWorkTypeId = workTypeId;
+    public void setWorkType(WorkType workType) {
+        mWorkType = workType;
     }
 
     @Override
@@ -131,11 +108,9 @@ public class TimeSheetRow implements Parcelable {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("clientName", getClientName());
         map.put("description", getDescription());
-        map.put("projectId", getProjectId());
-        map.put("projectName", getProjectName());
+        map.put("project", getProject().toJson());
         map.put("userId", getUserId());
-        map.put("workTypeDescription", getWorkTypeDescription());
-        map.put("workTypeId", getWorkTypeId());
+        map.put("workType", getWorkType().toJson());
 
         JSONArray timeCells = new JSONArray();
         for (TimeCell t : getTimeCells()) {
@@ -155,11 +130,9 @@ public class TimeSheetRow implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(getClientName());
         parcel.writeString(getDescription());
-        parcel.writeString(getProjectId());
-        parcel.writeString(getProjectName());
+        parcel.writeParcelable(getProject(), flags);
         parcel.writeTypedList(getTimeCells());
         parcel.writeString(getUserId());
-        parcel.writeString(getWorkTypeDescription());
-        parcel.writeString(getWorkTypeId());
+        parcel.writeParcelable(getWorkType(), flags);
     }
 }

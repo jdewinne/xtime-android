@@ -1,8 +1,8 @@
 package com.xebia.xtime.test.weekoverview.loader;
 
-import com.xebia.xtime.weekoverview.loader.WeekOverviewParser;
 import com.xebia.xtime.shared.model.TimeSheetRow;
 import com.xebia.xtime.shared.model.WeekOverview;
+import com.xebia.xtime.weekoverview.loader.WeekOverviewParser;
 
 import junit.framework.TestCase;
 
@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class WeekOverviewParserTest extends TestCase {
 
-    private final String INPUT_UNPARSEABLE = "this is intentionally not parseable";
+    private static final String INPUT_UNPARSEABLE = "this is intentionally not parseable";
     private static final String INPUT_REGULAR = "throw 'allowScriptTagRemoting is false.';\n" +
             "//#DWR-INSERT\n" +
             "//#DWR-REPLY\n" +
@@ -57,22 +57,22 @@ public class WeekOverviewParserTest extends TestCase {
         TimeSheetRow row = result.getTimeSheetRows().get(0);
         assertEquals("CLIENT 1", row.getClientName());
         assertEquals("description", row.getDescription());
-        assertEquals("PROJECT 1", row.getProjectName());
-        assertEquals("0001", row.getProjectId());
+        assertEquals("PROJECT 1", row.getProject().getDescription());
+        assertEquals("0001", row.getProject().getId());
         assertEquals("1234567", row.getUserId());
-        assertEquals("Work work", row.getWorkTypeDescription());
-        assertEquals("100", row.getWorkTypeId());
+        assertEquals("Work work", row.getWorkType().getDescription());
+        assertEquals("100", row.getWorkType().getId());
         assertEquals(1, row.getTimeCells().size());
         assertEquals(new Date(11111), row.getTimeCells().get(0).getEntryDate());
 
         row = result.getTimeSheetRows().get(1);
         assertEquals("CLIENT 2", row.getClientName());
         assertEquals("", row.getDescription());
-        assertEquals("PROJECT 2", row.getProjectName());
-        assertEquals("0002", row.getProjectId());
+        assertEquals("PROJECT 2", row.getProject().getDescription());
+        assertEquals("0002", row.getProject().getId());
         assertEquals("1234567", row.getUserId());
-        assertEquals("Work work", row.getWorkTypeDescription());
-        assertEquals("100", row.getWorkTypeId());
+        assertEquals("Work work", row.getWorkType().getDescription());
+        assertEquals("100", row.getWorkType().getId());
         assertEquals(1, row.getTimeCells().size());
         assertEquals(new Date(22222), row.getTimeCells().get(0).getEntryDate());
 
