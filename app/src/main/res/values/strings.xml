@@ -2,7 +2,9 @@
 <resources>
 
     <string name="app_name">XTime</string>
-    <string name="action_settings">Settings</string>
+    <!-- week overview activity -->
+    <string name="week_overview_busy">Loading data…</string>
+    <!-- day overview activity -->
     <string name="title_activity_day_overview">Day Overview</string>
     <string name="hello_world">Hello world!</string>
 
