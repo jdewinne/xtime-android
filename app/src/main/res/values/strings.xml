@@ -7,14 +7,20 @@
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in</string>
-    <string name="login_progress_signing_in">Signing in&#8230;</string>
+    <string name="login_progress_signing_in">Signing in…</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_request_failed">Failed to connect to XTime server</string>
     <string name="error_field_required">This field is required</string>
     <!-- week overview activity -->
-    <string name="week_overview_busy">Loading data&#8230;</string>
+    <string name="week_overview_busy">Loading data…</string>
     <!-- day overview activity -->
     <string name="title_activity_day_overview">Day Overview</string>
+    <!-- day overview activity -->
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_edit_time_cell">Edit</string>
+    <string name="editor_project_label">Project:</string>
+    <string name="editor_work_type_label">Work type:</string>
+    <string name="editor_time_label">Time:</string>
+    <string name="action_save">Save</string>
 
 </resources>
