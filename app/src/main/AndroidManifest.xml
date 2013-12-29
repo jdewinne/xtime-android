@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Xebia">
         <activity android:name="com.xebia.xtime.weekoverview.WeekOverviewActivity">
-            <intent-filter>
+        <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -28,7 +28,7 @@
             android:windowSoftInputMode="adjustResize|stateVisible" />
         <activity
             android:name="com.xebia.xtime.dayoverview.DayOverviewActivity"
-            android:label="@string/title_activity_day_overview"></activity>
+            android:label="@string/title_activity_day_overview" />
     </application>
 
 </manifest>
