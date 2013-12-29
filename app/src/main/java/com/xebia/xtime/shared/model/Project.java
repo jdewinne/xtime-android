@@ -3,11 +3,6 @@ package com.xebia.xtime.shared.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public class Project implements Parcelable {
 
     public static final Creator<Project> CREATOR = new Creator<Project>() {
@@ -52,18 +47,6 @@ public class Project implements Parcelable {
     }
 
     @Override
-    public String toString() {
-        return toJson().toString();
-    }
-
-    public JSONObject toJson() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", getId());
-        map.put("description", getDescription());
-        return new JSONObject(map);
-    }
-
-    @Override
     public int describeContents() {
         return 0;
     }
@@ -72,5 +55,14 @@ public class Project implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(mId);
         parcel.writeString(mDescription);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Project) {
+            return mId.equals(((Project) o).getId()) && mDescription.equals(((Project) o)
+                    .getDescription());
+        }
+        return super.equals(o);
     }
 }

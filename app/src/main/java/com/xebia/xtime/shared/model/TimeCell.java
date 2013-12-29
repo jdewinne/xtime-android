@@ -3,11 +3,7 @@ package com.xebia.xtime.shared.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONObject;
-
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TimeCell implements Parcelable {
 
@@ -26,15 +22,15 @@ public class TimeCell implements Parcelable {
     private boolean mApproved;
     private Date mEntryDate;
     private boolean mFromAfas;
-    private double mHour;
+    private double mHours;
     private boolean mTransferredToAfas;
 
-    public TimeCell(boolean approved, Date entryDate, boolean fromAfas, double hour,
+    public TimeCell(boolean approved, Date entryDate, boolean fromAfas, double hours,
                     boolean transferredToAfas) {
         setApproved(approved);
         setEntryDate(entryDate);
         setFromAfas(fromAfas);
-        setHour(hour);
+        setHours(hours);
         setTransferredToAfas(transferredToAfas);
     }
 
@@ -42,7 +38,7 @@ public class TimeCell implements Parcelable {
         mApproved = parcel.readInt() > 0;
         mEntryDate = new Date(parcel.readLong());
         mFromAfas = parcel.readInt() > 0;
-        mHour = parcel.readDouble();
+        mHours = parcel.readDouble();
         mTransferredToAfas = parcel.readInt() > 0;
     }
 
@@ -51,7 +47,7 @@ public class TimeCell implements Parcelable {
     }
 
     public void setApproved(boolean approved) {
-        this.mApproved = approved;
+        mApproved = approved;
     }
 
     public Date getEntryDate() {
@@ -59,7 +55,7 @@ public class TimeCell implements Parcelable {
     }
 
     public void setEntryDate(Date entryDate) {
-        this.mEntryDate = entryDate;
+        mEntryDate = entryDate;
     }
 
     public boolean isFromAfas() {
@@ -67,38 +63,23 @@ public class TimeCell implements Parcelable {
     }
 
     public void setFromAfas(boolean fromAfas) {
-        this.mFromAfas = fromAfas;
+        mFromAfas = fromAfas;
     }
 
-    public double getHour() {
-        return mHour;
+    public double getHours() {
+        return mHours;
     }
 
-    public void setHour(double hour) {
-        this.mHour = hour;
+    public void setHours(double hours) {
+        mHours = hours;
     }
 
     public boolean isTransferredToAfas() {
         return mTransferredToAfas;
     }
 
-    public void setTransferredToAfas(boolean mTransferredToAfas) {
-        this.mTransferredToAfas = mTransferredToAfas;
-    }
-
-    @Override
-    public String toString() {
-        return toJson().toString();
-    }
-
-    public JSONObject toJson() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("approved", isApproved());
-        map.put("entryDate", getEntryDate().getTime());
-        map.put("fromAfas", isFromAfas());
-        map.put("hour", Double.toString(getHour()));
-        map.put("transferredToAfas", isTransferredToAfas());
-        return new JSONObject(map);
+    public void setTransferredToAfas(boolean transferredToAfas) {
+        mTransferredToAfas = transferredToAfas;
     }
 
     @Override
@@ -111,7 +92,18 @@ public class TimeCell implements Parcelable {
         parcel.writeInt(mApproved ? 1 : 0);
         parcel.writeLong(mEntryDate.getTime());
         parcel.writeInt(mFromAfas ? 1 : 0);
-        parcel.writeDouble(mHour);
+        parcel.writeDouble(mHours);
         parcel.writeInt(mTransferredToAfas ? 1 : 0);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof TimeCell) {
+            return mApproved == ((TimeCell) o).isApproved() && mEntryDate.equals(((TimeCell) o)
+                    .getEntryDate()) && mFromAfas == ((TimeCell) o).isFromAfas() &&
+                    mTransferredToAfas == ((TimeCell) o).isTransferredToAfas() && mHours == (
+                    (TimeCell) o).getHours();
+        }
+        return super.equals(o);
     }
 }

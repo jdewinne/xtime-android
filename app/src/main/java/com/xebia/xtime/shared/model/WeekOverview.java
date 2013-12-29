@@ -4,14 +4,9 @@ package com.xebia.xtime.shared.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class WeekOverview implements Parcelable {
 
@@ -27,7 +22,6 @@ public class WeekOverview implements Parcelable {
             return new WeekOverview[size];
         }
     };
-
     private Date mLastTransferredDate;
     private int mMonthDaysCount;
     private boolean mMonthlyDataApproved;
@@ -117,34 +111,6 @@ public class WeekOverview implements Parcelable {
         this.mMonthlyDataTransferred = monthlyDataTransferred;
     }
 
-    public JSONObject toJson() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("lastTransferredDate", getLastTransferredDate().getTime());
-        map.put("monthDaysCount", getMonthDaysCount());
-        map.put("monthlyDataApproved", isMonthlyDataApproved());
-        map.put("monthlyDataTransferred", isMonthlyDataTransferred());
-        map.put("username", getUsername());
-
-        JSONArray projects = new JSONArray();
-        for (Project p : getProjects()) {
-            projects.put(p.toJson());
-        }
-        map.put("projects", projects);
-
-        JSONArray timeSheetRows = new JSONArray();
-        for (TimeSheetRow t : getTimeSheetRows()) {
-            timeSheetRows.put(t.toJson());
-        }
-        map.put("timeSheetRows", timeSheetRows);
-
-        return new JSONObject(map);
-    }
-
-    @Override
-    public String toString() {
-        return toJson().toString();
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -159,5 +125,18 @@ public class WeekOverview implements Parcelable {
         parcel.writeTypedList(mProjects);
         parcel.writeTypedList(mTimeSheetRows);
         parcel.writeString(mUsername);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof WeekOverview) {
+            return mLastTransferredDate.equals(((WeekOverview) o).getLastTransferredDate()) &&
+                    mMonthlyDataApproved == ((WeekOverview) o).isMonthlyDataApproved() &&
+                    mMonthlyDataTransferred == ((WeekOverview) o).isMonthlyDataTransferred() &&
+                    mMonthDaysCount == ((WeekOverview) o).getMonthDaysCount() && mProjects.equals
+                    (((WeekOverview) o).getProjects()) && mTimeSheetRows.equals(((WeekOverview)
+                    o).getTimeSheetRows()) && mUsername.equals(((WeekOverview) o).getUsername());
+        }
+        return super.equals(o);
     }
 }

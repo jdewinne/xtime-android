@@ -22,19 +22,18 @@ public class DayOverview implements Parcelable {
     };
     private Date mDate;
     private double mTotalHours;
-    private List<TimeRegistration> mTimeRegistrations;
+    private List<TimeSheetEntry> mTimeSheetEntries;
 
     protected DayOverview(Parcel parcel) {
         mDate = new Date(parcel.readLong());
         mTotalHours = parcel.readDouble();
-        mTimeRegistrations = new ArrayList<TimeRegistration>();
-        parcel.readTypedList(mTimeRegistrations, TimeRegistration.CREATOR);
+        mTimeSheetEntries = new ArrayList<TimeSheetEntry>();
+        parcel.readTypedList(mTimeSheetEntries, TimeSheetEntry.CREATOR);
     }
 
-    public DayOverview(Date date, double hours) {
+    public DayOverview(Date date) {
         mDate = date;
-        mTotalHours = hours;
-        mTimeRegistrations = new ArrayList<TimeRegistration>();
+        mTimeSheetEntries = new ArrayList<TimeSheetEntry>();
     }
 
     public Date getDate() {
@@ -53,12 +52,12 @@ public class DayOverview implements Parcelable {
         mTotalHours = totalHours;
     }
 
-    public List<TimeRegistration> getTimeRegistrations() {
-        return mTimeRegistrations;
+    public List<TimeSheetEntry> getTimeSheetEntries() {
+        return mTimeSheetEntries;
     }
 
-    public void setTimeRegistrations(List<TimeRegistration> timeRegistrations) {
-        mTimeRegistrations = timeRegistrations;
+    public void setTimeSheetEntries(List<TimeSheetEntry> timeSheetEntries) {
+        mTimeSheetEntries = timeSheetEntries;
     }
 
     @Override
@@ -70,6 +69,16 @@ public class DayOverview implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeLong(mDate.getTime());
         parcel.writeDouble(mTotalHours);
-        parcel.writeTypedList(mTimeRegistrations);
+        parcel.writeTypedList(mTimeSheetEntries);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof DayOverview) {
+            return mDate.equals(((DayOverview) o).getDate()) && mTotalHours == ((DayOverview) o)
+                    .getTotalHours() && mTimeSheetEntries.equals(((DayOverview) o)
+                    .getTimeSheetEntries());
+        }
+        return super.equals(o);
     }
 }
