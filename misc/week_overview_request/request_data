@@ -1,8 +1,0 @@
-callCount=1
-scriptSessionId=4D2E06061CB88F043ADBA7AC830EA771684
-c0-scriptName=TimeEntryServiceBean
-c0-methodName=getWeekOverview
-c0-id=42
-c0-param0=string:2013-12-09
-c0-param1=boolean:true
-batchId=5

@@ -1,0 +1,15 @@
+POST /xtime/j_spring_security_check HTTP/1.1
+Host: xtime.xebia.com
+Connection: keep-alive
+Content-Length: 55
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Origin: https://xtime.xebia.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/31.0.1650.63 Chrome/31.0.1650.63 Safari/537.36
+Content-Type: application/x-www-form-urlencoded
+Referer: https://xtime.xebia.com/xtime/login.jsp
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: en-US,en;q=0.8,nl-NL;q=0.6,nl;q=0.4
+Cookie: JSESSIONID=702FBB1D55B85BEF4C8AF7E734D0A0A5; username=smulder; __utma=179778477.1005742500.1387812972.1387812972.1387812972.1; __utmz=179778477.1387812972.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)
+
+j_username=smulder&j_password=UNHASHED_URLENCODED_PASSWORD&login=Login

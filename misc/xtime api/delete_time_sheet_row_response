@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+Date: Sun, 29 Dec 2013 17:10:15 GMT
+Content-Type: text/javascript;charset=utf-8
+Content-Length: 114
+Keep-Alive: timeout=15, max=100
+Connection: Keep-Alive
+
+throw 'allowScriptTagRemoting is false.';
+//#DWR-INSERT
+//#DWR-REPLY
+dwr.engine._remoteHandleCallback('2','0',2);

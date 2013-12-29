@@ -1,0 +1,8 @@
+HTTP/1.1 302 Found
+Date: Sun, 29 Dec 2013 17:00:35 GMT
+Set-Cookie: JSESSIONID=BEEF38177C0CA25A303951D5944A7A5B; Path=/xtime/; Secure; HttpOnly
+Location: https://xtime.xebia.com/xtime/entryform.html
+Content-Length: 0
+Keep-Alive: timeout=15, max=99
+Connection: Keep-Alive
+Content-Type: text/plain
