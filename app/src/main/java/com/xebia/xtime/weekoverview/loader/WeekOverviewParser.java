@@ -119,7 +119,7 @@ public class WeekOverviewParser {
             boolean fromAfas = "true".equals(matcher.group(3));
             double hour = Double.parseDouble(matcher.group(4));
             boolean transferredToAfas = "true".equals(matcher.group(5));
-            return new TimeCell(approved, new Date(entryDate), fromAfas, hour, transferredToAfas);
+            return new TimeCell(new Date(entryDate), hour, approved, fromAfas, transferredToAfas);
         }
 
         return null;

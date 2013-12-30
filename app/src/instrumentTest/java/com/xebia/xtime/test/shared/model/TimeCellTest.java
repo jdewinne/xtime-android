@@ -21,7 +21,7 @@ public class TimeCellTest extends TestCase {
         final boolean fromAfas = true;
         double hours = 3.14;
         final boolean transferredToAfas = true;
-        mTimeCell = new TimeCell(approved, entryDate, fromAfas, hours, transferredToAfas);
+        mTimeCell = new TimeCell(entryDate, hours, approved, fromAfas, transferredToAfas);
     }
 
     public void testEquals() {
@@ -31,17 +31,17 @@ public class TimeCellTest extends TestCase {
         double hours = 3.14;
         final boolean transferredToAfas = true;
 
-        assertTrue(mTimeCell.equals(new TimeCell(approved, entryDate, fromAfas, hours,
+        assertTrue(mTimeCell.equals(new TimeCell(entryDate, hours, approved, fromAfas,
                 transferredToAfas)));
-        assertFalse(mTimeCell.equals(new TimeCell(false, entryDate, fromAfas, hours,
+        assertFalse(mTimeCell.equals(new TimeCell(new Date(), hours, approved, fromAfas,
                 transferredToAfas)));
-        assertFalse(mTimeCell.equals(new TimeCell(approved, new Date(), fromAfas, hours,
+        assertFalse(mTimeCell.equals(new TimeCell(entryDate, hours + 1, approved, fromAfas,
                 transferredToAfas)));
-        assertFalse(mTimeCell.equals(new TimeCell(approved, entryDate, false, hours,
+        assertFalse(mTimeCell.equals(new TimeCell(entryDate, hours, false, fromAfas,
                 transferredToAfas)));
-        assertFalse(mTimeCell.equals(new TimeCell(approved, entryDate, fromAfas, hours + 1,
+        assertFalse(mTimeCell.equals(new TimeCell(entryDate, hours, approved, false,
                 transferredToAfas)));
-        assertFalse(mTimeCell.equals(new TimeCell(approved, entryDate, fromAfas, hours, false)));
+        assertFalse(mTimeCell.equals(new TimeCell(entryDate, hours, approved, fromAfas, false)));
     }
 
     public void testParcelable() {

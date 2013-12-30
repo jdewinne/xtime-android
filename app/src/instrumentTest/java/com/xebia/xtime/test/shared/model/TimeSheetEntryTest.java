@@ -22,7 +22,7 @@ public class TimeSheetEntryTest extends TestCase {
         Project project = new Project("project id", "project name");
         WorkType workType = new WorkType("work type id", "work type description");
         String description = "description";
-        TimeCell timeCell = new TimeCell(true, new Date(1234), true, 1, true);
+        TimeCell timeCell = new TimeCell(new Date(1234), 1, true, true, true);
         mTimeSheet = new TimeSheetEntry(project, workType, description, timeCell);
     }
 
@@ -30,7 +30,7 @@ public class TimeSheetEntryTest extends TestCase {
         Project project = new Project("project id", "project name");
         WorkType workType = new WorkType("work type id", "work type description");
         String description = "description";
-        TimeCell timeCell = new TimeCell(true, new Date(1234), true, 1, true);
+        TimeCell timeCell = new TimeCell(new Date(1234), 1, true, true, true);
 
         assertTrue(mTimeSheet.equals(new TimeSheetEntry(project, workType, description, timeCell)));
         assertFalse(mTimeSheet.equals(new TimeSheetEntry(new Project("not", "not"), workType,

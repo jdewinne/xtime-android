@@ -25,13 +25,13 @@ public class TimeCell implements Parcelable {
     private double mHours;
     private boolean mTransferredToAfas;
 
-    public TimeCell(boolean approved, Date entryDate, boolean fromAfas, double hours,
+    public TimeCell(Date entryDate, double hours, boolean approved, boolean fromAfas,
                     boolean transferredToAfas) {
-        setApproved(approved);
-        setEntryDate(entryDate);
-        setFromAfas(fromAfas);
-        setHours(hours);
-        setTransferredToAfas(transferredToAfas);
+        mApproved = approved;
+        mEntryDate = entryDate;
+        mFromAfas = fromAfas;
+        mHours = hours;
+        mTransferredToAfas = transferredToAfas;
     }
 
     protected TimeCell(Parcel parcel) {
