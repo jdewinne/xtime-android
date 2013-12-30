@@ -16,6 +16,7 @@ public class TimeSheetEntry implements Parcelable {
             return new TimeSheetEntry[size];
         }
     };
+    private String mDescription;
     private Project mProject;
     private WorkType mWorkType;
     private TimeCell mTimeCell;
@@ -23,13 +24,20 @@ public class TimeSheetEntry implements Parcelable {
     protected TimeSheetEntry(Parcel parcel) {
         mProject = parcel.readParcelable(Project.class.getClassLoader());
         mWorkType = parcel.readParcelable(WorkType.class.getClassLoader());
+        mDescription = parcel.readString();
         mTimeCell = parcel.readParcelable(TimeCell.class.getClassLoader());
     }
 
-    public TimeSheetEntry(Project project, WorkType workType, TimeCell timeCell) {
+    public TimeSheetEntry(Project project, WorkType workType, String description,
+                          TimeCell timeCell) {
         mProject = project;
         mWorkType = workType;
+        mDescription = description;
         mTimeCell = timeCell;
+    }
+
+    public String getDescription() {
+        return mDescription;
     }
 
     public WorkType getWorkType() {
@@ -53,6 +61,7 @@ public class TimeSheetEntry implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeParcelable(mProject, flags);
         parcel.writeParcelable(mWorkType, flags);
+        parcel.writeString(mDescription);
         parcel.writeParcelable(mTimeCell, flags);
     }
 
@@ -61,7 +70,7 @@ public class TimeSheetEntry implements Parcelable {
         if (o instanceof TimeSheetEntry) {
             return mProject.equals(((TimeSheetEntry) o).getProject()) && mWorkType.equals((
                     (TimeSheetEntry) o).getWorkType()) && mTimeCell.equals(((TimeSheetEntry) o)
-                    .getTimeCell());
+                    .getTimeCell()) && mDescription.equals(((TimeSheetEntry) o).getDescription());
         }
         return super.equals(o);
     }

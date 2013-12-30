@@ -37,6 +37,7 @@ public class TimeSheetUtils {
             // find the project that is related to this row
             Project project = row.getProject();
             WorkType workType = row.getWorkType();
+            String description = row.getDescription();
 
             // group the time cells by day of the week
             for (TimeCell timeCell : row.getTimeCells()) {
@@ -46,7 +47,8 @@ public class TimeSheetUtils {
                 DayOverview dayOverview = dailyHoursArray.get(entryCal.get(Calendar.DAY_OF_WEEK));
 
                 // add time registration entry
-                TimeSheetEntry timeReg = new TimeSheetEntry(project, workType, timeCell);
+                TimeSheetEntry timeReg = new TimeSheetEntry(project, workType, description,
+                        timeCell);
                 dayOverview.getTimeSheetEntries().add(timeReg);
 
                 // increment total hours

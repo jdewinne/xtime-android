@@ -19,39 +19,25 @@ public class TimeSheetRow implements Parcelable {
             return new TimeSheetRow[size];
         }
     };
-    private String mClientName;
     private String mDescription;
     private Project mProject;
     private List<TimeCell> mTimeCells;
-    private String mUserId;
     private WorkType mWorkType;
 
-    public TimeSheetRow(String clientName, String description, Project project,
-                        List<TimeCell> timeCells, String userId, WorkType workType) {
-        setClientName(clientName);
-        setDescription(description);
+    public TimeSheetRow(Project project, WorkType workType, String description,
+                        List<TimeCell> timeCells) {
         setProject(project);
-        setTimeCells(timeCells);
-        setUserId(userId);
         setWorkType(workType);
+        setDescription(description);
+        setTimeCells(timeCells);
     }
 
     protected TimeSheetRow(Parcel parcel) {
-        mClientName = parcel.readString();
+        mProject = parcel.readParcelable(Project.class.getClassLoader());
+        mWorkType = parcel.readParcelable(WorkType.class.getClassLoader());
         mDescription = parcel.readString();
-        mProject = parcel.readParcelable(getClass().getClassLoader());
         mTimeCells = new ArrayList<TimeCell>();
         parcel.readTypedList(mTimeCells, TimeCell.CREATOR);
-        mUserId = parcel.readString();
-        mWorkType = parcel.readParcelable(getClass().getClassLoader());
-    }
-
-    public String getClientName() {
-        return mClientName;
-    }
-
-    public void setClientName(String clientName) {
-        mClientName = clientName;
     }
 
     public String getDescription() {
@@ -78,14 +64,6 @@ public class TimeSheetRow implements Parcelable {
         mTimeCells = timeCells;
     }
 
-    public String getUserId() {
-        return mUserId;
-    }
-
-    public void setUserId(String userId) {
-        mUserId = userId;
-    }
-
     public WorkType getWorkType() {
         return mWorkType;
     }
@@ -101,22 +79,18 @@ public class TimeSheetRow implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
-        parcel.writeString(getClientName());
-        parcel.writeString(getDescription());
         parcel.writeParcelable(getProject(), flags);
-        parcel.writeTypedList(getTimeCells());
-        parcel.writeString(getUserId());
         parcel.writeParcelable(getWorkType(), flags);
+        parcel.writeString(getDescription());
+        parcel.writeTypedList(getTimeCells());
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof TimeSheetRow) {
-            return mClientName.equals(((TimeSheetRow) o).getClientName()) && mDescription.equals(
-                    ((TimeSheetRow) o).mDescription) && mProject.equals(((TimeSheetRow) o)
-                    .getProject()) && mTimeCells.equals(((TimeSheetRow) o).getTimeCells()) &&
-                    mWorkType.equals(((TimeSheetRow) o).getWorkType()) && mUserId.equals((
-                    (TimeSheetRow) o).getUserId());
+            return mDescription.equals(((TimeSheetRow) o).mDescription) && mProject.equals((
+                    (TimeSheetRow) o).getProject()) && mTimeCells.equals(((TimeSheetRow) o)
+                    .getTimeCells()) && mWorkType.equals(((TimeSheetRow) o).getWorkType());
 
         }
         return super.equals(o);

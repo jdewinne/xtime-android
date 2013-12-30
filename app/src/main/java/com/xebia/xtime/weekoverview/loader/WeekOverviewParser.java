@@ -44,8 +44,8 @@ public class WeekOverviewParser {
             List<Project> projects = parseProjects(input);
             List<TimeSheetRow> timeSheetRows = parseTimeSheetRows(input);
             String username = matcher.group(5);
-            String weekendDatesVar = matcher.group(6);
-            String weekStart = matcher.group(7);
+            // String weekendDatesVar = matcher.group(6);
+            // String weekStart = matcher.group(7);
             return new WeekOverview(new Date(lastTransferredDate), monthDaysCount,
                     monthlyDataApproved, monthlyDataTransferred, projects, timeSheetRows, username);
 
@@ -73,18 +73,17 @@ public class WeekOverviewParser {
 
         Matcher matcher = pattern.matcher(input);
         while (matcher.find()) {
-            String clientName = matcher.group(2);
+            // String clientName = matcher.group(2);
             String description = matcher.group(3);
             String projectId = matcher.group(4);
             String projectName = matcher.group(5);
             List<TimeCell> timeCells = parseTimeCells(input, matcher.group(6));
-            String userId = matcher.group(7);
+            // String userId = matcher.group(7);
             String workTypeDescription = matcher.group(8);
             String workTypeId = matcher.group(9);
             Project project = new Project(projectId, projectName);
             WorkType workType = new WorkType(workTypeId, workTypeDescription);
-            timeSheetRows.add(new TimeSheetRow(clientName, description, project, timeCells,
-                    userId, workType));
+            timeSheetRows.add(new TimeSheetRow(project, workType, description, timeCells));
         }
 
         return timeSheetRows;

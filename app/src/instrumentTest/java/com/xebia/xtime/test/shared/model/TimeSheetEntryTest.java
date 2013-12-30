@@ -21,22 +21,27 @@ public class TimeSheetEntryTest extends TestCase {
 
         Project project = new Project("project id", "project name");
         WorkType workType = new WorkType("work type id", "work type description");
+        String description = "description";
         TimeCell timeCell = new TimeCell(true, new Date(1234), true, 1, true);
-        mTimeSheet = new TimeSheetEntry(project, workType, timeCell);
+        mTimeSheet = new TimeSheetEntry(project, workType, description, timeCell);
     }
 
     public void testEquals() {
         Project project = new Project("project id", "project name");
         WorkType workType = new WorkType("work type id", "work type description");
+        String description = "description";
         TimeCell timeCell = new TimeCell(true, new Date(1234), true, 1, true);
 
-        assertTrue(mTimeSheet.equals(new TimeSheetEntry(project, workType, timeCell)));
+        assertTrue(mTimeSheet.equals(new TimeSheetEntry(project, workType, description, timeCell)));
         assertFalse(mTimeSheet.equals(new TimeSheetEntry(new Project("not", "not"), workType,
+                description,
                 timeCell)));
         assertFalse(mTimeSheet.equals(new TimeSheetEntry(project, new WorkType("not", "not"),
-                timeCell)));
+                description, timeCell)));
+        assertFalse(mTimeSheet.equals(new TimeSheetEntry(project, workType, "wrong", timeCell)));
         timeCell.setApproved(false);
-        assertFalse(mTimeSheet.equals(new TimeSheetEntry(project, workType, timeCell)));
+        assertFalse(mTimeSheet.equals(new TimeSheetEntry(project, workType, description,
+                timeCell)));
 
     }
 

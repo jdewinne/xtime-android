@@ -31,7 +31,7 @@ public class DayOverviewTest extends TestCase {
         shouldEqual.setTotalHours(2);
         assertFalse(mOverview.equals(shouldEqual));
         shouldEqual.setTotalHours(42);
-        shouldEqual.getTimeSheetEntries().add(new TimeSheetEntry(null, null, null));
+        shouldEqual.getTimeSheetEntries().add(new TimeSheetEntry(null, null, null, null));
         assertFalse(mOverview.equals(shouldEqual));
     }
 

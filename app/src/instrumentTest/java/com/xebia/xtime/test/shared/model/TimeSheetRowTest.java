@@ -20,36 +20,27 @@ public class TimeSheetRowTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        String clientName = "client name";
         String description = "description";
         Project project = new Project("project id", "project name");
         List<TimeCell> timeCells = new ArrayList<TimeCell>();
-        String userId = "user id";
         WorkType workType = new WorkType("work type id", "work type description");
-        mTimeSheet = new TimeSheetRow(clientName, description, project, timeCells, userId,
-                workType);
+        mTimeSheet = new TimeSheetRow(project, workType, description, timeCells);
     }
 
     public void testEquals() {
-        String clientName = "client name";
         String description = "description";
         Project project = new Project("project id", "project name");
         List<TimeCell> timeCells = new ArrayList<TimeCell>();
-        String userId = "user id";
         WorkType workType = new WorkType("work type id", "work type description");
 
-        assertTrue(mTimeSheet.equals(new TimeSheetRow(clientName, description, project,
-                timeCells, userId, workType)));
-        assertFalse(mTimeSheet.equals(new TimeSheetRow("not client", description, project,
-                timeCells, userId, workType)));
-        assertFalse(mTimeSheet.equals(new TimeSheetRow(clientName, "not descr", project,
-                timeCells, userId, workType)));
-        assertFalse(mTimeSheet.equals(new TimeSheetRow(clientName, description, project,
-                timeCells, "not user", workType)));
-        assertFalse(mTimeSheet.equals(new TimeSheetRow(clientName, description,
-                new Project("foo", "bar"), timeCells, userId, workType)));
-        assertFalse(mTimeSheet.equals(new TimeSheetRow(clientName, description, project,
-                timeCells, userId, new WorkType("foo", "bar"))));
+        assertTrue(mTimeSheet.equals(new TimeSheetRow(project, workType, description, timeCells)));
+        assertFalse(mTimeSheet.equals(new TimeSheetRow(new Project("wrong", "wrong"), workType,
+                description, timeCells)));
+        assertFalse(mTimeSheet.equals(new TimeSheetRow(project, new WorkType("wrong", "wrong"),
+                description, timeCells)));
+        assertFalse(mTimeSheet.equals(new TimeSheetRow(project, workType, "wrong", timeCells)));
+        timeCells.add(new TimeCell(false, null, false, 0, false));
+        assertFalse(mTimeSheet.equals(new TimeSheetRow(project, workType, description, timeCells)));
     }
 
     public void testParcelable() {

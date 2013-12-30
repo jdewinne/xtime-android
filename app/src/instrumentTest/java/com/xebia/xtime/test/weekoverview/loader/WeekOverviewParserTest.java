@@ -55,22 +55,18 @@ public class WeekOverviewParserTest extends TestCase {
         // list of time sheet rows
         assertEquals(2, result.getTimeSheetRows().size());
         TimeSheetRow row = result.getTimeSheetRows().get(0);
-        assertEquals("CLIENT 1", row.getClientName());
         assertEquals("description", row.getDescription());
         assertEquals("PROJECT 1", row.getProject().getDescription());
         assertEquals("0001", row.getProject().getId());
-        assertEquals("1234567", row.getUserId());
         assertEquals("Work work", row.getWorkType().getDescription());
         assertEquals("100", row.getWorkType().getId());
         assertEquals(1, row.getTimeCells().size());
         assertEquals(new Date(11111), row.getTimeCells().get(0).getEntryDate());
 
         row = result.getTimeSheetRows().get(1);
-        assertEquals("CLIENT 2", row.getClientName());
         assertEquals("", row.getDescription());
         assertEquals("PROJECT 2", row.getProject().getDescription());
         assertEquals("0002", row.getProject().getId());
-        assertEquals("1234567", row.getUserId());
         assertEquals("Work work", row.getWorkType().getDescription());
         assertEquals("100", row.getWorkType().getId());
         assertEquals(1, row.getTimeCells().size());
