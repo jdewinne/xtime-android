@@ -1,0 +1,14 @@
+HTTP/1.1 302 Found
+Date: Mon, 30 Dec 2013 11:32:27 GMT
+Pragma: no-cache
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Cache-Control: no-cache
+Cache-Control: no-store
+Location: https://xtime.xebia.com/xtime/entryform.html
+Content-Language: en-US
+Vary: Accept-Encoding
+Content-Encoding: gzip
+Content-Length: 20
+Keep-Alive: timeout=15, max=100
+Connection: Keep-Alive
+Content-Type: text/html
