@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class TimeSheetUtils {
 
@@ -44,6 +45,8 @@ public class TimeSheetUtils {
                 // get day overview for this day from array
                 Calendar entryCal = Calendar.getInstance();
                 entryCal.setTime(timeCell.getEntryDate());
+                entryCal.setTimeZone(TimeZone.getTimeZone("CET")); // use the day of week in
+                // central european time
                 DayOverview dayOverview = dailyHoursArray.get(entryCal.get(Calendar.DAY_OF_WEEK));
 
                 // add time registration entry
@@ -66,5 +69,4 @@ public class TimeSheetUtils {
 
         return result;
     }
-
 }
