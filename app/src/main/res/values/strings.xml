@@ -15,12 +15,14 @@
     <string name="week_overview_busy">Loading data…</string>
     <!-- day overview activity -->
     <string name="title_activity_day_overview">Day Overview</string>
-    <!-- day overview activity -->
-    <string name="hello_world">Hello world!</string>
+    <!-- Strings related to time cell editor -->
     <string name="title_activity_edit_time_cell">Edit</string>
     <string name="editor_project_label">Project:</string>
+    <string name="editor_descr_label">Description:</string>
     <string name="editor_work_type_label">Work type:</string>
     <string name="editor_time_label">Time:</string>
     <string name="action_save">Save</string>
+    <string name="error_invalid_time">Please enter a valid time</string>
+    <string name="toast_request_failed">Request failed</string>
 
 </resources>

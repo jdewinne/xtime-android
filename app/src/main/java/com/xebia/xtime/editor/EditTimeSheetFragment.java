@@ -1,8 +1,10 @@
 package com.xebia.xtime.editor;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
@@ -24,6 +27,7 @@ public class EditTimeSheetFragment extends Fragment {
     private TimeSheetEntry mTimeSheetEntry;
     private EditText mProjectView;
     private EditText mWorkTypeView;
+    private EditText mDescriptionView;
     private EditText mTimeView;
     private Listener mListener;
 
@@ -61,6 +65,7 @@ public class EditTimeSheetFragment extends Fragment {
         // link the views
         mProjectView = (EditText) rootView.findViewById(R.id.project);
         mWorkTypeView = (EditText) rootView.findViewById(R.id.work_type);
+        mDescriptionView = (EditText) rootView.findViewById(R.id.description);
         mTimeView = (EditText) rootView.findViewById(R.id.time);
 
         // prefill the views
@@ -69,6 +74,8 @@ public class EditTimeSheetFragment extends Fragment {
             mProjectView.setEnabled(false);
             mWorkTypeView.setText(mTimeSheetEntry.getWorkType().getDescription());
             mWorkTypeView.setEnabled(false);
+            mDescriptionView.setText(mTimeSheetEntry.getDescription());
+            mDescriptionView.setEnabled(false);
             mTimeView.setText(NumberFormat.getNumberInstance()
                     .format(mTimeSheetEntry.getTimeCell().getHours()));
         }
@@ -108,11 +115,33 @@ public class EditTimeSheetFragment extends Fragment {
     }
 
     private void onSaveClick() {
-        // TODO
-        Log.d(TAG, "Save: " + mProjectView.getText() + ", " + mWorkTypeView.getText() + ", " +
-                "" + mTimeView.getText());
 
-        mListener.onChangesSaved();
+        if (TextUtils.isEmpty(mTimeView.getText())) {
+            mTimeView.setError(getActivity().getString(R.string.error_field_required));
+            mTimeView.requestFocus();
+            return;
+        }
+
+        double time = getTimeInput();
+        if (time < 0) {
+            mTimeView.setError(getActivity().getString(R.string.error_invalid_time));
+            mTimeView.requestFocus();
+            return;
+        }
+
+        mTimeSheetEntry.getTimeCell().setHours(time);
+        new SaveTask().execute(mTimeSheetEntry);
+    }
+
+    private double getTimeInput() {
+        double time = -1;
+        String timeString = mTimeView.getText() + "";
+        try {
+            time = Double.parseDouble(timeString);
+        } catch (NumberFormatException e) {
+            Log.w(TAG, "Failed to parse time input: " + mTimeView.getText());
+        }
+        return time;
     }
 
     /**
@@ -120,5 +149,31 @@ public class EditTimeSheetFragment extends Fragment {
      */
     public interface Listener {
         public abstract void onChangesSaved();
+    }
+
+    /**
+     * Asynchronous task to save the changes to this time cell.
+     */
+    private class SaveTask extends AsyncTask<TimeSheetEntry, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(TimeSheetEntry... params) {
+            if (null == params || params.length < 1) {
+                Log.d(TAG, "Missing required parameter!");
+                return null;
+            }
+            TimeSheetEntry entry = params[0];
+            return new SaveTimeSheetRequest(entry).submit();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (null != result && result) {
+                mListener.onChangesSaved();
+            } else {
+                Toast.makeText(getActivity(), R.string.toast_request_failed,
+                        Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
