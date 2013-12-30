@@ -9,14 +9,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.net.HttpCookie;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
-import java.util.List;
 
 public class LoginRequest extends XTimeRequest {
 
@@ -25,6 +21,12 @@ public class LoginRequest extends XTimeRequest {
     private String mUsername;
     private String mPassword;
 
+    /**
+     * Constructor.
+     *
+     * @param username Xebia username, without the '@xebia.com' postfix
+     * @param password Xebia password (unhashed!)
+     */
     public LoginRequest(String username, String password) {
         mUsername = username;
         mPassword = password;
@@ -41,11 +43,12 @@ public class LoginRequest extends XTimeRequest {
         try {
             URL url = new URL(LOGIN_URL);
 
-            // TODO: do not blindly allow all host names...
-            trustAllCertificates();
-
+            // setting a cookie manager magically makes sure the cookies are stored
             CookieManager cookieManager = new CookieManager();
             CookieHandler.setDefault(cookieManager);
+
+            // blindly trust all certificates
+            trustAllCertificates();
 
             urlConnection = (HttpURLConnection) url.openConnection();
 
@@ -56,12 +59,6 @@ public class LoginRequest extends XTimeRequest {
             OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
             writeCredentials(out);
 
-            String setCookie = urlConnection.getHeaderField("Set-Cookie");
-            List<HttpCookie> cookies = HttpCookie.parse(setCookie);
-            for (HttpCookie cookie : cookies) {
-                cookieManager.getCookieStore().add(new URI("https://xtime.xebia.com/"), cookie);
-            }
-
             // login was successful if the Location header does not redirect to an error page
             String location = urlConnection.getHeaderField("Location");
             return location != null && !location.contains("error=true");
@@ -71,9 +68,6 @@ public class LoginRequest extends XTimeRequest {
             return null;
         } catch (GeneralSecurityException e) {
             Log.e(TAG, "Security problem performing request", e);
-            return null;
-        } catch (URISyntaxException e) {
-            // impossibru!
             return null;
         } finally {
             if (urlConnection != null) {

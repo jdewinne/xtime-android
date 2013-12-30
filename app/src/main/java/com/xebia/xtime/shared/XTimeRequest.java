@@ -16,7 +16,8 @@ public abstract class XTimeRequest {
     private static final String TAG = "XTimeRequest";
 
     /**
-     * Trust every server - do not check for any certificate
+     * Disables checks on security certificates for HttpsUrlConnections. This seems to be the
+     * only way around the crappy certificate that is being used for the XTime backend.
      */
     // TODO: Solve issue with security certificate for HTTPS.
     protected void trustAllCertificates() throws GeneralSecurityException {

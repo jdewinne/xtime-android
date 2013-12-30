@@ -10,58 +10,59 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.HttpCookie;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 public class WeekOverviewRequest extends XTimeRequest {
 
-    private static final String URL = "https://xtime.xebia" +
-            ".com/xtime/dwr/call/plaincall/TimeEntryServiceBean.getWeekOverview.dwr";
+    private static final String URL = "https://xtime.xebia.com" +
+            "/xtime/dwr/call/plaincall/TimeEntryServiceBean.getWeekOverview.dwr";
     private static final String TAG = "WeekOverviewRequest";
     private final Date mDate;
 
+    /**
+     * Constructor.
+     *
+     * @param date Date of the first day of the week that will be requested.
+     */
     public WeekOverviewRequest(Date date) {
-        super();
         mDate = date;
     }
 
+    /**
+     * Submits the request.
+     *
+     * @return Response content, or null if the request failed.
+     */
     public String submit() {
         HttpURLConnection urlConnection = null;
         try {
-            java.net.URL url = new URL(URL);
+            URL url = new URL(URL);
 
-            // TODO: do not blindly allow all host names...
+            // yeah...
             trustAllCertificates();
 
             urlConnection = (HttpURLConnection) url.openConnection();
 
-            CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
-            URI cookieUri = new URI("https://xtime.xebia.com/");
-            List<HttpCookie> cookies = cookieManager.getCookieStore().get(cookieUri);
-            urlConnection.setRequestProperty("Cookie", cookies.get(0).toString());
-
-            // do not follow redirects, we need the Location header to see if the login worked
+            // do not follow redirects, we use the Location header to see if the request was OK
             urlConnection.setInstanceFollowRedirects(false);
 
+            // write request data
             urlConnection.setDoOutput(true);
             OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
             writeStream(out);
 
+            // check if the request was OK
             String location = urlConnection.getHeaderField("Location");
-            if (null != location && !location.contains("error=true")) {
-                Log.d(TAG, "Request denied");
+            if (null != location && location.contains("error=true")) {
+                Log.w(TAG, "Request denied");
                 return null;
             }
 
+            // read response data
             InputStream in = urlConnection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(in), 8196);
             String line;
@@ -78,9 +79,6 @@ public class WeekOverviewRequest extends XTimeRequest {
         } catch (GeneralSecurityException e) {
             Log.e(TAG, "Security problem performing request", e);
             return null;
-        } catch (URISyntaxException e) {
-            // impossible
-            return null;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -94,12 +92,12 @@ public class WeekOverviewRequest extends XTimeRequest {
 
         String data = "callCount=1" + "\n";
         data += "scriptSessionId=" + System.currentTimeMillis() + "\n";
-        data += "c0-scriptName=TimeEntryServiceBean" + "\n";
-        data += "c0-methodName=getWeekOverview" + "\n";
-        data += "c0-id=0" + "\n"; // only used for JSONP callback
+        data += "c0-scriptName=TimeEntryServiceBean\n";
+        data += "c0-methodName=getWeekOverview\n";
+        data += "c0-id=0\n"; // only used for JSONP callback
         data += "c0-param0=string:" + dateString + "\n";
-        data += "c0-param1=boolean:true" + "\n"; // TODO: find out what this param does
-        data += "batchId=0" + "\n"; // only used for JSONP callback
+        data += "c0-param1=boolean:true\n"; // not used?
+        data += "batchId=0\n"; // only used for JSONP callback
         return data;
     }
 
