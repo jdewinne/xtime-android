@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -33,27 +34,30 @@ import java.util.List;
 public class EditTimeSheetFragment extends Fragment implements LoaderManager
         .LoaderCallbacks<List<WorkType>> {
 
-    private static final String ARG_TIME_SHEET = "time_sheet";
     private static final String ARG_PROJECTS = "projects";
+    private static final String ARG_DATE = "date";
+    private static final String ARG_TIME_SHEET = "time_sheet";
     private static final String TAG = "EditTimeSheetFragment";
     private TimeSheetEntry mTimeSheetEntry;
+    private List<Project> mProjects;
+    private Date mDate;
+    private List<WorkType> mWorkTypes;
     private Spinner mProjectView;
-    private EditText mWorkTypeView;
+    private Spinner mWorkTypeView;
     private EditText mDescriptionView;
     private EditText mTimeView;
     private Listener mListener;
-    private List<Project> mProjects;
-    private List<WorkType> mWorkTypes;
 
     public EditTimeSheetFragment() {
         // required empty constructor
     }
 
-    public static EditTimeSheetFragment getInstance(TimeSheetEntry entry,
-                                                    ArrayList<Project> projects) {
+    public static EditTimeSheetFragment getInstance(Date date, ArrayList<Project> projects,
+                                                    TimeSheetEntry entry) {
         Bundle args = new Bundle();
-        args.putParcelable(ARG_TIME_SHEET, entry);
+        args.putLong(ARG_DATE, date.getTime());
         args.putParcelableArrayList(ARG_PROJECTS, projects);
+        args.putParcelable(ARG_TIME_SHEET, entry);
         EditTimeSheetFragment fragment = new EditTimeSheetFragment();
         fragment.setArguments(args);
         return fragment;
@@ -64,16 +68,14 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         super.onCreate(savedInstanceState);
 
         if (null != getArguments()) {
-            mTimeSheetEntry = getArguments().getParcelable(ARG_TIME_SHEET);
+            mDate = new Date(getArguments().getLong(ARG_DATE));
             mProjects = getArguments().getParcelableArrayList(ARG_PROJECTS);
+            mTimeSheetEntry = getArguments().getParcelable(ARG_TIME_SHEET);
             mWorkTypes = new ArrayList<WorkType>();
         }
 
         if (null != mTimeSheetEntry) {
-            Bundle args = new Bundle();
-            args.putParcelable("project", mTimeSheetEntry.getProject());
-            args.putLong("date", mTimeSheetEntry.getTimeCell().getEntryDate().getTime());
-            getActivity().getSupportLoaderManager().initLoader(0, args, this);
+            mWorkTypes.add(mTimeSheetEntry.getWorkType());
         }
 
         setHasOptionsMenu(true);
@@ -89,14 +91,14 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
 
         // link the views
         mProjectView = (Spinner) rootView.findViewById(R.id.project);
-        mWorkTypeView = (EditText) rootView.findViewById(R.id.work_type);
+        mWorkTypeView = (Spinner) rootView.findViewById(R.id.work_type);
         mDescriptionView = (EditText) rootView.findViewById(R.id.description);
         mTimeView = (EditText) rootView.findViewById(R.id.time);
 
         // set up the views
+        initProjectView();
+        initWorkTypeView();
         if (null != mTimeSheetEntry) {
-            initProjectView();
-            initWorkTypeView();
             mDescriptionView.setText(mTimeSheetEntry.getDescription());
             mDescriptionView.setEnabled(false);
             mTimeView.setText(NumberFormat.getNumberInstance()
@@ -107,8 +109,14 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     }
 
     private void initWorkTypeView() {
-        mWorkTypeView.setText(mTimeSheetEntry.getWorkType().getDescription());
-        mWorkTypeView.setEnabled(false);
+        // set up the spinner adapter
+        ArrayAdapter<WorkType> adapter = new ArrayAdapter<WorkType>(getActivity(),
+                android.R.layout.simple_spinner_item, mWorkTypes);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mWorkTypeView.setAdapter(adapter);
+
+        // only enable the spinner if the work type is not already defined
+        mWorkTypeView.setEnabled(null == mTimeSheetEntry || null == mTimeSheetEntry.getWorkType());
     }
 
     private void initProjectView() {
@@ -118,21 +126,57 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mProjectView.setAdapter(adapter);
 
-        // match projects on project ID, somehow the project description is not constant
+        if (null != mTimeSheetEntry && null != mTimeSheetEntry.getProject()) {
+            selectProject(mTimeSheetEntry.getProject());
+            mProjectView.setEnabled(false);
+        } else {
+            listenProjectSelection();
+        }
+    }
+
+    /**
+     * Starts listening for item selection events from the projects spinner. Triggers a work type
+     * list load whenever the project selection changes.
+     */
+    private void listenProjectSelection() {
+        mProjectView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+                Project project = (Project) mProjectView.getItemAtPosition(pos);
+                loadWorkTypes(project);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                mWorkTypes.clear();
+                ((ArrayAdapter) mWorkTypeView.getAdapter()).notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void selectProject(Project project) {
+        // compare projects on project ID, somehow the project description is not constant
         // e.g. 'Internal projects' vs. 'Internal Project'
         int index = -1;
-        String projectId = mTimeSheetEntry.getProject().getId();
         for (int i = 0; i < mProjects.size(); i++) {
-            if (mProjects.get(i).getId().equals(projectId)) {
+            if (mProjects.get(i).getId().equals(project.getId())) {
                 index = i;
                 break;
             }
         }
 
+        // select the correct item
         if (index >= 0) {
             mProjectView.setSelection(index);
-            mProjectView.setEnabled(false);
         }
+    }
+
+    private void loadWorkTypes(Project project) {
+        Bundle args = new Bundle();
+        args.putParcelable("project", project);
+        args.putLong("date", mDate.getTime());
+        getActivity().getSupportLoaderManager().restartLoader(0, args, this);
     }
 
     @Override
@@ -180,12 +224,9 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
             return;
         }
 
+        mWorkTypes.clear();
         mWorkTypes.addAll(workTypes);
-
-        Log.d(TAG, "Loaded " + workTypes.size() + " work types");
-        for (WorkType workType : mWorkTypes) {
-            Log.d(TAG, workType.getDescription());
-        }
+        ((ArrayAdapter) mWorkTypeView.getAdapter()).notifyDataSetChanged();
     }
 
     @Override

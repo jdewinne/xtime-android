@@ -8,21 +8,33 @@ import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
 
 import java.util.ArrayList;
+import java.util.Date;
 
-public class EditTimeCellActivity extends ActionBarActivity implements EditTimeSheetFragment
+public class EditTimeSheetActivity extends ActionBarActivity implements EditTimeSheetFragment
         .Listener {
 
-    public static final String EXTRA_TIME_SHEET = "time_sheet";
+    /**
+     * Key for intent extra that contains the list of projects
+     */
     public static final String EXTRA_PROJECTS = "projects";
+    /**
+     * Key for intent extra that contains time stamp of the day
+     */
+    public static final String EXTRA_DATE = "date";
+    /**
+     * Key for (optional) intent extra that contains the TimeSheetEntry to edit,
+     * leave null to create a new entry
+     */
+    public static final String EXTRA_TIME_SHEET = "time_sheet";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_time_cell);
 
-        TimeSheetEntry entry = getIntent().getParcelableExtra(EXTRA_TIME_SHEET);
-        if (null == entry) {
-            throw new NullPointerException("Missing EXTRA_TIME_SHEET");
+        Date date = new Date(getIntent().getLongExtra(EXTRA_DATE, -1));
+        if (date.getTime() < 0) {
+            throw new NullPointerException("Missing EXTRA_DATE");
         }
 
         ArrayList<Project> projects = getIntent().getParcelableArrayListExtra(EXTRA_PROJECTS);
@@ -30,9 +42,11 @@ public class EditTimeCellActivity extends ActionBarActivity implements EditTimeS
             throw new NullPointerException("Missing EXTRA_PROJECTS");
         }
 
+        TimeSheetEntry entry = getIntent().getParcelableExtra(EXTRA_TIME_SHEET);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().add(R.id.container,
-                    EditTimeSheetFragment.getInstance(entry, projects)).commit();
+                    EditTimeSheetFragment.getInstance(date, projects, entry)).commit();
         }
     }
 

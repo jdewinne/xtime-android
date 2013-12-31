@@ -30,7 +30,7 @@
             android:name="com.xebia.xtime.dayoverview.DayOverviewActivity"
             android:label="@string/title_activity_day_overview"/>
         <activity
-            android:name="com.xebia.xtime.editor.EditTimeCellActivity"
+            android:name=".editor.EditTimeSheetActivity"
             android:label="@string/title_activity_edit_time_cell">
         </activity>
     </application>

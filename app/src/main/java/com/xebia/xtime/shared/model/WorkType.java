@@ -64,4 +64,9 @@ public class WorkType implements Parcelable {
         }
         return super.equals(o);
     }
+
+    @Override
+    public String toString() {
+        return mDescription;
+    }
 }

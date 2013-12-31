@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.editor.EditTimeCellActivity;
+import com.xebia.xtime.editor.EditTimeSheetActivity;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
@@ -23,6 +23,7 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
     public static final String EXTRA_WEEK_OVERVIEW = "week_overview";
     private static final int REQ_CODE_EDIT = 1;
     private WeekOverview mWeekOverview;
+    private DayOverview mDayOverview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +31,8 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
         setContentView(R.layout.activity_day_overview);
 
         // get the day overview
-        DayOverview dayOverview = getIntent().getParcelableExtra(EXTRA_DAY_OVERVIEW);
-        if (null == dayOverview) {
+        mDayOverview = getIntent().getParcelableExtra(EXTRA_DAY_OVERVIEW);
+        if (null == mDayOverview) {
             throw new NullPointerException("Missing EXTRA_DAY_OVERVIEW");
         }
 
@@ -43,13 +44,13 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
 
         // set up the UI
         if (savedInstanceState == null) {
-            Fragment fragment = DailyTimeSheetFragment.getInstance(dayOverview);
+            Fragment fragment = DailyTimeSheetFragment.getInstance(mDayOverview);
             getSupportFragmentManager().beginTransaction().add(R.id.container, fragment).commit();
         }
 
         // set up the title
         DateFormat dateFormat = new SimpleDateFormat("EEE d MMMM");
-        setTitle(dateFormat.format(dayOverview.getDate()));
+        setTitle(dateFormat.format(mDayOverview.getDate()));
     }
 
     @Override
@@ -62,10 +63,11 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
 
     @Override
     public void onTimeSheetEntrySelected(TimeSheetEntry selected) {
-        Intent editor = new Intent(this, EditTimeCellActivity.class);
-        editor.putExtra(EditTimeCellActivity.EXTRA_TIME_SHEET, selected);
-        editor.putParcelableArrayListExtra(EditTimeCellActivity.EXTRA_PROJECTS,
+        Intent editor = new Intent(this, EditTimeSheetActivity.class);
+        editor.putExtra(EditTimeSheetActivity.EXTRA_DATE, mDayOverview.getDate().getTime());
+        editor.putParcelableArrayListExtra(EditTimeSheetActivity.EXTRA_PROJECTS,
                 (ArrayList<Project>) mWeekOverview.getProjects());
+        editor.putExtra(EditTimeSheetActivity.EXTRA_TIME_SHEET, selected);
         startActivityForResult(editor, REQ_CODE_EDIT);
     }
 }
