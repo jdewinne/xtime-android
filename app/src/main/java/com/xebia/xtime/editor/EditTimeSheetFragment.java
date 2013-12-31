@@ -324,7 +324,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
      * Interface for listening to events from a EditTimeSheetFragment.
      */
     public interface Listener {
-        public abstract void onChangesSaved();
+        public abstract void onChangesSaved(TimeSheetEntry entry);
     }
 
     /**
@@ -332,19 +332,21 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
      */
     private class SaveTask extends AsyncTask<TimeSheetEntry, Void, Boolean> {
 
+        private TimeSheetEntry mEntry;
+
         @Override
         protected Boolean doInBackground(TimeSheetEntry... params) {
             if (null == params || params.length < 1) {
                 throw new NullPointerException("Missing TimeSheetEntry parameter");
             }
-            TimeSheetEntry entry = params[0];
-            return new SaveTimeSheetRequest(entry).submit();
+            mEntry = params[0];
+            return new SaveTimeSheetRequest(mEntry).submit();
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
             if (null != result && result) {
-                mListener.onChangesSaved();
+                mListener.onChangesSaved(mEntry);
             } else {
                 Toast.makeText(getActivity(), R.string.toast_save_fail, Toast.LENGTH_LONG).show();
             }

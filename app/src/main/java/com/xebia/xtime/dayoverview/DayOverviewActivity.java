@@ -27,6 +27,7 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
     private static final int REQ_CODE_CREATE = 2;
     private WeekOverview mWeekOverview;
     private DayOverview mDayOverview;
+    private TimeSheetEntry mSelectedEntry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +48,11 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
 
         // set up the UI
         if (savedInstanceState == null) {
-            Fragment fragment = DailyTimeSheetFragment.getInstance(mDayOverview);
-            getSupportFragmentManager().beginTransaction().add(R.id.container, fragment).commit();
+            ArrayList<TimeSheetEntry> timeSheets = (ArrayList<TimeSheetEntry>) mDayOverview
+                    .getTimeSheetEntries();
+            Fragment fragment = DailyTimeSheetFragment.getInstance(timeSheets);
+            getSupportFragmentManager().beginTransaction().add(R.id.container, fragment,
+                    "tag").commit();
         }
 
         // set up the title
@@ -71,6 +75,12 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onTimeSheetEntrySelected(TimeSheetEntry selected) {
+        mSelectedEntry = selected;
+        startEditor(selected, REQ_CODE_EDIT);
+    }
+
     private void startEditor(TimeSheetEntry entry, int requestCode) {
         Intent editor = new Intent(this, EditTimeSheetActivity.class);
         editor.putExtra(EditTimeSheetActivity.EXTRA_DATE, mDayOverview.getDate().getTime());
@@ -85,12 +95,17 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
         switch (requestCode) {
             case REQ_CODE_EDIT:
                 if (RESULT_OK == resultCode) {
-                    // TODO: Update list with edited entry
+                    TimeSheetEntry edited = data.getParcelableExtra(EditTimeSheetActivity
+                            .EXTRA_TIME_SHEET);
+                    onEntryEdited(edited);
                 }
+                mSelectedEntry = null;
                 break;
             case REQ_CODE_CREATE:
                 if (RESULT_OK == resultCode) {
-                    // TODO: Update list with new entry
+                    TimeSheetEntry created = data.getParcelableExtra(EditTimeSheetActivity
+                            .EXTRA_TIME_SHEET);
+                    onEntryCreated(created);
                 }
                 break;
             default:
@@ -98,8 +113,22 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
         }
     }
 
-    @Override
-    public void onTimeSheetEntrySelected(TimeSheetEntry selected) {
-        startEditor(selected, REQ_CODE_EDIT);
+    private void onEntryEdited(TimeSheetEntry edited) {
+        // update the time
+        mSelectedEntry.getTimeCell().setHours(edited.getTimeCell().getHours());
+
+        // notify the list view
+        DailyTimeSheetFragment fragment = (DailyTimeSheetFragment) getSupportFragmentManager()
+                .findFragmentByTag("tag");
+        fragment.onDataSetChanged();
+    }
+
+    private void onEntryCreated(TimeSheetEntry created) {
+        mDayOverview.getTimeSheetEntries().add(created);
+
+        // notify the list view
+        DailyTimeSheetFragment fragment = (DailyTimeSheetFragment) getSupportFragmentManager()
+                .findFragmentByTag("tag");
+        fragment.onDataSetChanged();
     }
 }

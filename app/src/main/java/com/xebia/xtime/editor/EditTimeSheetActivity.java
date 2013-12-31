@@ -1,5 +1,6 @@
 package com.xebia.xtime.editor;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
@@ -51,8 +52,11 @@ public class EditTimeSheetActivity extends ActionBarActivity implements EditTime
     }
 
     @Override
-    public void onChangesSaved() {
-        setResult(RESULT_OK);
+    public void onChangesSaved(TimeSheetEntry entry) {
+        // put the time sheet in the result data
+        Intent data = new Intent();
+        data.putExtra(EXTRA_TIME_SHEET, entry);
+        setResult(RESULT_OK, data);
         finish();
     }
 }
