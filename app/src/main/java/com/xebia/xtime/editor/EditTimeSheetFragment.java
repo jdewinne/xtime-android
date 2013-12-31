@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,14 +20,18 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.editor.worktypesloader.WorkTypeListLoader;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.WorkType;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class EditTimeSheetFragment extends Fragment {
+public class EditTimeSheetFragment extends Fragment implements LoaderManager
+        .LoaderCallbacks<List<WorkType>> {
 
     private static final String ARG_TIME_SHEET = "time_sheet";
     private static final String ARG_PROJECTS = "projects";
@@ -37,6 +43,7 @@ public class EditTimeSheetFragment extends Fragment {
     private EditText mTimeView;
     private Listener mListener;
     private List<Project> mProjects;
+    private List<WorkType> mWorkTypes;
 
     public EditTimeSheetFragment() {
         // required empty constructor
@@ -59,6 +66,14 @@ public class EditTimeSheetFragment extends Fragment {
         if (null != getArguments()) {
             mTimeSheetEntry = getArguments().getParcelable(ARG_TIME_SHEET);
             mProjects = getArguments().getParcelableArrayList(ARG_PROJECTS);
+            mWorkTypes = new ArrayList<WorkType>();
+        }
+
+        if (null != mTimeSheetEntry) {
+            Bundle args = new Bundle();
+            args.putParcelable("project", mTimeSheetEntry.getProject());
+            args.putLong("date", mTimeSheetEntry.getTimeCell().getEntryDate().getTime());
+            getActivity().getSupportLoaderManager().initLoader(0, args, this);
         }
 
         setHasOptionsMenu(true);
@@ -151,6 +166,33 @@ public class EditTimeSheetFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public Loader<List<WorkType>> onCreateLoader(int id, Bundle args) {
+        Project project = args.getParcelable("project");
+        Date date = new Date(args.getLong("date"));
+        return new WorkTypeListLoader(getActivity(), project, date);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<WorkType>> listLoader, List<WorkType> workTypes) {
+        if (null == workTypes) {
+            Toast.makeText(getActivity(), R.string.toast_work_types_fail, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        mWorkTypes.addAll(workTypes);
+
+        Log.d(TAG, "Loaded " + workTypes.size() + " work types");
+        for (WorkType workType : mWorkTypes) {
+            Log.d(TAG, workType.getDescription());
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<WorkType>> listLoader) {
+        mWorkTypes.clear();
+    }
+
     private void onSaveClick() {
 
         if (TextUtils.isEmpty(mTimeView.getText())) {
@@ -208,8 +250,7 @@ public class EditTimeSheetFragment extends Fragment {
             if (null != result && result) {
                 mListener.onChangesSaved();
             } else {
-                Toast.makeText(getActivity(), R.string.toast_request_failed,
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), R.string.toast_save_fail, Toast.LENGTH_LONG).show();
             }
         }
     }

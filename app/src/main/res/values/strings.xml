@@ -23,6 +23,7 @@
     <string name="editor_time_label">Time:</string>
     <string name="action_save">Save</string>
     <string name="error_invalid_time">Please enter a valid time</string>
-    <string name="toast_request_failed">Request failed</string>
+    <string name="toast_save_fail">Request failed</string>
+    <string name="toast_work_types_fail">Failed to load work types</string>
 
 </resources>
