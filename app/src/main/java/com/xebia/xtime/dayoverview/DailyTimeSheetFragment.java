@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.xebia.xtime.R;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
 
 import java.util.ArrayList;
@@ -51,6 +52,8 @@ public class DailyTimeSheetFragment extends ListFragment {
         DailyTimeSheetListAdapter adapter = new DailyTimeSheetListAdapter(getActivity(),
                 mTimeSheetEntries);
         setListAdapter(adapter);
+
+        setEmptyText(getActivity().getString(R.string.empty_day_overview));
     }
 
     @Override
