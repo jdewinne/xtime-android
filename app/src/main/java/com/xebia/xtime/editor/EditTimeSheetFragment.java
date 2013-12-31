@@ -12,32 +12,41 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditTimeSheetFragment extends Fragment {
 
-    private static final String ARG_TIME_SHEET = "TIME_SHEET";
+    private static final String ARG_TIME_SHEET = "time_sheet";
+    private static final String ARG_PROJECTS = "projects";
     private static final String TAG = "EditTimeSheetFragment";
     private TimeSheetEntry mTimeSheetEntry;
-    private EditText mProjectView;
+    private Spinner mProjectView;
     private EditText mWorkTypeView;
     private EditText mDescriptionView;
     private EditText mTimeView;
     private Listener mListener;
+    private List<Project> mProjects;
 
     public EditTimeSheetFragment() {
         // required empty constructor
     }
 
-    public static EditTimeSheetFragment getInstance(TimeSheetEntry entry) {
+    public static EditTimeSheetFragment getInstance(TimeSheetEntry entry,
+                                                    ArrayList<Project> projects) {
         Bundle args = new Bundle();
         args.putParcelable(ARG_TIME_SHEET, entry);
+        args.putParcelableArrayList(ARG_PROJECTS, projects);
         EditTimeSheetFragment fragment = new EditTimeSheetFragment();
         fragment.setArguments(args);
         return fragment;
@@ -49,6 +58,7 @@ public class EditTimeSheetFragment extends Fragment {
 
         if (null != getArguments()) {
             mTimeSheetEntry = getArguments().getParcelable(ARG_TIME_SHEET);
+            mProjects = getArguments().getParcelableArrayList(ARG_PROJECTS);
         }
 
         setHasOptionsMenu(true);
@@ -63,17 +73,15 @@ public class EditTimeSheetFragment extends Fragment {
         }
 
         // link the views
-        mProjectView = (EditText) rootView.findViewById(R.id.project);
+        mProjectView = (Spinner) rootView.findViewById(R.id.project);
         mWorkTypeView = (EditText) rootView.findViewById(R.id.work_type);
         mDescriptionView = (EditText) rootView.findViewById(R.id.description);
         mTimeView = (EditText) rootView.findViewById(R.id.time);
 
-        // prefill the views
+        // set up the views
         if (null != mTimeSheetEntry) {
-            mProjectView.setText(mTimeSheetEntry.getProject().getDescription());
-            mProjectView.setEnabled(false);
-            mWorkTypeView.setText(mTimeSheetEntry.getWorkType().getDescription());
-            mWorkTypeView.setEnabled(false);
+            initProjectView();
+            initWorkTypeView();
             mDescriptionView.setText(mTimeSheetEntry.getDescription());
             mDescriptionView.setEnabled(false);
             mTimeView.setText(NumberFormat.getNumberInstance()
@@ -81,6 +89,35 @@ public class EditTimeSheetFragment extends Fragment {
         }
 
         return rootView;
+    }
+
+    private void initWorkTypeView() {
+        mWorkTypeView.setText(mTimeSheetEntry.getWorkType().getDescription());
+        mWorkTypeView.setEnabled(false);
+    }
+
+    private void initProjectView() {
+        // set up the spinner adapter
+        ArrayAdapter<Project> adapter = new ArrayAdapter<Project>(getActivity(),
+                android.R.layout.simple_spinner_item, mProjects);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mProjectView.setAdapter(adapter);
+
+        // match projects on project ID, somehow the project description is not constant
+        // e.g. 'Internal projects' vs. 'Internal Project'
+        int index = -1;
+        String projectId = mTimeSheetEntry.getProject().getId();
+        for (int i = 0; i < mProjects.size(); i++) {
+            if (mProjects.get(i).getId().equals(projectId)) {
+                index = i;
+                break;
+            }
+        }
+
+        if (index >= 0) {
+            mProjectView.setSelection(index);
+            mProjectView.setEnabled(false);
+        }
     }
 
     @Override

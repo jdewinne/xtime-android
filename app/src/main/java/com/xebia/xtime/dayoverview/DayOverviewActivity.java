@@ -8,10 +8,13 @@ import android.support.v7.app.ActionBarActivity;
 import com.xebia.xtime.R;
 import com.xebia.xtime.editor.EditTimeCellActivity;
 import com.xebia.xtime.shared.model.DayOverview;
+import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.WeekOverview;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 public class DayOverviewActivity extends ActionBarActivity implements DailyTimeSheetFragment
         .Listener {
@@ -19,6 +22,7 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
     public static final String EXTRA_DAY_OVERVIEW = "day_overview";
     public static final String EXTRA_WEEK_OVERVIEW = "week_overview";
     private static final int REQ_CODE_EDIT = 1;
+    private WeekOverview mWeekOverview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +33,12 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
         DayOverview dayOverview = getIntent().getParcelableExtra(EXTRA_DAY_OVERVIEW);
         if (null == dayOverview) {
             throw new NullPointerException("Missing EXTRA_DAY_OVERVIEW");
+        }
+
+        // get the week overview
+        mWeekOverview = getIntent().getParcelableExtra(EXTRA_WEEK_OVERVIEW);
+        if (null == mWeekOverview) {
+            throw new NullPointerException("Missing EXTRA_WEEK_OVERVIEW");
         }
 
         // set up the UI
@@ -54,6 +64,8 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
     public void onTimeSheetEntrySelected(TimeSheetEntry selected) {
         Intent editor = new Intent(this, EditTimeCellActivity.class);
         editor.putExtra(EditTimeCellActivity.EXTRA_TIME_SHEET, selected);
+        editor.putParcelableArrayListExtra(EditTimeCellActivity.EXTRA_PROJECTS,
+                (ArrayList<Project>) mWeekOverview.getProjects());
         startActivityForResult(editor, REQ_CODE_EDIT);
     }
 }

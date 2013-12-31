@@ -65,4 +65,9 @@ public class Project implements Parcelable {
         }
         return super.equals(o);
     }
+
+    @Override
+    public String toString() {
+        return mDescription;
+    }
 }
