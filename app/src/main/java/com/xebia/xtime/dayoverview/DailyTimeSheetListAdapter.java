@@ -2,6 +2,7 @@ package com.xebia.xtime.dayoverview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,14 +35,19 @@ public class DailyTimeSheetListAdapter extends ArrayAdapter<TimeSheetEntry> {
         if (row != null) {
             TextView projectView = (TextView) row.findViewById(R.id.project);
             TextView workTypeView = (TextView) row.findViewById(R.id.work_type);
+            TextView descriptionView = (TextView) row.findViewById(R.id.description);
             TextView hoursView = (TextView) row.findViewById(R.id.hours);
 
             // update the view content
             TimeSheetEntry item = getItem(position);
             projectView.setText(item.getProject().getDescription());
             workTypeView.setText(item.getWorkType().getDescription());
-            hoursView.setText(NumberFormat.getNumberInstance().format(item.getTimeCell().getHours
-                    ()));
+            descriptionView.setText(item.getDescription());
+            double hours = item.getTimeCell().getHours();
+            hoursView.setText(NumberFormat.getNumberInstance().format(hours));
+
+            descriptionView.setVisibility(TextUtils.isEmpty(item.getDescription()) ? View.GONE :
+                    View.VISIBLE);
         }
 
         return row;
