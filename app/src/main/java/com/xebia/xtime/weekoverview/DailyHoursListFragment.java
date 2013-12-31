@@ -6,12 +6,12 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.shared.model.DayOverview;
@@ -29,7 +29,6 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
         .LoaderCallbacks<WeekOverview> {
 
     private static final String ARG_START_DATE = "start_date";
-    private static final String TAG = "DailyHoursListFragment";
     private Date mStartDate;
     private WeekOverview mOverview;
     private DailyHoursListener mListener;
@@ -116,13 +115,13 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
 
     @Override
     public Loader<WeekOverview> onCreateLoader(int i, Bundle bundle) {
-        setBusy(true);
+        showLoadingIndicator(true);
         return new WeekOverviewLoader(getActivity(), mStartDate);
     }
 
     @Override
     public void onLoadFinished(Loader<WeekOverview> loader, WeekOverview overview) {
-        setBusy(false);
+        showLoadingIndicator(false);
 
         mOverview = overview;
         updateList();
@@ -130,11 +129,11 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
 
     private void updateList() {
         mDailyHours.clear();
-        if (null == mOverview || null == mOverview.getTimeSheetRows()) {
-            // no data to show
-            Log.d(TAG, "No overview data to show");
-        } else {
+        if (null != mOverview && null != mOverview.getTimeSheetRows()) {
             mDailyHours.addAll(TimeSheetUtils.dailyHours(mOverview, mStartDate));
+        }
+        if (mDailyHours.size() <= 0) {
+            Toast.makeText(getActivity(), R.string.empty_week_overview, Toast.LENGTH_LONG).show();
         }
         ((ArrayAdapter) getListAdapter()).notifyDataSetChanged();
     }
@@ -144,7 +143,7 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
         // nothing to do
     }
 
-    private void setBusy(final boolean busy) {
+    private void showLoadingIndicator(final boolean busy) {
         if (null != getActivity()) {
             getActivity().runOnUiThread(new Thread() {
                 @Override
