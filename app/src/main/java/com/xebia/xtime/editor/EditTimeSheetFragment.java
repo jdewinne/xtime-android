@@ -23,11 +23,13 @@ import android.widget.Toast;
 import com.xebia.xtime.R;
 import com.xebia.xtime.editor.worktypesloader.WorkTypeListLoader;
 import com.xebia.xtime.shared.model.Project;
+import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
 import com.xebia.xtime.shared.model.WorkType;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +40,11 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     private static final String ARG_DATE = "date";
     private static final String ARG_TIME_SHEET = "time_sheet";
     private static final String TAG = "EditTimeSheetFragment";
+    /**
+     * List of work type IDs where the description is required.
+     */
+    // TODO: Replace static list of description work types with data from XTime backend
+    private static final List<String> REQUIRE_DESCR = Arrays.asList("960", "940", "920", "935");
     private TimeSheetEntry mTimeSheetEntry;
     private List<Project> mProjects;
     private Date mDate;
@@ -52,6 +59,14 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         // required empty constructor
     }
 
+    /**
+     * Factory method
+     *
+     * @param date     Date to edit/create TimeSheetEntry for
+     * @param projects List of available projects on this data
+     * @param entry    (Optional) TimeSheetEntry to view/edit
+     * @return Fragment
+     */
     public static EditTimeSheetFragment getInstance(Date date, ArrayList<Project> projects,
                                                     TimeSheetEntry entry) {
         Bundle args = new Bundle();
@@ -234,23 +249,64 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         mWorkTypes.clear();
     }
 
-    private void onSaveClick() {
+    private boolean validateForm() {
+
+        View focusView = null;
+        int errorResId = -1;
 
         if (TextUtils.isEmpty(mTimeView.getText())) {
-            mTimeView.setError(getActivity().getString(R.string.error_field_required));
-            mTimeView.requestFocus();
-            return;
+            focusView = mTimeView;
+            errorResId = R.string.error_field_required;
+        } else {
+            double time = getTimeInput();
+            if (time < 0) {
+                focusView = mTimeView;
+                errorResId = R.string.error_invalid_time;
+            }
         }
 
-        double time = getTimeInput();
-        if (time < 0) {
-            mTimeView.setError(getActivity().getString(R.string.error_invalid_time));
-            mTimeView.requestFocus();
-            return;
+        WorkType workType = (WorkType) mWorkTypeView.getSelectedItem();
+        if (null == workType) {
+            focusView = mWorkTypeView;
+        } else {
+            if (REQUIRE_DESCR.contains(workType.getId()) && TextUtils.isEmpty(mDescriptionView
+                    .getText())) {
+                focusView = mDescriptionView;
+                errorResId = R.string.error_field_required;
+            }
         }
 
-        mTimeSheetEntry.getTimeCell().setHours(time);
-        new SaveTask().execute(mTimeSheetEntry);
+        Project project = (Project) mProjectView.getSelectedItem();
+        if (null == project) {
+            focusView = mProjectView;
+        }
+
+        if (null != focusView && errorResId > 0) {
+            if (focusView instanceof EditText) {
+                ((EditText) focusView).setError(getActivity().getString(errorResId));
+            }
+            focusView.requestFocus();
+        }
+
+        return null == focusView && errorResId < 0;
+    }
+
+    private void onSaveClick() {
+        if (validateForm()) {
+            double time = getTimeInput();
+            if (null == mTimeSheetEntry) {
+                Project project = (Project) mProjectView.getSelectedItem();
+                WorkType workType = (WorkType) mWorkTypeView.getSelectedItem();
+                String descr = "" + mDescriptionView.getText();
+                TimeCell timeCell = new TimeCell(mDate, time, false, false, false);
+                TimeSheetEntry newEntry = new TimeSheetEntry(project, workType, descr, timeCell);
+                new SaveTask().execute(newEntry);
+            } else {
+                // only the time can be changed for existing time sheet entries
+                mTimeSheetEntry.getTimeCell().setHours(time);
+                new SaveTask().execute(mTimeSheetEntry);
+            }
+        }
     }
 
     private double getTimeInput() {
@@ -279,8 +335,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         @Override
         protected Boolean doInBackground(TimeSheetEntry... params) {
             if (null == params || params.length < 1) {
-                Log.d(TAG, "Missing required parameter!");
-                return null;
+                throw new NullPointerException("Missing TimeSheetEntry parameter");
             }
             TimeSheetEntry entry = params[0];
             return new SaveTimeSheetRequest(entry).submit();

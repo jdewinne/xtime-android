@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.editor.EditTimeSheetActivity;
@@ -22,6 +24,7 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
     public static final String EXTRA_DAY_OVERVIEW = "day_overview";
     public static final String EXTRA_WEEK_OVERVIEW = "week_overview";
     private static final int REQ_CODE_EDIT = 1;
+    private static final int REQ_CODE_CREATE = 2;
     private WeekOverview mWeekOverview;
     private DayOverview mDayOverview;
 
@@ -54,20 +57,49 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQ_CODE_EDIT && resultCode == RESULT_OK) {
-            // TODO: refresh list of time sheets after edit activity finishes
-        }
-        super.onActivityResult(requestCode, resultCode, data);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_day_overview, menu);
+        return true;
     }
 
     @Override
-    public void onTimeSheetEntrySelected(TimeSheetEntry selected) {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.newItem) {
+            startEditor(null, REQ_CODE_CREATE);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void startEditor(TimeSheetEntry entry, int requestCode) {
         Intent editor = new Intent(this, EditTimeSheetActivity.class);
         editor.putExtra(EditTimeSheetActivity.EXTRA_DATE, mDayOverview.getDate().getTime());
         editor.putParcelableArrayListExtra(EditTimeSheetActivity.EXTRA_PROJECTS,
                 (ArrayList<Project>) mWeekOverview.getProjects());
-        editor.putExtra(EditTimeSheetActivity.EXTRA_TIME_SHEET, selected);
-        startActivityForResult(editor, REQ_CODE_EDIT);
+        editor.putExtra(EditTimeSheetActivity.EXTRA_TIME_SHEET, entry);
+        startActivityForResult(editor, requestCode);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQ_CODE_EDIT:
+                if (RESULT_OK == resultCode) {
+                    // TODO: Update list with edited entry
+                }
+                break;
+            case REQ_CODE_CREATE:
+                if (RESULT_OK == resultCode) {
+                    // TODO: Update list with new entry
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onTimeSheetEntrySelected(TimeSheetEntry selected) {
+        startEditor(selected, REQ_CODE_EDIT);
     }
 }
