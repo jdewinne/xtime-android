@@ -1,51 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:gravity="center_vertical">
 
     <TextView
         android:id="@+id/date"
-        android:layout_width="48dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="14"
-        tools:ignore="HardcodedText"/>
-
-    <TextView
-        android:id="@+id/month"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:gravity="center_horizontal"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Mar"
+        android:text="Sat 14 Mar"
         tools:ignore="HardcodedText"/>
 
     <TextView
         android:id="@+id/hours"
         android:layout_width="wrap_content"
-        android:minWidth="48dp"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/date"
-        android:layout_marginLeft="8dp"
-        android:layout_centerVertical="true"
-        android:gravity="right"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="8"
-        tools:ignore="HardcodedText"
-        android:maxLines="1"
-        />
+        android:text="3.25"
+        tools:ignore="HardcodedText"/>
 
     <TextView
+        android:id="@+id/hours_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/hours"
-        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text=" hours"
-        tools:ignore="HardcodedText"/>
-</RelativeLayout>
+        android:text="@string/hours_label"/>
+
+</LinearLayout>
