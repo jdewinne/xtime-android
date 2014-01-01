@@ -10,8 +10,14 @@ import com.xebia.xtime.dayoverview.DayOverviewActivity;
 import com.xebia.xtime.login.LoginActivity;
 import com.xebia.xtime.shared.model.DayOverview;
 
+/**
+ * Activity that displays a set of {@link DailyHoursListFragment} in a ViewPager.
+ * <p/>
+ * Each fragment shows a list of days, and clicking on a day opens up the {@link
+ * DayOverviewActivity} to show the day's details.
+ */
 public class WeekOverviewActivity extends ActionBarActivity implements DailyHoursListFragment
-        .DailyHoursListener {
+        .Listener {
 
     private static final int REQ_CODE_LOGIN = 1;
     private static final String KEY_LOGGED_IN = "logged_in";
@@ -51,6 +57,7 @@ public class WeekOverviewActivity extends ActionBarActivity implements DailyHour
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        // remember logged in status across configuration changes
         outState.putBoolean(KEY_LOGGED_IN, mLoggedIn);
         super.onSaveInstanceState(outState);
     }

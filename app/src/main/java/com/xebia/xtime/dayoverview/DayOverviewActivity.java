@@ -17,9 +17,18 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+/**
+ * Activity that displays a list of {@link TimeSheetEntry} in a {@link DailyTimeSheetFragment}.
+ * <p/>
+ * Clicking on a time sheet entry opens up the {@link EditTimeSheetActivity},
+ * and the action bar also contains an option to create a new time sheet entry.
+ */
 public class DayOverviewActivity extends ActionBarActivity implements DailyTimeSheetFragment
         .Listener {
 
+    /**
+     * Key for intent extra that contains the day overview to display
+     */
     public static final String EXTRA_DAY_OVERVIEW = "day_overview";
     private static final int REQ_CODE_EDIT = 1;
     private static final int REQ_CODE_CREATE = 2;

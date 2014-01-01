@@ -23,7 +23,17 @@ public class TimeSheetUtils {
             Calendar.WEDNESDAY, Calendar.THURSDAY, Calendar.FRIDAY, Calendar.SATURDAY,
             Calendar.SUNDAY};
 
-    public static List<DayOverview> dailyHours(WeekOverview overview, Date startDate) {
+    /**
+     * Converts a week overview into a list of 7 day overviews.
+     * <p/>
+     * Each day of the week gets a separate DayOverview model. The list of TimeSheetRows is split
+     * up into separate TimeSheetEntries, which are stored in the correct DayOverview
+     *
+     * @param overview  WeekOverview to split up
+     * @param startDate The date of the first day of the week
+     * @return A list of 7 days
+     */
+    public static List<DayOverview> weekToDays(WeekOverview overview, Date startDate) {
 
         // initialize array of day overview entries for the week, indexed by Calendar.DAY_OF_WEEK
         SparseArray<DayOverview> dailyHoursArray = new SparseArray<DayOverview>();

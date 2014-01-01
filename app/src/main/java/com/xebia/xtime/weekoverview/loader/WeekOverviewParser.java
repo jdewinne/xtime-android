@@ -15,10 +15,20 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Parser for the response to a {@link WeekOverviewRequest}. Uses regular expression acrobatics
+ * to parse the JavaScript that is returned.
+ */
 public class WeekOverviewParser {
 
     private static final String TAG = "WeekOverviewParser";
 
+    /**
+     * Parses the input from a {@link WeekOverviewRequest} into a {@link WeekOverview}.
+     *
+     * @param input String with the JavaScript code that is returned to a WeekOverviewRequest.
+     * @return The week overview, or <code>null</code> when the input could not be parsed
+     */
     public static WeekOverview parse(String input) {
         if (TextUtils.isEmpty(input)) {
             Log.d(TAG, "No input to parse");

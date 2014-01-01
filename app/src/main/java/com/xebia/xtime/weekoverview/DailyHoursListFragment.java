@@ -24,16 +24,24 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
+/**
+ * Fragment that represents a week as a list of days.
+ * <p/>
+ * When the activity is created, the fragment kicks off a AsyncTaskLoader to fetch the
+ * WeekOverview from the XTime backend.
+ * <p/>
+ * Each row shows the total amount of work that has been registered for that day. Clicking on a
+ * day should open up the day details.
+ */
 public class DailyHoursListFragment extends ListFragment implements LoaderManager
         .LoaderCallbacks<WeekOverview> {
 
     private static final String ARG_START_DATE = "start_date";
     private Date mStartDate;
     private WeekOverview mOverview;
-    private DailyHoursListener mListener;
+    private Listener mListener;
     private View mBusyIndicator;
-    private List<DayOverview> mDailyHours;
+    private List<DayOverview> mDays;
 
     public DailyHoursListFragment() {
         // Required empty public constructor
@@ -53,7 +61,7 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
 
     /**
      * @param startDate Date indicating the start of the week
-     * @return Title String of this fragment
+     * @return Title String of the fragment
      */
     public static String getTitle(Date startDate) {
         Date endDate = new Date(startDate.getTime() + 6 * DateUtils.DAY_IN_MILLIS);
@@ -65,8 +73,8 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mDailyHours = new ArrayList<DayOverview>();
-        setListAdapter(new DailyHoursListAdapter(getActivity(), mDailyHours));
+        mDays = new ArrayList<DayOverview>();
+        setListAdapter(new DailyHoursListAdapter(getActivity(), mDays));
 
         getLoaderManager().initLoader(0, null, this);
     }
@@ -93,10 +101,10 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (DailyHoursListener) activity;
+            mListener = (Listener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement " +
-                    "DailyHoursListener");
+                    "DailyHoursListFragment.Listener");
         }
     }
 
@@ -126,11 +134,11 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     }
 
     private void updateList() {
-        mDailyHours.clear();
+        mDays.clear();
         if (null != mOverview && null != mOverview.getTimeSheetRows()) {
-            mDailyHours.addAll(TimeSheetUtils.dailyHours(mOverview, mStartDate));
+            mDays.addAll(TimeSheetUtils.weekToDays(mOverview, mStartDate));
         }
-        if (mDailyHours.size() <= 0) {
+        if (mDays.size() <= 0) {
             Toast.makeText(getActivity(), R.string.empty_week_overview, Toast.LENGTH_LONG).show();
         }
         ((ArrayAdapter) getListAdapter()).notifyDataSetChanged();
@@ -138,7 +146,7 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
 
     @Override
     public void onLoaderReset(Loader<WeekOverview> loader) {
-        // nothing to do
+        mDays.clear();
     }
 
     private void showLoadingIndicator(final boolean busy) {
@@ -153,8 +161,10 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
         }
     }
 
-    public interface DailyHoursListener {
+    /**
+     * Interface for handling clicks on the list of DayOverviews
+     */
+    public interface Listener {
         public void onItemClicked(DayOverview overview);
     }
-
 }

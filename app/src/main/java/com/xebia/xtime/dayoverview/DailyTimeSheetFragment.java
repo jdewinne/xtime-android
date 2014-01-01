@@ -13,6 +13,12 @@ import com.xebia.xtime.shared.model.TimeSheetEntry;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment that displays a list of {@link TimeSheetEntry} in a ListView.
+ * <p/>
+ * Each row displays the details of the time sheet entry (project, work type,
+ * hours registered). Clicking on an item should open up an editor.
+ */
 public class DailyTimeSheetFragment extends ListFragment {
 
     private static final String ARG_TIME_SHEETS = "time_sheets";

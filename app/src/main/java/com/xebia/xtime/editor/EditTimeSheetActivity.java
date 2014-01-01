@@ -11,6 +11,12 @@ import com.xebia.xtime.shared.model.TimeSheetEntry;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Activity that wraps a {@link EditTimeSheetFragment}.
+ * <p/>
+ * When the activity is created, it checks the {@link #EXTRA_TIME_SHEET} Intent extra for a time
+ * sheet entry to edit. If the time sheet is not present, a new one will be created.
+ */
 public class EditTimeSheetActivity extends ActionBarActivity implements EditTimeSheetFragment
         .Listener {
 

@@ -33,6 +33,20 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Fragment for a time sheet entry editor. Contains spinners for selecting the project and type
+ * of work, and text boxes for the description and the amount of time to register.
+ * <p/>
+ * If a time sheet entry is provided as an argument, only the time field is editable. When
+ * creating a new entry, all fields are enabled.
+ * <p/>
+ * The list of possible work types is fetched dynamically whenever a new project is selected,
+ * using an AsyncTaskLoader. The list of projects is predefined.
+ * <p/>
+ * The action bar contains an option to save the changes, which triggers an AsyncTask that sends
+ * a {@link SaveTimeSheetRequest} to the XTime backend. When the task finishes,
+ * the parent activity is notified.
+ */
 public class EditTimeSheetFragment extends Fragment implements LoaderManager
         .LoaderCallbacks<List<WorkType>> {
 
