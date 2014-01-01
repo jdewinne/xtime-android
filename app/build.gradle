@@ -20,6 +20,21 @@ android {
         minSdkVersion 10
         targetSdkVersion 19
     }
+
+    signingConfigs {
+        release {
+            storeFile file("../misc/signing_keystore.jks")
+            storePassword System.console().readLine("\n\$ Enter keystore password: ")
+            keyAlias System.console().readLine("\n\$ Enter key alias: ")
+            keyPassword System.console().readLine("\n\$ Enter key password: ")
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
 }
 
 dependencies {
