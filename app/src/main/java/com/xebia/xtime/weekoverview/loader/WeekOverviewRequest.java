@@ -13,8 +13,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.GeneralSecurityException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class WeekOverviewRequest extends XTimeRequest {
 
@@ -86,19 +88,19 @@ public class WeekOverviewRequest extends XTimeRequest {
         }
     }
 
-    private String getRequestData() {
-
-        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(mDate);
-
-        String data = "callCount=1" + "\n";
-        data += "scriptSessionId=" + System.currentTimeMillis() + "\n";
-        data += "c0-scriptName=TimeEntryServiceBean\n";
-        data += "c0-methodName=getWeekOverview\n";
-        data += "c0-id=0\n"; // only used for JSONP callback
-        data += "c0-param0=string:" + dateString + "\n";
-        data += "c0-param1=boolean:true\n"; // not used?
-        data += "batchId=0\n"; // only used for JSONP callback
-        return data;
+    public String getRequestData() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
+        return "callCount=1\n" +
+                "page=/xtime/entryform.html\n" +
+                "httpSessionId=\n" +
+                "scriptSessionId=\n" +
+                "c0-scriptName=TimeEntryServiceBean\n" +
+                "c0-methodName=getWeekOverview\n" +
+                "c0-id=0\n" + // only used for JSONP callback
+                "c0-param0=string:" + dateFormat.format(mDate) + "\n" +
+                "c0-param1=boolean:true\n" + // not used?
+                "batchId=0\n"; // only used for JSONP callback
     }
 
     private void writeStream(OutputStream out) throws IOException {
