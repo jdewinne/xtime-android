@@ -34,10 +34,20 @@ public class DayOverviewTest extends TestCase {
 
         assertTrue(mOverview.equals(shouldEqual));
         shouldEqual.setTotalHours(2);
+
         assertFalse(mOverview.equals(shouldEqual));
         shouldEqual.setTotalHours(42);
+        assertTrue(mOverview.equals(shouldEqual));
+
         shouldEqual.getTimeSheetEntries().add(new TimeSheetEntry(null, null, null, null));
         assertFalse(mOverview.equals(shouldEqual));
+        shouldEqual.getTimeSheetEntries().clear();
+        assertTrue(mOverview.equals(shouldEqual));
+
+        DayOverview shouldNotEqual = new DayOverview(new Date(1234), new ArrayList<Project>());
+        shouldNotEqual.setTotalHours(42);
+        shouldNotEqual.setTimeSheetEntries(new ArrayList<TimeSheetEntry>());
+        assertFalse(mOverview.equals(shouldNotEqual));
     }
 
     public void testParcelable() {

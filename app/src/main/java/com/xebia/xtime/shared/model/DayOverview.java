@@ -48,6 +48,8 @@ public class DayOverview implements Parcelable {
         mTotalHours = parcel.readDouble();
         mTimeSheetEntries = new ArrayList<TimeSheetEntry>();
         parcel.readTypedList(mTimeSheetEntries, TimeSheetEntry.CREATOR);
+        mProjects = new ArrayList<Project>();
+        parcel.readTypedList(mProjects, Project.CREATOR);
     }
 
     /**
@@ -100,6 +102,7 @@ public class DayOverview implements Parcelable {
         parcel.writeLong(mDate.getTime());
         parcel.writeDouble(mTotalHours);
         parcel.writeTypedList(mTimeSheetEntries);
+        parcel.writeTypedList(mProjects);
     }
 
     @Override
@@ -107,6 +110,7 @@ public class DayOverview implements Parcelable {
         if (o instanceof DayOverview) {
             return mDate.equals(((DayOverview) o).getDate()) &&
                     mTotalHours == ((DayOverview) o).getTotalHours() &&
+                    mProjects.equals(((DayOverview) o).getProjects()) &&
                     mTimeSheetEntries.equals(((DayOverview) o).getTimeSheetEntries());
         }
         return super.equals(o);
