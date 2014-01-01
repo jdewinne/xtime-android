@@ -3,12 +3,15 @@ package com.xebia.xtime.test.shared.model;
 import android.os.Parcel;
 
 import com.xebia.xtime.shared.model.DayOverview;
+import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
 
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class DayOverviewTest extends TestCase {
 
@@ -17,13 +20,15 @@ public class DayOverviewTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        mOverview = new DayOverview(new Date(1234));
+        List<Project> projects = Arrays.asList(new Project("project id", "project name"));
+        mOverview = new DayOverview(new Date(1234), projects);
         mOverview.setTotalHours(42);
         mOverview.setTimeSheetEntries(new ArrayList<TimeSheetEntry>());
     }
 
     public void testEquals() {
-        DayOverview shouldEqual = new DayOverview(new Date(1234));
+        List<Project> projects = Arrays.asList(new Project("project id", "project name"));
+        DayOverview shouldEqual = new DayOverview(new Date(1234), projects);
         shouldEqual.setTotalHours(42);
         shouldEqual.setTimeSheetEntries(new ArrayList<TimeSheetEntry>());
 

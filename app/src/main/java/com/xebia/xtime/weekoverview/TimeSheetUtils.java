@@ -29,7 +29,7 @@ public class TimeSheetUtils {
         SparseArray<DayOverview> dailyHoursArray = new SparseArray<DayOverview>();
         for (int i = 0; i < DAILY_INDEXES.length; i++) {
             Date date = new Date(startDate.getTime() + i * DateUtils.DAY_IN_MILLIS);
-            dailyHoursArray.put(DAILY_INDEXES[i], new DayOverview(date));
+            dailyHoursArray.put(DAILY_INDEXES[i], new DayOverview(date, overview.getProjects()));
         }
 
         // fill the array with data from the overview

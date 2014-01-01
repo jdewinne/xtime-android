@@ -7,6 +7,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Represents an overview of the work that has been done for a certain day.
+ * <p/>
+ * Similar to its big brother, {@link WeekOverview}, each day contains a list of {@link
+ * TimeSheetEntry} that the user already registered time for, and a complete list of all {@link
+ * Project} that the user can possibly log time on. Additionally, the model contains the total
+ * amount of time registered for this day.
+ */
 public class DayOverview implements Parcelable {
 
     public static final Creator<DayOverview> CREATOR = new Creator<DayOverview>() {
@@ -23,6 +31,17 @@ public class DayOverview implements Parcelable {
     private Date mDate;
     private double mTotalHours;
     private List<TimeSheetEntry> mTimeSheetEntries;
+    private List<Project> mProjects;
+
+    /**
+     * @param date     Day of this overview
+     * @param projects List of available projects for this day
+     */
+    public DayOverview(Date date, List<Project> projects) {
+        mDate = date;
+        mProjects = projects;
+        mTimeSheetEntries = new ArrayList<TimeSheetEntry>();
+    }
 
     protected DayOverview(Parcel parcel) {
         mDate = new Date(parcel.readLong());
@@ -31,11 +50,9 @@ public class DayOverview implements Parcelable {
         parcel.readTypedList(mTimeSheetEntries, TimeSheetEntry.CREATOR);
     }
 
-    public DayOverview(Date date) {
-        mDate = date;
-        mTimeSheetEntries = new ArrayList<TimeSheetEntry>();
-    }
-
+    /**
+     * @return Day of this overview
+     */
     public Date getDate() {
         return mDate;
     }
@@ -44,6 +61,16 @@ public class DayOverview implements Parcelable {
         mDate = date;
     }
 
+    /**
+     * @return List of available projects for this day
+     */
+    public List<Project> getProjects() {
+        return mProjects;
+    }
+
+    /**
+     * @return Total time of work for this day
+     */
     public double getTotalHours() {
         return mTotalHours;
     }
@@ -52,6 +79,9 @@ public class DayOverview implements Parcelable {
         mTotalHours = totalHours;
     }
 
+    /**
+     * @return List of time sheet entries that the user already registered
+     */
     public List<TimeSheetEntry> getTimeSheetEntries() {
         return mTimeSheetEntries;
     }
@@ -75,9 +105,9 @@ public class DayOverview implements Parcelable {
     @Override
     public boolean equals(Object o) {
         if (o instanceof DayOverview) {
-            return mDate.equals(((DayOverview) o).getDate()) && mTotalHours == ((DayOverview) o)
-                    .getTotalHours() && mTimeSheetEntries.equals(((DayOverview) o)
-                    .getTimeSheetEntries());
+            return mDate.equals(((DayOverview) o).getDate()) &&
+                    mTotalHours == ((DayOverview) o).getTotalHours() &&
+                    mTimeSheetEntries.equals(((DayOverview) o).getTimeSheetEntries());
         }
         return super.equals(o);
     }
