@@ -121,7 +121,7 @@ public class LoginActivity extends ActionBarActivity {
             mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
             showProgress(true);
             mAuthTask = new UserLoginTask();
-            mAuthTask.execute(username, password);
+            mAuthTask.execute(username.trim(), password.trim());
         }
     }
 
