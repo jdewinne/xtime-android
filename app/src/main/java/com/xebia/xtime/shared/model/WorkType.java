@@ -3,6 +3,9 @@ package com.xebia.xtime.shared.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * Represents a type of work. Each work type is identified by its ID and its description.
+ */
 public class WorkType implements Parcelable {
 
     public static final Creator<WorkType> CREATOR = new Creator<WorkType>() {
@@ -19,14 +22,14 @@ public class WorkType implements Parcelable {
     private String mId;
     private String mDescription;
 
-    protected WorkType(Parcel parcel) {
-        mId = parcel.readString();
-        mDescription = parcel.readString();
-    }
-
     public WorkType(String id, String description) {
         mId = id;
         mDescription = description;
+    }
+
+    protected WorkType(Parcel parcel) {
+        mId = parcel.readString();
+        mDescription = parcel.readString();
     }
 
     public String getId() {
@@ -59,14 +62,16 @@ public class WorkType implements Parcelable {
     @Override
     public boolean equals(Object o) {
         if (o instanceof WorkType) {
-            return mId.equals(((WorkType) o).getId()) && mDescription.equals(((WorkType) o)
-                    .getDescription());
+            return mId.equals(((WorkType) o).getId()) &&
+                    mDescription.equals(((WorkType) o).getDescription());
         }
         return super.equals(o);
     }
 
     @Override
     public String toString() {
+        // just returning the work type description makes it possible to create a list of work
+        // types without having to build a special adapter
         return mDescription;
     }
 }
