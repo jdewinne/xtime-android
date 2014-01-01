@@ -37,17 +37,18 @@ public class WeekOverviewParser {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(input);
         if (matcher.find()) {
-            long lastTransferredDate = Long.parseLong(matcher.group(1));
-            int monthDaysCount = Integer.parseInt(matcher.group(2));
+            // not all data that is returned is actually used in the app
+
+            // long lastTransferredDate = Long.parseLong(matcher.group(1));
+            // int monthDaysCount = Integer.parseInt(matcher.group(2));
             boolean monthlyDataApproved = Boolean.parseBoolean(matcher.group(3));
-            boolean monthlyDataTransferred = Boolean.parseBoolean(matcher.group(4));
+            // boolean monthlyDataTransferred = Boolean.parseBoolean(matcher.group(4));
             List<Project> projects = parseProjects(input);
             List<TimeSheetRow> timeSheetRows = parseTimeSheetRows(input);
             String username = matcher.group(5);
             // String weekendDatesVar = matcher.group(6);
             // String weekStart = matcher.group(7);
-            return new WeekOverview(new Date(lastTransferredDate), monthDaysCount,
-                    monthlyDataApproved, monthlyDataTransferred, projects, timeSheetRows, username);
+            return new WeekOverview(timeSheetRows, projects, username, monthlyDataApproved);
 
         } else {
             Log.d(TAG, "Failed to parse input '" + input + "'");

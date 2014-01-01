@@ -3,13 +3,15 @@ package com.xebia.xtime.test.shared.model;
 import android.os.Parcel;
 
 import com.xebia.xtime.shared.model.Project;
+import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetRow;
 import com.xebia.xtime.shared.model.WeekOverview;
+import com.xebia.xtime.shared.model.WorkType;
 
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 
 public class WeekOverviewTest extends TestCase {
@@ -20,30 +22,32 @@ public class WeekOverviewTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        Date lastTransferred = new Date(1234);
-        int monthDaysCount = 21;
-        final boolean monthlyDataApproved = true;
-        final boolean monthlyDataTransferred = false;
-        List<Project> projects = new ArrayList<Project>();
-        List<TimeSheetRow> timeSheetRows = new ArrayList<TimeSheetRow>();
+        Project project = new Project("project id", "project name");
+        TimeSheetRow row = new TimeSheetRow(project, new WorkType("id", "descr"), "descr",
+                new ArrayList<TimeCell>());
+        List<TimeSheetRow> timeSheetRows = Arrays.asList(row);
+        List<Project> projects = Arrays.asList(project);
         String username = "username";
-        mOverview = new WeekOverview(lastTransferred, monthDaysCount, monthlyDataApproved,
-                monthlyDataTransferred, projects, timeSheetRows, username);
+        final boolean approved = true;
+        mOverview = new WeekOverview(timeSheetRows, projects, username, approved);
     }
 
     public void testEquals() {
-        Date lastTransferred = new Date(1234);
-        int monthDaysCount = 21;
-        final boolean monthlyDataApproved = true;
-        final boolean monthlyDataTransferred = false;
-        List<Project> projects = new ArrayList<Project>();
-        List<TimeSheetRow> timeSheetRows = new ArrayList<TimeSheetRow>();
+        Project project = new Project("project id", "project name");
+        TimeSheetRow row = new TimeSheetRow(project, new WorkType("id", "descr"), "descr",
+                new ArrayList<TimeCell>());
+        List<TimeSheetRow> timeSheetRows = Arrays.asList(row);
+        List<Project> projects = Arrays.asList(project);
         String username = "username";
-        WeekOverview shouldEqual = new WeekOverview(lastTransferred, monthDaysCount,
-                monthlyDataApproved,
-                monthlyDataTransferred, projects, timeSheetRows, username);
+        final boolean approved = true;
 
-        assertTrue(mOverview.equals(shouldEqual));
+        assertTrue(mOverview.equals(new WeekOverview(timeSheetRows, projects, username, approved)));
+        assertFalse(mOverview.equals(new WeekOverview(new ArrayList<TimeSheetRow>(), projects,
+                username, approved)));
+        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, new ArrayList<Project>(),
+                username, approved)));
+        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, projects, "wrong", approved)));
+        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, projects, username, false)));
     }
 
     public void testParcelable() {
