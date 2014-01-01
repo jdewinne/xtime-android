@@ -3,6 +3,13 @@ package com.xebia.xtime.shared.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * Represents a project. Each project is identified by its ID and its name.
+ * <p/>
+ * Note: projects with identical IDs can sometimes have slightly different names,
+ * e.g. 'Internal Project' versus 'Internal projects'. This issue comes from the in the XTime
+ * backend.
+ */
 public class Project implements Parcelable {
 
     public static final Creator<Project> CREATOR = new Creator<Project>() {
@@ -18,16 +25,16 @@ public class Project implements Parcelable {
         }
     };
     private String mId;
-    private String mDescription;
+    private String mName;
 
-    public Project(String id, String description) {
-        setId(id);
-        setDescription(description);
+    public Project(String id, String name) {
+        mId = id;
+        mName = name;
     }
 
     protected Project(Parcel parcel) {
         mId = parcel.readString();
-        mDescription = parcel.readString();
+        mName = parcel.readString();
     }
 
     public String getId() {
@@ -38,12 +45,12 @@ public class Project implements Parcelable {
         mId = id;
     }
 
-    public String getDescription() {
-        return mDescription;
+    public String getName() {
+        return mName;
     }
 
-    public void setDescription(String description) {
-        mDescription = description;
+    public void setName(String name) {
+        mName = name;
     }
 
     @Override
@@ -54,20 +61,22 @@ public class Project implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(mId);
-        parcel.writeString(mDescription);
+        parcel.writeString(mName);
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof Project) {
-            return mId.equals(((Project) o).getId()) && mDescription.equals(((Project) o)
-                    .getDescription());
+            return mId.equals(((Project) o).getId()) &&
+                    mName.equals(((Project) o).getName());
         }
         return super.equals(o);
     }
 
     @Override
     public String toString() {
-        return mDescription;
+        // just returning the project name makes it possible to create a list of projects without
+        // having to build a special adapter
+        return mName;
     }
 }

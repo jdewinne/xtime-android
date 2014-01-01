@@ -45,18 +45,18 @@ public class WeekOverviewParserTest extends TestCase {
 
         // list of projects
         assertEquals(3, result.getProjects().size());
-        assertEquals("PROJECT 1", result.getProjects().get(0).getDescription());
+        assertEquals("PROJECT 1", result.getProjects().get(0).getName());
         assertEquals("0001", result.getProjects().get(0).getId());
-        assertEquals("PROJECT 2", result.getProjects().get(1).getDescription());
+        assertEquals("PROJECT 2", result.getProjects().get(1).getName());
         assertEquals("0002", result.getProjects().get(1).getId());
-        assertEquals("XKE", result.getProjects().get(2).getDescription());
+        assertEquals("XKE", result.getProjects().get(2).getName());
         assertEquals("0062", result.getProjects().get(2).getId());
 
         // list of time sheet rows
         assertEquals(2, result.getTimeSheetRows().size());
         TimeSheetRow row = result.getTimeSheetRows().get(0);
         assertEquals("description", row.getDescription());
-        assertEquals("PROJECT 1", row.getProject().getDescription());
+        assertEquals("PROJECT 1", row.getProject().getName());
         assertEquals("0001", row.getProject().getId());
         assertEquals("Work work", row.getWorkType().getDescription());
         assertEquals("100", row.getWorkType().getId());
@@ -65,7 +65,7 @@ public class WeekOverviewParserTest extends TestCase {
 
         row = result.getTimeSheetRows().get(1);
         assertEquals("", row.getDescription());
-        assertEquals("PROJECT 2", row.getProject().getDescription());
+        assertEquals("PROJECT 2", row.getProject().getName());
         assertEquals("0002", row.getProject().getId());
         assertEquals("Work work", row.getWorkType().getDescription());
         assertEquals("100", row.getWorkType().getId());

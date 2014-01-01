@@ -40,7 +40,7 @@ public class DailyTimeSheetListAdapter extends ArrayAdapter<TimeSheetEntry> {
 
             // update the view content
             TimeSheetEntry item = getItem(position);
-            projectView.setText(item.getProject().getDescription());
+            projectView.setText(item.getProject().getName());
             workTypeView.setText(item.getWorkType().getDescription());
             descriptionView.setText(item.getDescription());
             double hours = item.getTimeCell().getHours();
