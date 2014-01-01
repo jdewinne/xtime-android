@@ -3,6 +3,14 @@ package com.xebia.xtime.shared.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * Represents a single work time registration entry.
+ * <p/>
+ * This class is very similar to a {@link TimeSheetRow}, but only contains a single {@link
+ * TimeCell}. Just like in a full time sheet row, the work time is related to a specific
+ * combination of a certain {@link Project}, a certain {@link WorkType},
+ * and sometimes a short description text.
+ */
 public class TimeSheetEntry implements Parcelable {
 
     public static final Creator<TimeSheetEntry> CREATOR = new Creator<TimeSheetEntry>() {
@@ -21,13 +29,13 @@ public class TimeSheetEntry implements Parcelable {
     private WorkType mWorkType;
     private TimeCell mTimeCell;
 
-    protected TimeSheetEntry(Parcel parcel) {
-        mProject = parcel.readParcelable(Project.class.getClassLoader());
-        mWorkType = parcel.readParcelable(WorkType.class.getClassLoader());
-        mDescription = parcel.readString();
-        mTimeCell = parcel.readParcelable(TimeCell.class.getClassLoader());
-    }
-
+    /**
+     * @param project     The project
+     * @param workType    The work type
+     * @param description Optional free form description of the work
+     * @param timeCell    Time cell that contains the amount of time that is registered for this
+     *                    project/work type
+     */
     public TimeSheetEntry(Project project, WorkType workType, String description,
                           TimeCell timeCell) {
         mProject = project;
@@ -36,20 +44,34 @@ public class TimeSheetEntry implements Parcelable {
         mTimeCell = timeCell;
     }
 
+    protected TimeSheetEntry(Parcel parcel) {
+        mProject = parcel.readParcelable(Project.class.getClassLoader());
+        mWorkType = parcel.readParcelable(WorkType.class.getClassLoader());
+        mDescription = parcel.readString();
+        mTimeCell = parcel.readParcelable(TimeCell.class.getClassLoader());
+    }
+
+    /**
+     * @return Optional free form description of the work
+     */
     public String getDescription() {
         return mDescription;
     }
 
-    public WorkType getWorkType() {
-        return mWorkType;
+    public Project getProject() {
+        return mProject;
     }
 
+    /**
+     * @return Time cell that contains the amount of time that is registered for this
+     * project/work type
+     */
     public TimeCell getTimeCell() {
         return mTimeCell;
     }
 
-    public Project getProject() {
-        return mProject;
+    public WorkType getWorkType() {
+        return mWorkType;
     }
 
     @Override
@@ -68,9 +90,10 @@ public class TimeSheetEntry implements Parcelable {
     @Override
     public boolean equals(Object o) {
         if (o instanceof TimeSheetEntry) {
-            return mProject.equals(((TimeSheetEntry) o).getProject()) && mWorkType.equals((
-                    (TimeSheetEntry) o).getWorkType()) && mTimeCell.equals(((TimeSheetEntry) o)
-                    .getTimeCell()) && mDescription.equals(((TimeSheetEntry) o).getDescription());
+            return mProject.equals(((TimeSheetEntry) o).getProject()) &&
+                    mWorkType.equals(((TimeSheetEntry) o).getWorkType()) &&
+                    mTimeCell.equals(((TimeSheetEntry) o).getTimeCell()) &&
+                    mDescription.equals(((TimeSheetEntry) o).getDescription());
         }
         return super.equals(o);
     }
