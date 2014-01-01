@@ -298,7 +298,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
                 Project project = (Project) mProjectView.getSelectedItem();
                 WorkType workType = (WorkType) mWorkTypeView.getSelectedItem();
                 String descr = "" + mDescriptionView.getText();
-                TimeCell timeCell = new TimeCell(mDate, time, false, false, false);
+                TimeCell timeCell = new TimeCell(mDate, time, false);
                 TimeSheetEntry newEntry = new TimeSheetEntry(project, workType, descr, timeCell);
                 new SaveTask().execute(newEntry);
             } else {

@@ -5,6 +5,12 @@ import android.os.Parcelable;
 
 import java.util.Date;
 
+/**
+ * Represents a single cell in the time registration form.
+ * <p/>
+ * Each cell is related to a certain day that the work was performed on,
+ * and also contains the number of hours worked.
+ */
 public class TimeCell implements Parcelable {
 
     public static final Creator<TimeCell> CREATOR = new Creator<TimeCell>() {
@@ -21,35 +27,30 @@ public class TimeCell implements Parcelable {
     };
     private boolean mApproved;
     private Date mEntryDate;
-    private boolean mFromAfas;
     private double mHours;
-    private boolean mTransferredToAfas;
 
-    public TimeCell(Date entryDate, double hours, boolean approved, boolean fromAfas,
-                    boolean transferredToAfas) {
+    /**
+     * Constructor.
+     *
+     * @param entryDate Date of the day that the work was performed
+     * @param hours     Amount of hours worked
+     * @param approved  <code>true</code> if the time cell is approved and cannot be changed anymore
+     */
+    public TimeCell(Date entryDate, double hours, boolean approved) {
         mApproved = approved;
         mEntryDate = entryDate;
-        mFromAfas = fromAfas;
         mHours = hours;
-        mTransferredToAfas = transferredToAfas;
     }
 
     protected TimeCell(Parcel parcel) {
         mApproved = parcel.readInt() > 0;
         mEntryDate = new Date(parcel.readLong());
-        mFromAfas = parcel.readInt() > 0;
         mHours = parcel.readDouble();
-        mTransferredToAfas = parcel.readInt() > 0;
     }
 
-    public boolean isApproved() {
-        return mApproved;
-    }
-
-    public void setApproved(boolean approved) {
-        mApproved = approved;
-    }
-
+    /**
+     * @return Date of the day that the work was performed
+     */
     public Date getEntryDate() {
         return mEntryDate;
     }
@@ -58,14 +59,9 @@ public class TimeCell implements Parcelable {
         mEntryDate = entryDate;
     }
 
-    public boolean isFromAfas() {
-        return mFromAfas;
-    }
-
-    public void setFromAfas(boolean fromAfas) {
-        mFromAfas = fromAfas;
-    }
-
+    /**
+     * @return Amount of hours worked
+     */
     public double getHours() {
         return mHours;
     }
@@ -74,12 +70,15 @@ public class TimeCell implements Parcelable {
         mHours = hours;
     }
 
-    public boolean isTransferredToAfas() {
-        return mTransferredToAfas;
+    /**
+     * @return <code>true</code> if the time cell is approved and cannot be changed anymore
+     */
+    public boolean isApproved() {
+        return mApproved;
     }
 
-    public void setTransferredToAfas(boolean transferredToAfas) {
-        mTransferredToAfas = transferredToAfas;
+    public void setApproved(boolean approved) {
+        mApproved = approved;
     }
 
     @Override
@@ -91,18 +90,15 @@ public class TimeCell implements Parcelable {
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeInt(mApproved ? 1 : 0);
         parcel.writeLong(mEntryDate.getTime());
-        parcel.writeInt(mFromAfas ? 1 : 0);
         parcel.writeDouble(mHours);
-        parcel.writeInt(mTransferredToAfas ? 1 : 0);
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof TimeCell) {
-            return mApproved == ((TimeCell) o).isApproved() && mEntryDate.equals(((TimeCell) o)
-                    .getEntryDate()) && mFromAfas == ((TimeCell) o).isFromAfas() &&
-                    mTransferredToAfas == ((TimeCell) o).isTransferredToAfas() && mHours == (
-                    (TimeCell) o).getHours();
+            return mApproved == ((TimeCell) o).isApproved() &&
+                    mEntryDate.equals(((TimeCell) o).getEntryDate()) &&
+                    mHours == ((TimeCell) o).getHours();
         }
         return super.equals(o);
     }

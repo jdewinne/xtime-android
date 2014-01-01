@@ -63,7 +63,7 @@ public class SaveTimeSheetRequestTest extends TestCase {
         WorkType workType = new WorkType("100", "some work description");
         String description = "foo bar";
         Date date = new Date(1426287600000l); // Sat, 14 Mar 2015, 0:00:00 CET
-        TimeCell timeCell = new TimeCell(date, 3.14, false, false, false);
+        TimeCell timeCell = new TimeCell(date, 3.14, false);
         TimeSheetEntry timeSheetEntry = new TimeSheetEntry(project, workType, description,
                 timeCell);
         SaveTimeSheetRequest request = new SaveTimeSheetRequest(timeSheetEntry);

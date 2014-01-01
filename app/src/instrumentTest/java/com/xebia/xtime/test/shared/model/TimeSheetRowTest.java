@@ -39,7 +39,7 @@ public class TimeSheetRowTest extends TestCase {
         assertFalse(mTimeSheet.equals(new TimeSheetRow(project, new WorkType("wrong", "wrong"),
                 description, timeCells)));
         assertFalse(mTimeSheet.equals(new TimeSheetRow(project, workType, "wrong", timeCells)));
-        timeCells.add(new TimeCell(null, 0, false, false, false));
+        timeCells.add(new TimeCell(null, 0, false));
         assertFalse(mTimeSheet.equals(new TimeSheetRow(project, workType, description, timeCells)));
     }
 

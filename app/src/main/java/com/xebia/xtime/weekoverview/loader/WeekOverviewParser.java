@@ -74,6 +74,8 @@ public class WeekOverviewParser {
 
         Matcher matcher = pattern.matcher(input);
         while (matcher.find()) {
+            // not all data that is returned is actually used in the app
+
             // String clientName = matcher.group(2);
             String description = matcher.group(3);
             String projectId = matcher.group(4);
@@ -115,12 +117,14 @@ public class WeekOverviewParser {
 
         Matcher matcher = pattern.matcher(input);
         if (matcher.find()) {
+            // not all data that is returned is actually used in the app
+
             boolean approved = "true".equals(matcher.group(1));
             long entryDate = Long.parseLong(matcher.group(2));
-            boolean fromAfas = "true".equals(matcher.group(3));
+            // boolean fromAfas = "true".equals(matcher.group(3));
             double hour = Double.parseDouble(matcher.group(4));
-            boolean transferredToAfas = "true".equals(matcher.group(5));
-            return new TimeCell(new Date(entryDate), hour, approved, fromAfas, transferredToAfas);
+            // boolean transferredToAfas = "true".equals(matcher.group(5));
+            return new TimeCell(new Date(entryDate), hour, approved);
         }
 
         return null;
