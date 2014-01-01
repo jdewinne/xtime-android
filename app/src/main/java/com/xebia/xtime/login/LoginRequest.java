@@ -76,14 +76,14 @@ public class LoginRequest extends XTimeRequest {
         }
     }
 
-    private String getLoginData() throws IOException {
+    public String getRequestData() throws IOException {
         String username = URLEncoder.encode(mUsername, "UTF-8");
         String password = URLEncoder.encode(mPassword, "UTF-8");
         return "j_username=" + username + "&j_password=" + password;
     }
 
     private void writeCredentials(OutputStream out) throws IOException {
-        String data = getLoginData();
+        String data = getRequestData();
         out.write(data.getBytes());
         out.flush();
         out.close();
