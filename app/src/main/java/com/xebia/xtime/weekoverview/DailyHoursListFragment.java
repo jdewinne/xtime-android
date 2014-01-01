@@ -108,9 +108,7 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        DayOverview item = (DayOverview) getListView().getItemAtPosition(position);
-        // notify handler
-        mListener.onItemClicked(mOverview, item);
+        mListener.onItemClicked((DayOverview) l.getItemAtPosition(position));
     }
 
     @Override
@@ -156,7 +154,7 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     }
 
     public interface DailyHoursListener {
-        public void onItemClicked(WeekOverview overview, DayOverview dayOverview);
+        public void onItemClicked(DayOverview overview);
     }
 
 }

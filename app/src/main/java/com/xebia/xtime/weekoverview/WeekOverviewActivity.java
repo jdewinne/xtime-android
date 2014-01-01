@@ -9,7 +9,6 @@ import com.xebia.xtime.R;
 import com.xebia.xtime.dayoverview.DayOverviewActivity;
 import com.xebia.xtime.login.LoginActivity;
 import com.xebia.xtime.shared.model.DayOverview;
-import com.xebia.xtime.shared.model.WeekOverview;
 
 public class WeekOverviewActivity extends ActionBarActivity implements DailyHoursListFragment
         .DailyHoursListener {
@@ -57,10 +56,9 @@ public class WeekOverviewActivity extends ActionBarActivity implements DailyHour
     }
 
     @Override
-    public void onItemClicked(WeekOverview weekOverview, DayOverview dayOverview) {
+    public void onItemClicked(DayOverview overview) {
         Intent intent = new Intent(this, DayOverviewActivity.class);
-        intent.putExtra(DayOverviewActivity.EXTRA_DAY_OVERVIEW, dayOverview);
-        intent.putExtra(DayOverviewActivity.EXTRA_WEEK_OVERVIEW, weekOverview);
+        intent.putExtra(DayOverviewActivity.EXTRA_DAY_OVERVIEW, overview);
         startActivity(intent);
     }
 

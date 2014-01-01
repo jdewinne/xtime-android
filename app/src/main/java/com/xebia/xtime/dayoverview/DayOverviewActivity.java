@@ -12,7 +12,6 @@ import com.xebia.xtime.editor.EditTimeSheetActivity;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
-import com.xebia.xtime.shared.model.WeekOverview;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -22,11 +21,9 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
         .Listener {
 
     public static final String EXTRA_DAY_OVERVIEW = "day_overview";
-    public static final String EXTRA_WEEK_OVERVIEW = "week_overview";
     private static final int REQ_CODE_EDIT = 1;
     private static final int REQ_CODE_CREATE = 2;
-    private WeekOverview mWeekOverview;
-    private DayOverview mDayOverview;
+    private DayOverview mOverview;
     private TimeSheetEntry mSelectedEntry;
 
     @Override
@@ -35,20 +32,14 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
         setContentView(R.layout.activity_day_overview);
 
         // get the day overview
-        mDayOverview = getIntent().getParcelableExtra(EXTRA_DAY_OVERVIEW);
-        if (null == mDayOverview) {
+        mOverview = getIntent().getParcelableExtra(EXTRA_DAY_OVERVIEW);
+        if (null == mOverview) {
             throw new NullPointerException("Missing EXTRA_DAY_OVERVIEW");
-        }
-
-        // get the week overview
-        mWeekOverview = getIntent().getParcelableExtra(EXTRA_WEEK_OVERVIEW);
-        if (null == mWeekOverview) {
-            throw new NullPointerException("Missing EXTRA_WEEK_OVERVIEW");
         }
 
         // set up the UI
         if (savedInstanceState == null) {
-            ArrayList<TimeSheetEntry> timeSheets = (ArrayList<TimeSheetEntry>) mDayOverview
+            ArrayList<TimeSheetEntry> timeSheets = (ArrayList<TimeSheetEntry>) mOverview
                     .getTimeSheetEntries();
             Fragment fragment = DailyTimeSheetFragment.getInstance(timeSheets);
             getSupportFragmentManager().beginTransaction().add(R.id.container, fragment,
@@ -57,7 +48,7 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
 
         // set up the title
         DateFormat dateFormat = new SimpleDateFormat("EEE d MMMM");
-        setTitle(dateFormat.format(mDayOverview.getDate()));
+        setTitle(dateFormat.format(mOverview.getDate()));
     }
 
     @Override
@@ -83,9 +74,9 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
 
     private void startEditor(TimeSheetEntry entry, int requestCode) {
         Intent editor = new Intent(this, EditTimeSheetActivity.class);
-        editor.putExtra(EditTimeSheetActivity.EXTRA_DATE, mDayOverview.getDate().getTime());
+        editor.putExtra(EditTimeSheetActivity.EXTRA_DATE, mOverview.getDate().getTime());
         editor.putParcelableArrayListExtra(EditTimeSheetActivity.EXTRA_PROJECTS,
-                (ArrayList<Project>) mWeekOverview.getProjects());
+                (ArrayList<Project>) mOverview.getProjects());
         editor.putExtra(EditTimeSheetActivity.EXTRA_TIME_SHEET, entry);
         startActivityForResult(editor, requestCode);
     }
@@ -124,7 +115,7 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
     }
 
     private void onEntryCreated(TimeSheetEntry created) {
-        mDayOverview.getTimeSheetEntries().add(created);
+        mOverview.getTimeSheetEntries().add(created);
 
         // notify the list view
         DailyTimeSheetFragment fragment = (DailyTimeSheetFragment) getSupportFragmentManager()
