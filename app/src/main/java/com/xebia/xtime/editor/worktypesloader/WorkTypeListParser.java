@@ -54,7 +54,7 @@ public class WorkTypeListParser {
 
         // match the response for patterns like:
         // xx[0]=$1; xx[1]=$2; ...
-        String regex = arrayName + "\\[\\d\\]=([^;,]*);";
+        String regex = arrayName + "\\[\\d*\\]=([^;,]*);";
         Pattern pattern = Pattern.compile(regex);
 
         Matcher matcher = pattern.matcher(input);
