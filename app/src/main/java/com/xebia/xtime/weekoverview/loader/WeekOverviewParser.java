@@ -72,14 +72,14 @@ public class WeekOverviewParser {
 
         // match the response for patterns like:
         // xx.clientName="$1"; xx.description="$2"; xx.projectId="$3"; ...
-        String regex = "(\\w*)\\.clientName=\"([^\"]*)\";";
-        regex += ".*\\1\\.description=\"([^\"]*)\";";
-        regex += ".*\\1\\.projectId=\"([^\"]*)\";";
-        regex += ".*\\1\\.projectName=\"([^\"]*)\";";
-        regex += ".*\\1\\.timeCells=([^;]*);";
-        regex += ".*\\1\\.userId=\"([^\"]*)\";";
-        regex += ".*\\1\\.workTypeDescription=\"([^\"]*)\";";
-        regex += ".*\\1\\.workTypeId=\"([^\"]*)\";";
+        String regex = "(\\w*)\\.clientName=\"([^\"]*)\";" +
+                ".*\\1\\.description=\"([^\"]*)\";" +
+                ".*\\1\\.projectId=\"([^\"]*)\";" +
+                ".*\\1\\.projectName=\"([^\"]*)\";" +
+                ".*\\1\\.timeCells=([^;]*);" +
+                ".*\\1\\.userId=\"([^\"]*)\";" +
+                ".*\\1\\.workTypeDescription=\"([^\"]*)\";" +
+                ".*\\1\\.workTypeId=\"([^\"]*)\";";
         Pattern pattern = Pattern.compile(regex);
 
         Matcher matcher = pattern.matcher(input);
@@ -163,8 +163,8 @@ public class WeekOverviewParser {
 
         // match the response for patterns like:
         // xx.description="$1"; xx.id="$2";
-        String regex = "(\\w*)\\.description=\"([^\"]*)\";";
-        regex += ".*\\1\\.id=\"([^\"]*)\";";
+        String regex = "(\\w*)\\.description=\"([^\"]*)\";" +
+                ".*\\1\\.id=\"([^\"]*)\";";
         Pattern pattern = Pattern.compile(regex);
 
         Matcher matcher = pattern.matcher(input);
