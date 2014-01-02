@@ -145,7 +145,7 @@ public class WeekOverviewParser {
 
         // match the response for patterns like:
         // xx[0]=$1; xx[1]=$2; ...
-        String regex = varName + "\\[\\d\\]=([^;,]*);";
+        String regex = varName + "\\[\\d*\\]=([^;,]*);";
         Pattern pattern = Pattern.compile(regex);
 
         Matcher matcher = pattern.matcher(input);
