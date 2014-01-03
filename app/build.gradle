@@ -29,6 +29,6 @@ dependencies {
 
 // load gradle file with the secret signing config for release, see:
 // https://www.timroes.de/2013/09/22/handling-signing-configs-with-gradle/
-if (project.hasProperty("XTime.signing") && new File(project.property("XTime.signing") + ".gradle").exists()) {
-    apply from: project.property("XTime.signing") + ".gradle";
+if (project.hasProperty("XTime.signing") && file(project.property("XTime.signing") + ".gradle").exists()) {
+    apply from: file(project.property("XTime.signing") + ".gradle");
 }
