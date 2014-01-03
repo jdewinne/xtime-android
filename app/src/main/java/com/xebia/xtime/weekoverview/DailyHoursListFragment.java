@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Fragment that represents a week as a list of days.
@@ -65,7 +66,7 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
      */
     public static String getTitle(Date startDate) {
         Date endDate = new Date(startDate.getTime() + 6 * DateUtils.DAY_IN_MILLIS);
-        DateFormat formatter = new SimpleDateFormat("dd/MM");
+        DateFormat formatter = new SimpleDateFormat("dd/MM", Locale.US);
         return formatter.format(startDate) + " - " + formatter.format(endDate);
     }
 

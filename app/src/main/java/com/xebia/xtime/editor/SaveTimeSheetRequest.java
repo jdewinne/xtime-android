@@ -17,6 +17,7 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class SaveTimeSheetRequest extends XTimeRequest {
@@ -82,7 +83,7 @@ public class SaveTimeSheetRequest extends XTimeRequest {
         while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
             cal.add(Calendar.DAY_OF_WEEK, -1);
         }
-        DateFormat dateFormat = new SimpleDateFormat("d+MMM+yyyy");
+        DateFormat dateFormat = new SimpleDateFormat("d+MMM+yyyy", Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
         data += "startDate=" + dateFormat.format(cal.getTime());
         cal.add(Calendar.DAY_OF_YEAR, 6);
@@ -90,7 +91,7 @@ public class SaveTimeSheetRequest extends XTimeRequest {
 
         // week dates
         cal.add(Calendar.DAY_OF_YEAR, -6);
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
         for (int i = 0; i < 7; i++) {
             data += "&weekDates=" + dateFormat.format(cal.getTime());

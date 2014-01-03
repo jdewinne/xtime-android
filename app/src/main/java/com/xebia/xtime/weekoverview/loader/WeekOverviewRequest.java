@@ -16,6 +16,7 @@ import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class WeekOverviewRequest extends XTimeRequest {
@@ -89,7 +90,7 @@ public class WeekOverviewRequest extends XTimeRequest {
     }
 
     public String getRequestData() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
         return "callCount=1\n" +
                 "page=/xtime/entryform.html\n" +
