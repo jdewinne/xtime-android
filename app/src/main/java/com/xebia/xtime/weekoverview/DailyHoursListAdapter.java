@@ -1,9 +1,11 @@
 package com.xebia.xtime.weekoverview;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.Build;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -33,8 +36,7 @@ public class DailyHoursListAdapter extends ArrayAdapter<DayOverview> {
     public DailyHoursListAdapter(Context context, List<DayOverview> data) {
         super(context, R.layout.row_daily_hours, R.id.hours, data);
 
-        mDateFormat = new SimpleDateFormat("EEE d MMM");
-        mDateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
+        mDateFormat = getDateFormat();
 
         Resources res = context.getResources();
         mXebiaPurple = res.getColor(R.color.xebia_purple);
@@ -74,5 +76,17 @@ public class DailyHoursListAdapter extends ArrayAdapter<DayOverview> {
         }
 
         return row;
+    }
+
+    @TargetApi(18)
+    private DateFormat getDateFormat() {
+        Locale locale = Locale.getDefault();
+        String pattern = "EEE d MMM";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, pattern);
+        }
+        DateFormat dateFormat = new SimpleDateFormat(pattern, locale);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
+        return dateFormat;
     }
 }

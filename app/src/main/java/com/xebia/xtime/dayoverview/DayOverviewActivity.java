@@ -1,6 +1,8 @@
 package com.xebia.xtime.dayoverview;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -16,6 +18,8 @@ import com.xebia.xtime.shared.model.TimeSheetEntry;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Activity that displays a list of {@link TimeSheetEntry} in a {@link DailyTimeSheetFragment}.
@@ -56,8 +60,7 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
         }
 
         // set up the title
-        DateFormat dateFormat = new SimpleDateFormat("EEE d MMMM");
-        setTitle(dateFormat.format(mOverview.getDate()));
+        setTitle(getDayTitle());
     }
 
     @Override
@@ -130,5 +133,17 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
         DailyTimeSheetFragment fragment = (DailyTimeSheetFragment) getSupportFragmentManager()
                 .findFragmentByTag("tag");
         fragment.onDataSetChanged();
+    }
+
+    @TargetApi(18)
+    private String getDayTitle() {
+        Locale locale = Locale.getDefault();
+        String pattern = "EEEE d MMMM";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, pattern);
+        }
+        DateFormat dateFormat = new SimpleDateFormat(pattern, locale);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
+        return dateFormat.format(mOverview.getDate());
     }
 }
