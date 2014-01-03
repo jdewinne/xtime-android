@@ -1,0 +1,18 @@
+// To enable making a release with Gradle:
+// Copy this template to `signing.gradle` and replace the password placeholders with correct values
+android {
+    signingConfigs {
+        release {
+            storeFile file(project.property("XTime.signing") + ".keystore")
+            storePassword "STORE_PASSWORD"
+            keyAlias "KEY_ALIAS"
+            keyPassword "KEY_PASSWORD"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+}
