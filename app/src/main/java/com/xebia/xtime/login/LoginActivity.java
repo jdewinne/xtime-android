@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -45,20 +46,20 @@ public class LoginActivity extends ActionBarActivity {
 
         // Set up the login form.
         mUsernameView = (EditText) findViewById(R.id.username);
-        String username = PreferenceManager.getDefaultSharedPreferences(this).getString
-                (PREF_USERNAME,
-                        null);
+        String username = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(PREF_USERNAME, null);
         mUsernameView.setText(username);
 
         mPasswordView = (EditText) findViewById(R.id.password);
-        String password = PreferenceManager.getDefaultSharedPreferences(this).getString
-                (PREF_PASSWORD,
-                        null);
+        String password = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(PREF_PASSWORD, null);
         mPasswordView.setText(password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                Log.d("TAG", "event " + id);
+                if (id == R.id.login || id == EditorInfo.IME_NULL ||
+                        id == EditorInfo.IME_ACTION_DONE) {
                     attemptLogin();
                     return true;
                 }
