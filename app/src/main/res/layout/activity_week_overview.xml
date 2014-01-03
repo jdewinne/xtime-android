@@ -8,10 +8,13 @@
     tools:ignore="MergeRootFrame">
 
     <android.support.v4.view.PagerTabStrip
+        android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
-        android:layout_gravity="top"/>
+        android:layout_gravity="top"
+        android:background="@drawable/ab_stacked_solid_xebia"
+        android:textColor="#eee"/>
 
 </android.support.v4.view.ViewPager>
