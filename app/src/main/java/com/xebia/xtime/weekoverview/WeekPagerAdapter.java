@@ -7,6 +7,7 @@ import android.util.SparseArray;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * PagerAdapter for switching between {@link DailyHoursListFragment}.
@@ -50,11 +51,20 @@ public class WeekPagerAdapter extends FragmentPagerAdapter {
 
     private Date getStartDate(int index) {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(TimeZone.getTimeZone("CET"));
         calendar.add(Calendar.WEEK_OF_YEAR, index - START_INDEX);
 
+        // roll back until monday
         while (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
             calendar.add(Calendar.DAY_OF_WEEK, -1);
         }
+
+        // make sure the time is exactly 0:00
+        calendar.clear(Calendar.HOUR_OF_DAY);
+        calendar.clear(Calendar.HOUR);
+        calendar.clear(Calendar.MINUTE);
+        calendar.clear(Calendar.SECOND);
+        calendar.clear(Calendar.MILLISECOND);
 
         return calendar.getTime();
     }
