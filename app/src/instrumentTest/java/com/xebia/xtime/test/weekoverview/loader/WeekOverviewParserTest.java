@@ -38,7 +38,7 @@ public class WeekOverviewParserTest extends TestCase {
             "s20[0]=s21;\n" +
             "s21.approved=false;s21.entryDate=new Date(1388617200000);s21.fromAfas=false;s21.hour=\"7.0\";s21.transferredToAfas=false;\n" +
             "s2[0]=4;s2[1]=5;\n" +
-            "dwr.engine._remoteHandleCallback('0','0',{lastTransferredDate:new Date(1388444400000),monthDaysCount:7,monthlyDataApproved:true,monthlyDataTransferred:false,projects:s0,timesheetRows:s1,userName:\"Foo Bar\",weekEndDates:s2,weekStart:null});\n";
+            "dwr.engine._remoteHandleCallback('0','0',{lastTransferredDate:new Date(1388444400000),monthDaysCount:7,monthlyDataApproved:true,monthlyDataTransferred:true,projects:s0,timesheetRows:s1,userName:\"Foo Bar\",weekEndDates:s2,weekStart:null});\n";
 
     public void testRegularInput() {
         WeekOverview result = WeekOverviewParser.parse(INPUT_REGULAR);
@@ -66,6 +66,8 @@ public class WeekOverviewParserTest extends TestCase {
         assertEquals(new TimeCell(new Date(1388617200000l), 7, false), row.getTimeCells().get(0));
 
         assertEquals("Foo Bar", result.getUsername());
+        assertEquals(true, result.isMonthlyDataApproved());
+        assertEquals(new Date(1388444400000l), result.getLastTransferred());
     }
 
     public void testUnparseableInput() {

@@ -49,7 +49,7 @@ public class WeekOverviewParser {
         if (matcher.find()) {
             // not all data that is returned is actually used in the app
 
-            // long lastTransferredDate = Long.parseLong(matcher.group(1));
+            long lastTransferredDate = Long.parseLong(matcher.group(1));
             // int monthDaysCount = Integer.parseInt(matcher.group(2));
             boolean monthlyDataApproved = Boolean.parseBoolean(matcher.group(3));
             // boolean monthlyDataTransferred = Boolean.parseBoolean(matcher.group(4));
@@ -58,7 +58,7 @@ public class WeekOverviewParser {
             String username = matcher.group(5);
             // String weekendDatesVar = matcher.group(6);
             // String weekStart = matcher.group(7);
-            return new WeekOverview(timeSheetRows, projects, username, monthlyDataApproved);
+            return new WeekOverview(timeSheetRows, projects, username, monthlyDataApproved, new Date(lastTransferredDate));
 
         } else {
             Log.d(TAG, "Failed to parse input '" + input + "'");

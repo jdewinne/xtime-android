@@ -12,6 +12,7 @@ import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class WeekOverviewTest extends TestCase {
@@ -29,7 +30,8 @@ public class WeekOverviewTest extends TestCase {
         List<Project> projects = Arrays.asList(project);
         String username = "username";
         final boolean approved = true;
-        mOverview = new WeekOverview(timeSheetRows, projects, username, approved);
+        Date transferred = new Date(1234);
+        mOverview = new WeekOverview(timeSheetRows, projects, username, approved, transferred);
     }
 
     public void testEquals() {
@@ -40,14 +42,20 @@ public class WeekOverviewTest extends TestCase {
         List<Project> projects = Arrays.asList(project);
         String username = "username";
         final boolean approved = true;
+        Date transferred = new Date(1234);
 
-        assertTrue(mOverview.equals(new WeekOverview(timeSheetRows, projects, username, approved)));
+        assertTrue(mOverview.equals(new WeekOverview(timeSheetRows, projects, username, approved,
+                transferred)));
         assertFalse(mOverview.equals(new WeekOverview(new ArrayList<TimeSheetRow>(), projects,
-                username, approved)));
+                username, approved, transferred)));
         assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, new ArrayList<Project>(),
-                username, approved)));
-        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, projects, "wrong", approved)));
-        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, projects, username, false)));
+                username, approved, transferred)));
+        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, projects, "wrong", approved,
+                transferred)));
+        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, projects, username, false,
+                transferred)));
+        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, projects, username,
+                approved, new Date(666))));
     }
 
     public void testParcelable() {
