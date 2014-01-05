@@ -32,5 +32,6 @@
     <string name="toast_save_fail">Request failed</string>
     <string name="toast_delete_fail">Request failed</string>
     <string name="toast_work_types_fail">Failed to load work types</string>
+    <string name="editor_busy">Sending request...</string>
 
 </resources>

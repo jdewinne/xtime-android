@@ -1,6 +1,10 @@
 package com.xebia.xtime.editor;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -61,16 +65,18 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
      */
     // TODO: Replace static list of description work types with data from XTime backend
     private static final List<String> REQUIRE_DESCR = Arrays.asList("960", "940", "920", "935");
+    private Listener mListener;
+    private TimeSheetEntry mSaveEntry;
     private TimeSheetEntry mTimeSheetEntry;
     private List<Project> mProjects;
     private Date mDate;
     private List<WorkType> mWorkTypes;
+    private View mBusyIndicatorView;
+    private View mMainView;
     private Spinner mProjectView;
     private Spinner mWorkTypeView;
     private EditText mDescriptionView;
     private EditText mTimeView;
-    private Listener mListener;
-    private TimeSheetEntry mSaveEntry;
 
     public EditTimeSheetFragment() {
         // required empty constructor
@@ -122,6 +128,8 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         }
 
         // link the views
+        mBusyIndicatorView = rootView.findViewById(R.id.busy_indicator);
+        mMainView = rootView.findViewById(R.id.editor_form);
         mProjectView = (Spinner) rootView.findViewById(R.id.project);
         mWorkTypeView = (Spinner) rootView.findViewById(R.id.work_type);
         mDescriptionView = (EditText) rootView.findViewById(R.id.description);
@@ -235,23 +243,6 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (Listener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement " +
-                    "EditTimeSheetFragment.Listener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
     public Loader<List<WorkType>> onCreateLoader(int id, Bundle args) {
         Project project = args.getParcelable("project");
         Date date = new Date(args.getLong("date"));
@@ -319,6 +310,8 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
 
     private void onSaveClick() {
         if (validateForm()) {
+            showBusyIndicator(true);
+
             double time = getTimeInput();
             if (null == mTimeSheetEntry) {
                 // create new entry from the form
@@ -338,6 +331,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     }
 
     private void onDeleteClick() {
+        showBusyIndicator(true);
         new DeleteEntryTask(this).execute(mTimeSheetEntry);
     }
 
@@ -357,6 +351,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         if (null != result && result) {
             mListener.onEntryDelete(mTimeSheetEntry);
         } else {
+            showBusyIndicator(false);
             Toast.makeText(getActivity(), R.string.toast_delete_fail, Toast.LENGTH_LONG).show();
         }
     }
@@ -366,8 +361,61 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         if (null != result && result) {
             mListener.onEntryUpdate(mSaveEntry);
         } else {
+            showBusyIndicator(false);
             Toast.makeText(getActivity(), R.string.toast_save_fail, Toast.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * Shows the busy indicator UI and hides the editor form.
+     */
+    @SuppressWarnings("ConstantConditions")
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showBusyIndicator(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allows for very easy
+        // animations. If available, use these APIs to fade-in the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+            mBusyIndicatorView.setVisibility(View.VISIBLE);
+            mBusyIndicatorView.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mBusyIndicatorView.setVisibility(show ? View.VISIBLE : View.GONE);
+                        }
+                    });
+
+            mMainView.setVisibility(View.VISIBLE);
+            mMainView.animate().setDuration(shortAnimTime).alpha(show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mMainView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show and hide the
+            // relevant UI components.
+            mBusyIndicatorView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mMainView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (Listener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement " +
+                    "EditTimeSheetFragment.Listener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     /**
