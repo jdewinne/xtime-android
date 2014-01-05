@@ -52,17 +52,19 @@ public class DailyHoursListAdapter extends ArrayAdapter<DayOverview> {
             row = inflater.inflate(R.layout.row_daily_hours, parent, false);
         }
 
-        // find the view
         if (row != null) {
+            // find the view
             TextView dateView = (TextView) row.findViewById(R.id.date);
             TextView hoursView = (TextView) row.findViewById(R.id.hours);
             TextView hoursLabelView = (TextView) row.findViewById(R.id.hours_label);
+            TextView approvedView = (TextView) row.findViewById(R.id.approved);
 
             // update the view content
             DayOverview item = getItem(position);
             Date date = item.getDate();
             dateView.setText(mDateFormat.format(date));
             hoursView.setText(NumberFormat.getNumberInstance().format(item.getTotalHours()));
+            approvedView.setVisibility(item.isEditable() ? View.GONE : View.VISIBLE);
             if (DateUtils.isToday(date.getTime())) {
                 row.setBackgroundColor(mXebiaPurple);
                 dateView.setTextColor(Color.WHITE);
