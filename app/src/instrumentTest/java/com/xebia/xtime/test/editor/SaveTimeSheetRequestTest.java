@@ -1,6 +1,6 @@
 package com.xebia.xtime.test.editor;
 
-import com.xebia.xtime.editor.SaveTimeSheetRequest;
+import com.xebia.xtime.editor.save.SaveTimeSheetRequest;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetEntry;

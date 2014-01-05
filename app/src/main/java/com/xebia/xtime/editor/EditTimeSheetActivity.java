@@ -33,6 +33,10 @@ public class EditTimeSheetActivity extends ActionBarActivity implements EditTime
      * leave null to create a new entry
      */
     public static final String EXTRA_TIME_SHEET = "time_sheet";
+    /**
+     * Result code for when the entry was deleted
+     */
+    public static final int RESULT_DELETE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +62,20 @@ public class EditTimeSheetActivity extends ActionBarActivity implements EditTime
     }
 
     @Override
-    public void onChangesSaved(TimeSheetEntry entry) {
+    public void onEntryUpdate(TimeSheetEntry entry) {
         // put the time sheet in the result data
         Intent data = new Intent();
         data.putExtra(EXTRA_TIME_SHEET, entry);
         setResult(RESULT_OK, data);
+        finish();
+    }
+
+    @Override
+    public void onEntryDelete(TimeSheetEntry entry) {
+        // put the time sheet in the result data
+        Intent data = new Intent();
+        data.putExtra(EXTRA_TIME_SHEET, entry);
+        setResult(RESULT_DELETE, data);
         finish();
     }
 }

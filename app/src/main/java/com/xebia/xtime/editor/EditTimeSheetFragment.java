@@ -1,7 +1,6 @@
 package com.xebia.xtime.editor;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -21,6 +20,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.editor.delete.DeleteEntryTask;
+import com.xebia.xtime.editor.save.SaveEntryTask;
 import com.xebia.xtime.editor.worktypesloader.WorkTypeListLoader;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeCell;
@@ -44,11 +45,12 @@ import java.util.List;
  * using an AsyncTaskLoader. The list of projects is predefined.
  * <p/>
  * The action bar contains an option to save the changes, which triggers an AsyncTask that sends
- * a {@link SaveTimeSheetRequest} to the XTime backend. When the task finishes,
+ * a {@link com.xebia.xtime.editor.save.SaveTimeSheetRequest} to the XTime backend. When the task
+ * finishes,
  * the parent activity is notified.
  */
 public class EditTimeSheetFragment extends Fragment implements LoaderManager
-        .LoaderCallbacks<List<WorkType>> {
+        .LoaderCallbacks<List<WorkType>>, SaveEntryTask.Listener, DeleteEntryTask.Listener {
 
     private static final String ARG_PROJECTS = "projects";
     private static final String ARG_DATE = "date";
@@ -68,6 +70,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     private EditText mDescriptionView;
     private EditText mTimeView;
     private Listener mListener;
+    private TimeSheetEntry mSaveEntry;
 
     public EditTimeSheetFragment() {
         // required empty constructor
@@ -211,15 +214,24 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_edit_time_cell, menu);
+        if (null == mTimeSheetEntry) {
+            // do not show delete button when creating new entries
+            menu.removeItem(R.id.delete);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.save) {
-            onSaveClick();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.save:
+                onSaveClick();
+                return true;
+            case R.id.delete:
+                onDeleteClick();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -309,18 +321,24 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         if (validateForm()) {
             double time = getTimeInput();
             if (null == mTimeSheetEntry) {
+                // create new entry from the form
                 Project project = (Project) mProjectView.getSelectedItem();
                 WorkType workType = (WorkType) mWorkTypeView.getSelectedItem();
                 String descr = "" + mDescriptionView.getText();
                 TimeCell timeCell = new TimeCell(mDate, time, false);
-                TimeSheetEntry newEntry = new TimeSheetEntry(project, workType, descr, timeCell);
-                new SaveTask().execute(newEntry);
+                mSaveEntry = new TimeSheetEntry(project, workType, descr, timeCell);
+                new SaveEntryTask(this).execute(mSaveEntry);
             } else {
                 // only the time can be changed for existing time sheet entries
-                mTimeSheetEntry.getTimeCell().setHours(time);
-                new SaveTask().execute(mTimeSheetEntry);
+                mSaveEntry = mTimeSheetEntry;
+                mSaveEntry.getTimeCell().setHours(time);
+                new SaveEntryTask(this).execute(mSaveEntry);
             }
         }
+    }
+
+    private void onDeleteClick() {
+        new DeleteEntryTask(this).execute(mTimeSheetEntry);
     }
 
     private double getTimeInput() {
@@ -334,36 +352,36 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         return time;
     }
 
+    @Override
+    public void onDeleteComplete(Boolean result) {
+        if (null != result && result) {
+            mListener.onEntryDelete(mTimeSheetEntry);
+        } else {
+            Toast.makeText(getActivity(), R.string.toast_delete_fail, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onSaveComplete(Boolean result) {
+        if (null != result && result) {
+            mListener.onEntryUpdate(mSaveEntry);
+        } else {
+            Toast.makeText(getActivity(), R.string.toast_save_fail, Toast.LENGTH_LONG).show();
+        }
+    }
+
     /**
      * Interface for listening to events from a EditTimeSheetFragment.
      */
     public interface Listener {
-        public abstract void onChangesSaved(TimeSheetEntry entry);
-    }
+        /**
+         * @param entry The entry that was updated.
+         */
+        public abstract void onEntryUpdate(TimeSheetEntry entry);
 
-    /**
-     * Asynchronous task to save the changes to this time cell.
-     */
-    private class SaveTask extends AsyncTask<TimeSheetEntry, Void, Boolean> {
-
-        private TimeSheetEntry mEntry;
-
-        @Override
-        protected Boolean doInBackground(TimeSheetEntry... params) {
-            if (null == params || params.length < 1) {
-                throw new NullPointerException("Missing TimeSheetEntry parameter");
-            }
-            mEntry = params[0];
-            return new SaveTimeSheetRequest(mEntry).submit();
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if (null != result && result) {
-                mListener.onChangesSaved(mEntry);
-            } else {
-                Toast.makeText(getActivity(), R.string.toast_save_fail, Toast.LENGTH_LONG).show();
-            }
-        }
+        /**
+         * @param entry The entry that was deleted.
+         */
+        public abstract void onEntryDelete(TimeSheetEntry entry);
     }
 }

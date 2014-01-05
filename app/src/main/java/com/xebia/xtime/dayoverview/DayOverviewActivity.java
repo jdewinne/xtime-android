@@ -105,6 +105,10 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
                     TimeSheetEntry edited = data.getParcelableExtra(EditTimeSheetActivity
                             .EXTRA_TIME_SHEET);
                     onEntryEdited(edited);
+                } else if (EditTimeSheetActivity.RESULT_DELETE == resultCode) {
+                    TimeSheetEntry deleted = data.getParcelableExtra(EditTimeSheetActivity
+                            .EXTRA_TIME_SHEET);
+                    onEntryDeleted(deleted);
                 }
                 mSelectedEntry = null;
                 break;
@@ -118,6 +122,16 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
             default:
                 super.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    private void onEntryDeleted(TimeSheetEntry deleted) {
+        int index = mOverview.getTimeSheetEntries().indexOf(deleted);
+        mOverview.getTimeSheetEntries().remove(index);
+
+        // notify the list view
+        DailyTimeSheetFragment fragment = (DailyTimeSheetFragment) getSupportFragmentManager()
+                .findFragmentByTag("tag");
+        fragment.onDataSetChanged();
     }
 
     private void onEntryEdited(TimeSheetEntry edited) {

@@ -8,4 +8,9 @@
         android:icon="@android:drawable/ic_menu_save"
         android:title="@string/action_save"
         xtime:showAsAction="ifRoom|withText"/>
+    <item
+        android:id="@+id/delete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:title="@string/action_delete"
+        xtime:showAsAction="ifRoom|withText"/>
 </menu>
