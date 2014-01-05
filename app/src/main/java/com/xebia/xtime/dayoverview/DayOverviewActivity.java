@@ -65,7 +65,9 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_day_overview, menu);
+        if (mOverview.isEditable()) {
+            getMenuInflater().inflate(R.menu.menu_day_overview, menu);
+        }
         return true;
     }
 
@@ -80,8 +82,10 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
 
     @Override
     public void onTimeSheetEntrySelected(TimeSheetEntry selected) {
-        mSelectedEntry = selected;
-        startEditor(selected, REQ_CODE_EDIT);
+        if (mOverview.isEditable()) {
+            mSelectedEntry = selected;
+            startEditor(selected, REQ_CODE_EDIT);
+        }
     }
 
     private void startEditor(TimeSheetEntry entry, int requestCode) {
