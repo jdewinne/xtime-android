@@ -21,30 +21,35 @@ public class DayOverviewTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         List<Project> projects = Arrays.asList(new Project("project id", "project name"));
-        mOverview = new DayOverview(new Date(1234), projects);
+        mOverview = new DayOverview(new Date(1234), projects, true);
         mOverview.setTotalHours(42);
         mOverview.setTimeSheetEntries(new ArrayList<TimeSheetEntry>());
     }
 
     public void testEquals() {
         List<Project> projects = Arrays.asList(new Project("project id", "project name"));
-        DayOverview shouldEqual = new DayOverview(new Date(1234), projects);
-        shouldEqual.setTotalHours(42);
-        shouldEqual.setTimeSheetEntries(new ArrayList<TimeSheetEntry>());
+        DayOverview compare = new DayOverview(new Date(1234), projects, true);
+        compare.setTotalHours(42);
+        compare.setTimeSheetEntries(new ArrayList<TimeSheetEntry>());
+        assertTrue(mOverview.equals(compare));
 
-        assertTrue(mOverview.equals(shouldEqual));
-        shouldEqual.setTotalHours(2);
+        compare.setTotalHours(13);
+        assertFalse(mOverview.equals(compare));
+        compare.setTotalHours(42);
+        assertTrue(mOverview.equals(compare));
 
-        assertFalse(mOverview.equals(shouldEqual));
-        shouldEqual.setTotalHours(42);
-        assertTrue(mOverview.equals(shouldEqual));
+        compare.getTimeSheetEntries().add(new TimeSheetEntry(null, null, null, null));
+        assertFalse(mOverview.equals(compare));
+        compare.getTimeSheetEntries().clear();
+        assertTrue(mOverview.equals(compare));
 
-        shouldEqual.getTimeSheetEntries().add(new TimeSheetEntry(null, null, null, null));
-        assertFalse(mOverview.equals(shouldEqual));
-        shouldEqual.getTimeSheetEntries().clear();
-        assertTrue(mOverview.equals(shouldEqual));
+        compare.setEditable(false);
+        assertFalse(mOverview.equals(compare));
+        compare.setEditable(true);
+        assertTrue(mOverview.equals(compare));
 
-        DayOverview shouldNotEqual = new DayOverview(new Date(1234), new ArrayList<Project>());
+        DayOverview shouldNotEqual = new DayOverview(new Date(1234), new ArrayList<Project>(),
+                true);
         shouldNotEqual.setTotalHours(42);
         shouldNotEqual.setTimeSheetEntries(new ArrayList<TimeSheetEntry>());
         assertFalse(mOverview.equals(shouldNotEqual));

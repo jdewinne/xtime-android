@@ -32,14 +32,17 @@ public class DayOverview implements Parcelable {
     private double mTotalHours;
     private List<TimeSheetEntry> mTimeSheetEntries;
     private List<Project> mProjects;
+    private boolean mEditable;
 
     /**
      * @param date     Day of this overview
      * @param projects List of available projects for this day
+     * @param editable <code>true</code> if the time sheet for this day is not sent to Afas yet
      */
-    public DayOverview(Date date, List<Project> projects) {
+    public DayOverview(Date date, List<Project> projects, boolean editable) {
         mDate = date;
         mProjects = projects;
+        mEditable = editable;
         mTimeSheetEntries = new ArrayList<TimeSheetEntry>();
     }
 
@@ -50,6 +53,7 @@ public class DayOverview implements Parcelable {
         parcel.readTypedList(mTimeSheetEntries, TimeSheetEntry.CREATOR);
         mProjects = new ArrayList<Project>();
         parcel.readTypedList(mProjects, Project.CREATOR);
+        mEditable = parcel.readInt() > 0;
     }
 
     /**
@@ -92,6 +96,17 @@ public class DayOverview implements Parcelable {
         mTimeSheetEntries = timeSheetEntries;
     }
 
+    /**
+     * @return <code>true</code> if the data for this day is not transferred to Afas yet
+     */
+    public boolean isEditable() {
+        return mEditable;
+    }
+
+    public void setEditable(boolean editable) {
+        mEditable = editable;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -103,6 +118,7 @@ public class DayOverview implements Parcelable {
         parcel.writeDouble(mTotalHours);
         parcel.writeTypedList(mTimeSheetEntries);
         parcel.writeTypedList(mProjects);
+        parcel.writeInt(mEditable ? 1 : 0);
     }
 
     @Override
@@ -111,8 +127,10 @@ public class DayOverview implements Parcelable {
             return mDate.equals(((DayOverview) o).getDate()) &&
                     mTotalHours == ((DayOverview) o).getTotalHours() &&
                     mProjects.equals(((DayOverview) o).getProjects()) &&
-                    mTimeSheetEntries.equals(((DayOverview) o).getTimeSheetEntries());
+                    mTimeSheetEntries.equals(((DayOverview) o).getTimeSheetEntries()) &&
+                    mEditable == ((DayOverview) o).isEditable();
         }
         return super.equals(o);
     }
+
 }
