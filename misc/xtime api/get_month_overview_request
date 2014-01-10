@@ -1,0 +1,22 @@
+POST /xtime/dwr/call/plaincall/TimeEntryServiceBean.getMonthOverview.dwr HTTP/1.1
+Host: xtime.xebia.com
+Connection: keep-alive
+Content-Length: 223
+Origin: https://xtime.xebia.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/31.0.1650.63 Chrome/31.0.1650.63 Safari/537.36
+Content-Type: text/plain
+Accept: */*
+Referer: https://xtime.xebia.com/xtime/monthlyApprove.html
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: en-US,en;q=0.8,nl-NL;q=0.6,nl;q=0.4
+Cookie: username=smulder; JSESSIONID=A8FF4C88C31187DD3116142CC0C9D9F3; SPRING_SECURITY_REMEMBER_ME_COOKIE=c211bGRlcjoxMzkwNTU3NTMwODg3OjQ1MjdkYjQ0M2RlNGIzODZkODBjZjY5MjBmOGY1YTdk; __utma=179778477.1005742500.1387812972.1387812972.1388740233.2; __utmz=179778477.1387812972.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)
+
+callCount=1
+page=/xtime/monthlyApprove.html
+httpSessionId=
+scriptSessionId=93551DB088154586D1CF697F3E6DEB9E831
+c0-scriptName=TimeEntryServiceBean
+c0-methodName=getMonthOverview
+c0-id=0
+c0-param0=string:2014-01-01
+batchId=0
