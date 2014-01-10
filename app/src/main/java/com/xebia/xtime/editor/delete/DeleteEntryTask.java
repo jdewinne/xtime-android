@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 
 import com.xebia.xtime.shared.model.TimeSheetEntry;
 
+import org.apache.http.auth.AuthenticationException;
+
 /**
  * Asynchronous task to delete a time sheet entry
  */
@@ -21,8 +23,12 @@ public class DeleteEntryTask extends AsyncTask<TimeSheetEntry, Void, Boolean> {
             throw new NullPointerException("Missing TimeSheetEntry parameter");
         }
 
-        String response = new DeleteEntryRequest(params[0]).submit();
-        return DeleteEntryResponseParser.parse(response);
+        try {
+            String response = new DeleteEntryRequest(params[0]).submit();
+            return DeleteEntryResponseParser.parse(response);
+        } catch (AuthenticationException e) {
+            return null;
+        }
     }
 
     @Override

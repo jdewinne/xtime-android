@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 
 import com.xebia.xtime.shared.model.TimeSheetEntry;
 
+import org.apache.http.auth.AuthenticationException;
+
 /**
  * Asynchronous task to save the changes to a time sheet entry
  */
@@ -20,7 +22,14 @@ public class SaveEntryTask extends AsyncTask<TimeSheetEntry, Void, Boolean> {
         if (null == params || params.length < 1) {
             throw new NullPointerException("Missing TimeSheetEntry parameter");
         }
-        return new SaveTimeSheetRequest(params[0]).submit();
+
+        try {
+            new SaveTimeSheetRequest(params[0]).submit();
+        } catch (AuthenticationException e) {
+            return null;
+        }
+
+        return true;
     }
 
     @Override

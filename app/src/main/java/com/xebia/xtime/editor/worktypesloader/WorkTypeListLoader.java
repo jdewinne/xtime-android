@@ -6,6 +6,8 @@ import android.support.v4.content.AsyncTaskLoader;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.WorkType;
 
+import org.apache.http.auth.AuthenticationException;
+
 import java.util.Date;
 import java.util.List;
 
@@ -22,8 +24,12 @@ public class WorkTypeListLoader extends AsyncTaskLoader<List<WorkType>> {
 
     @Override
     public List<WorkType> loadInBackground() {
-        String response = new WorkTypesForProjectRequest(mProject, mDate).submit();
-        return WorkTypeListParser.parse(response);
+        try {
+            String response = new WorkTypesForProjectRequest(mProject, mDate).submit();
+            return WorkTypeListParser.parse(response);
+        } catch (AuthenticationException e) {
+            return null;
+        }
     }
 
     @Override

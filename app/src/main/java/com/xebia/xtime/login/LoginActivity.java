@@ -20,6 +20,8 @@ import android.widget.Toast;
 
 import com.xebia.xtime.R;
 
+import org.apache.http.auth.AuthenticationException;
+
 /**
  * Activity which displays a login screen to the user
  */
@@ -180,7 +182,13 @@ public class LoginActivity extends ActionBarActivity {
             mUsername = params[0];
             mPassword = params[1];
 
-            return new LoginRequest(mUsername, mPassword).submit();
+            try {
+                new LoginRequest(mUsername, mPassword).submit();
+            } catch (AuthenticationException e) {
+                return false;
+            }
+
+            return true;
         }
 
         @Override

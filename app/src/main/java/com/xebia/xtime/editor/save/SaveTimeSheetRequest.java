@@ -1,18 +1,10 @@
 package com.xebia.xtime.editor.save;
 
-import android.util.Log;
-
 import com.xebia.xtime.shared.XTimeRequest;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
-import java.security.GeneralSecurityException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -23,56 +15,14 @@ import java.util.TimeZone;
 public class SaveTimeSheetRequest extends XTimeRequest {
 
     private static final String XTIME_URL = "https://xtime.xebia.com/xtime/entryform.html";
-    private static final String TAG = "SaveTimeSheetRequest";
     private final TimeSheetEntry mTimeSheetEntry;
 
     public SaveTimeSheetRequest(TimeSheetEntry timeSheetEntry) {
         mTimeSheetEntry = timeSheetEntry;
     }
 
-    /**
-     * Submits the request.
-     *
-     * @return <code>true</code> if save was successful, <code>false</code> if the save was
-     * denied, or <code>null</code> if the request failed for another reason.
-     */
-    public Boolean submit() {
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL(XTIME_URL);
-
-            // blindly trust all certificates
-            trustAllCertificates();
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-            // do not follow redirects, we use the Location header to see if the request was OK
-            urlConnection.setInstanceFollowRedirects(false);
-
-            // write request data
-            urlConnection.setDoOutput(true);
-            urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
-            writeCredentials(out);
-
-            // request was successful if the Location header does not redirect to an error page
-            String location = urlConnection.getHeaderField("Location");
-            return location != null && !location.contains("error=true");
-
-        } catch (IOException e) {
-            Log.w(TAG, "Save request failed", e);
-            return null;
-        } catch (GeneralSecurityException e) {
-            Log.e(TAG, "Security problem performing request", e);
-            return null;
-        } finally {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-        }
-    }
-
-    public String getRequestData() throws UnsupportedEncodingException {
+    @Override
+    public String getRequestData() {
 
         String data = "";
 
@@ -103,11 +53,17 @@ public class SaveTimeSheetRequest extends XTimeRequest {
         entryCal.setTime(mTimeSheetEntry.getTimeCell().getEntryDate());
         entryCal.setTimeZone(TimeZone.getTimeZone("CET")); // use central european time
         int entryWeekDay = entryCal.get(Calendar.DAY_OF_WEEK);
+        String description = "";
+        try {
+            description = URLEncoder.encode(mTimeSheetEntry.getDescription(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // should never happen
+        }
         String hours = NumberFormat.getNumberInstance().format(mTimeSheetEntry.getTimeCell
                 ().getHours());
         data += "&projectId=" + mTimeSheetEntry.getProject().getId() +
                 "&workType=" + mTimeSheetEntry.getWorkType().getId() +
-                "&description=" + URLEncoder.encode(mTimeSheetEntry.getDescription(), "UTF-8") +
+                "&description=" + description +
                 "&monday=" + (entryWeekDay == Calendar.MONDAY ? hours : "") +
                 "&tuesday=" + (entryWeekDay == Calendar.TUESDAY ? hours : "") +
                 "&wednesday=" + (entryWeekDay == Calendar.WEDNESDAY ? hours : "") +
@@ -138,10 +94,8 @@ public class SaveTimeSheetRequest extends XTimeRequest {
         return data;
     }
 
-    private void writeCredentials(OutputStream out) throws IOException {
-        String data = getRequestData();
-        out.write(data.getBytes());
-        out.flush();
-        out.close();
+    @Override
+    public String getUrl() {
+        return XTIME_URL;
     }
 }

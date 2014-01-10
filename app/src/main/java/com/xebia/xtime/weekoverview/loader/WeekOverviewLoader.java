@@ -5,6 +5,8 @@ import android.support.v4.content.AsyncTaskLoader;
 
 import com.xebia.xtime.shared.model.WeekOverview;
 
+import org.apache.http.auth.AuthenticationException;
+
 import java.util.Date;
 
 public class WeekOverviewLoader extends AsyncTaskLoader<WeekOverview> {
@@ -18,8 +20,12 @@ public class WeekOverviewLoader extends AsyncTaskLoader<WeekOverview> {
 
     @Override
     public WeekOverview loadInBackground() {
-        String response = new WeekOverviewRequest(mDate).submit();
-        return WeekOverviewParser.parse(response);
+        try {
+            String response = new WeekOverviewRequest(mDate).submit();
+            return WeekOverviewParser.parse(response);
+        } catch (AuthenticationException e) {
+            return null;
+        }
     }
 
     @Override
