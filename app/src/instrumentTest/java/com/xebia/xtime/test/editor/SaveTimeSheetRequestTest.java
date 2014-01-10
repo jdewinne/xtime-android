@@ -8,7 +8,6 @@ import com.xebia.xtime.shared.model.WorkType;
 
 import junit.framework.TestCase;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 public class SaveTimeSheetRequestTest extends TestCase {
@@ -68,12 +67,7 @@ public class SaveTimeSheetRequestTest extends TestCase {
                 timeCell);
         SaveTimeSheetRequest request = new SaveTimeSheetRequest(timeSheetEntry);
 
-        String data = null;
-        try {
-            data = request.getRequestData();
-        } catch (UnsupportedEncodingException e) {
-            // should not happen
-        }
+        String data = request.getRequestData();
 
         assertEquals(EXPECTED, data);
     }
