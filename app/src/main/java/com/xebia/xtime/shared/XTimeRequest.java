@@ -25,6 +25,8 @@ import javax.net.ssl.X509TrustManager;
 public abstract class XTimeRequest {
 
     private static final String TAG = "XTimeRequest";
+    public static final String CONTENT_TYPE_PLAIN = "text/plain";
+    public static final String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
 
     /**
      * Submits the request. Does preliminary work if required, e.g. circumventing the SSL
@@ -52,8 +54,7 @@ public abstract class XTimeRequest {
             // write request data
             if (!TextUtils.isEmpty(getRequestData())) {
                 urlConnection.setDoOutput(true);
-                urlConnection.setRequestProperty("Content-Type",
-                        "application/x-www-form-urlencoded");
+                urlConnection.setRequestProperty("Content-Type", getContentType());
                 OutputStream out = new BufferedOutputStream(urlConnection.getOutputStream());
                 writeStream(out);
             }
@@ -80,16 +81,6 @@ public abstract class XTimeRequest {
             }
         }
     }
-
-    /**
-     * @return The URL to connect to.
-     */
-    public abstract String getUrl();
-
-    /**
-     * @return The request data, or <code>null</code> if there is no data to be transmitted.
-     */
-    public abstract String getRequestData();
 
     private boolean shouldHackSsl() {
         // TODO: Create preference to toggle SSL hack
@@ -145,4 +136,20 @@ public abstract class XTimeRequest {
         }
         return responseContent.toString();
     }
+
+    /**
+     * @return The content type of the request data, or <code>null</code> if there is no data to
+     * be transmitted.
+     */
+    public abstract String getContentType();
+
+    /**
+     * @return The request data, or <code>null</code> if there is no data to be transmitted.
+     */
+    public abstract String getRequestData();
+
+    /**
+     * @return The URL to connect to.
+     */
+    public abstract String getUrl();
 }

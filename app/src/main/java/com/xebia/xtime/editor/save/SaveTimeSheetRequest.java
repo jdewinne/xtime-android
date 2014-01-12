@@ -22,6 +22,11 @@ public class SaveTimeSheetRequest extends XTimeRequest {
     }
 
     @Override
+    public String getContentType() {
+        return CONTENT_TYPE_FORM;
+    }
+
+    @Override
     public String getRequestData() {
 
         String data = "";

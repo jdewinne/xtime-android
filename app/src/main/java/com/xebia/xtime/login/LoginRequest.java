@@ -37,6 +37,11 @@ public class LoginRequest extends XTimeRequest {
     }
 
     @Override
+    public String getContentType() {
+        return CONTENT_TYPE_FORM;
+    }
+
+    @Override
     public String getRequestData() {
         String username = null;
         String password = null;

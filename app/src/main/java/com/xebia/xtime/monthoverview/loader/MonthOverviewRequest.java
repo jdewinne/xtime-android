@@ -19,6 +19,11 @@ public class MonthOverviewRequest extends XTimeRequest {
     }
 
     @Override
+    public String getContentType() {
+        return CONTENT_TYPE_PLAIN;
+    }
+
+    @Override
     public String getRequestData() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
