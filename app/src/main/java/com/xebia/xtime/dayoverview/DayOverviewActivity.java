@@ -126,30 +126,17 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
     private void onEntryDeleted(TimeSheetEntry deleted) {
         int index = mOverview.getTimeSheetEntries().indexOf(deleted);
         mOverview.getTimeSheetEntries().remove(index);
-
-        // notify the list view
-        DailyTimeSheetFragment fragment = (DailyTimeSheetFragment) getSupportFragmentManager()
-                .findFragmentByTag("tag");
-        fragment.onDataSetChanged();
+        onDataSetChanged();
     }
 
     private void onEntryEdited(TimeSheetEntry edited) {
-        // update the time
         mSelectedEntry.getTimeCell().setHours(edited.getTimeCell().getHours());
-
-        // notify the list view
-        DailyTimeSheetFragment fragment = (DailyTimeSheetFragment) getSupportFragmentManager()
-                .findFragmentByTag("tag");
-        fragment.onDataSetChanged();
+        onDataSetChanged();
     }
 
     private void onEntryCreated(TimeSheetEntry created) {
         mOverview.getTimeSheetEntries().add(created);
-
-        // notify the list view
-        DailyTimeSheetFragment fragment = (DailyTimeSheetFragment) getSupportFragmentManager()
-                .findFragmentByTag("tag");
-        fragment.onDataSetChanged();
+        onDataSetChanged();
     }
 
     @TargetApi(18)
@@ -162,5 +149,14 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
         DateFormat dateFormat = new SimpleDateFormat(pattern, locale);
         dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
         return dateFormat.format(mOverview.getDate());
+    }
+
+    /**
+     * Notifies the list fragment that the data set changed and the list might have to be updated.
+     */
+    private void onDataSetChanged() {
+        DailyTimeSheetFragment fragment = (DailyTimeSheetFragment) getSupportFragmentManager()
+                .findFragmentByTag("tag");
+        fragment.onDataSetChanged();
     }
 }
