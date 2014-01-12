@@ -42,7 +42,6 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_day_overview);
 
         // get the day overview
         mOverview = getIntent().getParcelableExtra(EXTRA_DAY_OVERVIEW);
@@ -55,7 +54,7 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
             ArrayList<TimeSheetEntry> timeSheets = (ArrayList<TimeSheetEntry>) mOverview
                     .getTimeSheetEntries();
             Fragment fragment = DailyTimeSheetFragment.getInstance(timeSheets);
-            getSupportFragmentManager().beginTransaction().add(R.id.container, fragment,
+            getSupportFragmentManager().beginTransaction().add(android.R.id.content, fragment,
                     "tag").commit();
         }
 
