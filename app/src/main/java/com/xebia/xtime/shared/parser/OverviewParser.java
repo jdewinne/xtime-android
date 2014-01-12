@@ -1,4 +1,4 @@
-package com.xebia.xtime.weekoverview.loader;
+package com.xebia.xtime.shared.parser;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -16,17 +16,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Parser for the response to a {@link WeekOverviewRequest}. Uses regular expression acrobatics
+ * Parser for the response to a overview request from XTime. Uses regular expression acrobatics
  * to parse the JavaScript that is returned.
+ *
+ * @see {@link com.xebia.xtime.weekoverview.loader.WeekOverviewRequest}
+ * @see {@link com.xebia.xtime.monthoverview.loader.MonthOverviewRequest}
  */
-public class WeekOverviewParser {
+public class OverviewParser {
 
-    private static final String TAG = "WeekOverviewParser";
+    private static final String TAG = "OverviewParser";
 
     /**
-     * Parses the input from a {@link WeekOverviewRequest} into a {@link WeekOverview}.
+     * Parses the input from a WeekOverviewRequest or MonthOverviewRequest into a {@link
+     * WeekOverview}.
      *
-     * @param input String with the JavaScript code that is returned to a WeekOverviewRequest.
+     * @param input String with the JavaScript code that is returned to an overview request.
      * @return The week overview, or <code>null</code> when the input could not be parsed
      */
     public static WeekOverview parse(String input) {
@@ -58,7 +62,8 @@ public class WeekOverviewParser {
             String username = matcher.group(5);
             // String weekendDatesVar = matcher.group(6);
             // String weekStart = matcher.group(7);
-            return new WeekOverview(timeSheetRows, projects, username, monthlyDataApproved, new Date(lastTransferredDate));
+            return new WeekOverview(timeSheetRows, projects, username, monthlyDataApproved,
+                    new Date(lastTransferredDate));
 
         } else {
             Log.d(TAG, "Failed to parse input '" + input + "'");

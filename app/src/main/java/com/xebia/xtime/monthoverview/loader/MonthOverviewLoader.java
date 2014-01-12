@@ -1,4 +1,4 @@
-package com.xebia.xtime.weekoverview.loader;
+package com.xebia.xtime.monthoverview.loader;
 
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
@@ -10,19 +10,19 @@ import org.apache.http.auth.AuthenticationException;
 
 import java.util.Date;
 
-public class WeekOverviewLoader extends AsyncTaskLoader<WeekOverview> {
+public class MonthOverviewLoader extends AsyncTaskLoader<WeekOverview> {
 
-    private final Date mDate;
+    private final Date mMonth;
 
-    public WeekOverviewLoader(Context context, Date date) {
+    public MonthOverviewLoader(Context context, Date month) {
         super(context);
-        mDate = date;
+        mMonth = month;
     }
 
     @Override
     public WeekOverview loadInBackground() {
         try {
-            String response = new WeekOverviewRequest(mDate).submit();
+            String response = new MonthOverviewRequest(mMonth).submit();
             return OverviewParser.parse(response);
         } catch (AuthenticationException e) {
             return null;
