@@ -9,16 +9,16 @@ import android.view.ViewGroup;
 import com.xebia.xtime.R;
 import com.xebia.xtime.shared.FragmentWithChildFragmentManager;
 
-public class WeekOverviewFragment extends FragmentWithChildFragmentManager {
+public class WeekPagerFragment extends FragmentWithChildFragmentManager {
 
-    public WeekOverviewFragment() {
+    public WeekPagerFragment() {
         // required default constructor
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_week_overview, container, false);
+        View view = inflater.inflate(R.layout.fragment_week_pager, container, false);
         if (view != null) {
             ViewPager pager = (ViewPager) view.findViewById(R.id.pager);
             pager.setAdapter(new WeekPagerAdapter(getChildFragmentManager()));

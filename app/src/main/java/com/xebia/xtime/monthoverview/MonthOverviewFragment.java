@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -31,6 +33,7 @@ public class MonthOverviewFragment extends Fragment implements LoaderManager
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(0, null, this);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -46,5 +49,11 @@ public class MonthOverviewFragment extends Fragment implements LoaderManager
     @Override
     public void onLoaderReset(Loader<WeekOverview> weekOverviewLoader) {
         // nothing to do
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.add("foo");
     }
 }

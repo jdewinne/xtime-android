@@ -4,10 +4,9 @@
     android:id="@+id/pager"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.xebia.xtime.weekoverview.WeekOverviewActivity"
-    tools:ignore="MergeRootFrame">
+    tools:context=".OverviewActivity">
 
-    <android.support.v4.view.PagerTabStrip
+<android.support.v4.view.PagerTabStrip
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

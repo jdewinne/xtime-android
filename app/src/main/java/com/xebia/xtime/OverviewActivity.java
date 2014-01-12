@@ -13,7 +13,7 @@ import com.xebia.xtime.login.LoginActivity;
 import com.xebia.xtime.monthoverview.MonthOverviewFragment;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.weekoverview.DailyHoursListFragment;
-import com.xebia.xtime.weekoverview.WeekOverviewFragment;
+import com.xebia.xtime.weekoverview.WeekPagerFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
         final List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("title", getString(R.string.title_week_overview));
-        map.put("fragment", Fragment.instantiate(this, WeekOverviewFragment.class.getName()));
+        map.put("fragment", Fragment.instantiate(this, WeekPagerFragment.class.getName()));
         data.add(map);
         map = new HashMap<String, Object>();
         map.put("title", getString(R.string.title_month_overview));
