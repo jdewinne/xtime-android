@@ -51,6 +51,9 @@ public abstract class XTimeRequest {
             // do not follow redirects, we use the Location header to see if the request was OK
             urlConnection.setInstanceFollowRedirects(false);
 
+            urlConnection.setConnectTimeout(15000);
+            urlConnection.setReadTimeout(15000);
+
             // write request data
             if (!TextUtils.isEmpty(getRequestData())) {
                 urlConnection.setDoOutput(true);
@@ -70,7 +73,7 @@ public abstract class XTimeRequest {
             return readStream(in);
 
         } catch (IOException e) {
-            Log.w(TAG, "Save request failed", e);
+            Log.w(TAG, "Failed to connect to XTime", e);
             return null;
         } catch (GeneralSecurityException e) {
             Log.e(TAG, "Failed to set custom SSL certificate manager", e);
