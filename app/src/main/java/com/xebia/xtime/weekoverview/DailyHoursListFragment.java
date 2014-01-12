@@ -6,12 +6,9 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.format.DateUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.shared.model.DayOverview;
@@ -41,7 +38,6 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     private Date mStartDate;
     private WeekOverview mOverview;
     private Listener mListener;
-    private View mBusyIndicator;
     private List<DayOverview> mDays;
 
     public DailyHoursListFragment() {
@@ -73,29 +69,13 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        mDays = new ArrayList<DayOverview>();
-        setListAdapter(new DailyHoursListAdapter(getActivity(), mDays));
-
-        getLoaderManager().initLoader(0, null, this);
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mStartDate = new Date(getArguments().getLong(ARG_START_DATE, -1));
         }
-    }
+        setEmptyText(getText(R.string.empty_week_overview));
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.list_daily_hours, container, false);
-        if (null != view) {
-            mBusyIndicator = view.findViewById(R.id.week_overview_busy);
-        }
-        return view;
+        // start loading the week overview
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -121,26 +101,26 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     }
 
     @Override
-    public Loader<WeekOverview> onCreateLoader(int i, Bundle bundle) {
-        showLoadingIndicator(true);
+    public Loader<WeekOverview> onCreateLoader(int id, Bundle args) {
         return new WeekOverviewLoader(getActivity(), mStartDate);
     }
 
     @Override
     public void onLoadFinished(Loader<WeekOverview> loader, WeekOverview overview) {
-        showLoadingIndicator(false);
-
         mOverview = overview;
         updateList();
     }
 
     private void updateList() {
-        mDays.clear();
+        if (null == mDays) {
+            mDays = new ArrayList<DayOverview>();
+            setListAdapter(new DailyHoursListAdapter(getActivity(), mDays));
+        } else {
+            mDays.clear();
+        }
+
         if (null != mOverview && null != mOverview.getTimeSheetRows()) {
             mDays.addAll(TimeSheetUtils.weekToDays(mOverview, mStartDate));
-        }
-        if (mDays.size() <= 0) {
-            Toast.makeText(getActivity(), R.string.empty_week_overview, Toast.LENGTH_LONG).show();
         }
         ((ArrayAdapter) getListAdapter()).notifyDataSetChanged();
     }
@@ -148,18 +128,6 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     @Override
     public void onLoaderReset(Loader<WeekOverview> loader) {
         mDays.clear();
-    }
-
-    private void showLoadingIndicator(final boolean busy) {
-        if (null != getActivity()) {
-            getActivity().runOnUiThread(new Thread() {
-                @Override
-                public void run() {
-                    getListView().setVisibility(busy ? View.GONE : View.VISIBLE);
-                    mBusyIndicator.setVisibility(busy ? View.VISIBLE : View.GONE);
-                }
-            });
-        }
     }
 
     /**
