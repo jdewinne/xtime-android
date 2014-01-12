@@ -30,9 +30,12 @@
         <item name="actionModeSplitBackground">@drawable/cab_background_bottom_xebia</item>
         <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Xebia</item>
 
-                <!-- Light.DarkActionBar specific -->
+        <!-- Light.DarkActionBar specific -->
         <item name="actionBarWidgetTheme">@style/Theme.Xebia.Widget</item>
 
+        <!-- Invert text appearance for spinner dropdown items (fixes action bar dropdown style) -->
+        <item name="android:spinnerDropDownItemStyle">@style/Widget.DropDownItem.Spinner.Xebia
+        </item>
     </style>
 
     <style name="ActionBar.Solid.Xebia" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
@@ -46,11 +49,11 @@
         <item name="background">@drawable/ab_transparent_xebia</item>
         <item name="progressBarStyle">@style/ProgressBar.Xebia</item>
     </style>
-	
-    <style name="PopupMenu.Xebia" parent="@style/Widget.AppCompat.PopupMenu">	
-        <item name="android:popupBackground">@drawable/menu_dropdown_panel_xebia</item>	
+
+    <style name="PopupMenu.Xebia" parent="@style/Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_xebia</item>
     </style>
-	
+
     <style name="DropDownListView.Xebia" parent="@style/Widget.AppCompat.ListView.DropDown">
         <item name="android:listSelector">@drawable/selectable_background_xebia</item>
     </style>
@@ -58,25 +61,30 @@
     <style name="ActionBarTabStyle.Xebia" parent="@style/Widget.AppCompat.ActionBar.TabView">
         <item name="android:background">@drawable/tab_indicator_ab_xebia</item>
     </style>
-	
+
     <style name="DropDownNav.Xebia" parent="@style/Widget.AppCompat.Spinner.DropDown.ActionBar">
         <item name="android:background">@drawable/spinner_background_ab_xebia</item>
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_xebia</item>
         <item name="android:dropDownSelector">@drawable/selectable_background_xebia</item>
     </style>
-    
+
     <style name="ProgressBar.Xebia" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/progress_horizontal_xebia</item>
     </style>
-    
+
     <style name="ActionButton.CloseMode.Xebia" parent="@style/Widget.AppCompat.ActionButton.CloseMode">
         <item name="android:background">@drawable/btn_cab_done_xebia</item>
     </style>
-    
+
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
     <style name="Theme.Xebia.Widget" parent="@style/Theme.AppCompat">
         <item name="popupMenuStyle">@style/PopupMenu.Xebia</item>
         <item name="dropDownListViewStyle">@style/DropDownListView.Xebia</item>
+    </style>
+
+    <!-- White text for spinner dropdown items -->
+    <style name="Widget.DropDownItem.Spinner.Xebia" parent="@style/Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textAppearance">?android:attr/textAppearanceInverse</item>
     </style>
 
 </resources>

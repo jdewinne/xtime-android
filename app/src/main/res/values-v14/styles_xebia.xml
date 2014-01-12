@@ -29,10 +29,13 @@
         <item name="android:actionModeBackground">@drawable/cab_background_top_xebia</item>
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_xebia</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Xebia</item>
-        
-                <!-- Light.DarkActionBar specific -->
+
+        <!-- Light.DarkActionBar specific -->
         <item name="android:actionBarWidgetTheme">@style/Theme.Xebia.Widget</item>
 
+        <!-- Invert text appearance for spinner dropdown items (fixes action bar dropdown style) -->
+        <item name="android:spinnerDropDownItemStyle">@style/Widget.DropDownItem.Spinner.Xebia
+        </item>
     </style>
 
     <style name="ActionBar.Solid.Xebia" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
@@ -46,7 +49,7 @@
         <item name="android:background">@drawable/ab_transparent_xebia</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Xebia</item>
     </style>
-    
+
     <!-- this style is only referenced in a Light.DarkActionBar based theme -->
     <style name="Theme.Xebia.Widget" parent="@style/Theme.AppCompat">
         <item name="android:popupMenuStyle">@style/PopupMenu.Xebia</item>
