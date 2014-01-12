@@ -5,19 +5,23 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TableLayout;
+import android.widget.TextView;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.monthoverview.loader.MonthOverviewLoader;
+import com.xebia.xtime.shared.model.TimeSheetRow;
 import com.xebia.xtime.shared.model.WeekOverview;
 
 import java.util.Date;
 
 public class MonthOverviewFragment extends Fragment implements LoaderManager
         .LoaderCallbacks<WeekOverview> {
+
+    private TableLayout mTable;
+    private WeekOverview mOverview;
 
     public MonthOverviewFragment() {
         // required default constructor
@@ -26,14 +30,22 @@ public class MonthOverviewFragment extends Fragment implements LoaderManager
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_month_overview, container, false);
+        View root = inflater.inflate(R.layout.fragment_month_overview, container, false);
+        if (null != root) {
+            mTable = (TableLayout) root.findViewById(R.id.table);
+        }
+        return root;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(0, null, this);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -43,7 +55,8 @@ public class MonthOverviewFragment extends Fragment implements LoaderManager
 
     @Override
     public void onLoadFinished(Loader<WeekOverview> weekOverviewLoader, WeekOverview weekOverview) {
-        // TODO: show fancy UI
+        mOverview = weekOverview;
+        updateTable();
     }
 
     @Override
@@ -51,9 +64,20 @@ public class MonthOverviewFragment extends Fragment implements LoaderManager
         // nothing to do
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        menu.add("foo");
+    private void updateTable() {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (TimeSheetRow timeSheet : mOverview.getTimeSheetRows()) {
+                    View row = getActivity().getLayoutInflater().inflate(R.layout
+                            .table_month_row, null, false);
+                    if (null != row) {
+                        TextView project = (TextView) row.findViewById(R.id.project);
+                        project.setText(timeSheet.getProject().getName());
+                        mTable.addView(row);
+                    }
+                }
+            }
+        });
     }
 }

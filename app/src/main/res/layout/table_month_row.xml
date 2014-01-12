@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TableRow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.xebia.xtime.OverviewActivity.MonthOverviewFragment"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    style="@style/MonthOverviewRow">
+
+    <TextView
+        android:id="@+id/project"
+        style="@style/MonthOverviewCell.ProjectCell"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_1"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_2"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_3"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_4"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_5"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_6"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_7"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_8"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_9"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_10"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_11"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_12"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_13"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_14"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_15"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_16"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_17"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_18"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_19"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_20"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_21"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_22"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_23"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_24"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_25"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_26"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_27"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_28"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_29"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_30"/>
+
+    <TextView
+        style="@style/MonthOverviewCell"
+        android:id="@+id/cell_31"/>
+</TableRow>

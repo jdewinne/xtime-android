@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TableRow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.xebia.xtime.OverviewActivity.MonthOverviewFragment"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    style="@style/MonthOverviewHeading">
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading.ProjectCell"
+        android:text="@string/project"
+        android:id="@+id/project"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="1"
+        android:id="@+id/cell_1"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="2"
+        android:id="@+id/cell_2"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="3"
+        android:id="@+id/cell_3"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="4"
+        android:id="@+id/cell_4"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="5"
+        android:id="@+id/cell_5"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="6"
+        android:id="@+id/cell_6"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="7"
+        android:id="@+id/cell_7"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="8"
+        android:id="@+id/cell_8"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="9"
+        android:id="@+id/cell_9"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="10"
+        android:id="@+id/cell_10"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="11"
+        android:id="@+id/cell_11"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="12"
+        android:id="@+id/cell_12"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="13"
+        android:id="@+id/cell_13"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="14"
+        android:id="@+id/cell_14"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="15"
+        android:id="@+id/cell_15"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="16"
+        android:id="@+id/cell_16"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="17"
+        android:id="@+id/cell_17"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="18"
+        android:id="@+id/cell_18"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="19"
+        android:id="@+id/cell_19"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="20"
+        android:id="@+id/cell_20"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="21"
+        android:id="@+id/cell_21"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="22"
+        android:id="@+id/cell_22"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="23"
+        android:id="@+id/cell_23"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="24"
+        android:id="@+id/cell_24"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="25"
+        android:id="@+id/cell_25"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="26"
+        android:id="@+id/cell_26"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="27"
+        android:id="@+id/cell_27"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="28"
+        android:id="@+id/cell_28"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="29"
+        android:id="@+id/cell_29"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="30"
+        android:id="@+id/cell_30"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        style="@style/MonthOverviewCell.Heading"
+        android:text="31"
+        android:id="@+id/cell_31"
+        tools:ignore="HardcodedText"/>
+</TableRow>
