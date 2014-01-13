@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
-import com.xebia.xtime.R;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
 
@@ -41,7 +40,6 @@ public class EditTimeSheetActivity extends ActionBarActivity implements EditTime
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_time_cell);
 
         Date date = new Date(getIntent().getLongExtra(EXTRA_DATE, -1));
         if (date.getTime() < 0) {
@@ -56,7 +54,7 @@ public class EditTimeSheetActivity extends ActionBarActivity implements EditTime
         TimeSheetEntry entry = getIntent().getParcelableExtra(EXTRA_TIME_SHEET);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().add(R.id.container,
+            getSupportFragmentManager().beginTransaction().add(android.R.id.content,
                     EditTimeSheetFragment.getInstance(date, projects, entry)).commit();
         }
     }
