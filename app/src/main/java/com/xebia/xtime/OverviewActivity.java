@@ -39,9 +39,7 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
             startActivityForResult(login, REQ_CODE_LOGIN);
         }
 
-        if (null == savedInstanceState) {
-            setListNavigation();
-        }
+        setListNavigation();
     }
 
     private void setListNavigation() {
