@@ -101,6 +101,8 @@ public class MonthOverviewFragment extends Fragment implements LoaderManager
                     ((TextView) row.findViewById(resId)).setText(hours);
                 }
 
+                highlightWeekends(row);
+
                 mTable.addView(row);
             }
         }
@@ -120,6 +122,20 @@ public class MonthOverviewFragment extends Fragment implements LoaderManager
             return -1;
         } catch (IllegalAccessException e) {
             return -1;
+        }
+    }
+
+    private void highlightWeekends(View row) {
+        final int highlightColor = getResources().getColor(R.color.month_weekend_background);
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("CET"));
+        calendar.setTime(new Date());
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        for (int i = 1; i < 32; i++) {
+            int weekDay = calendar.get(Calendar.DAY_OF_WEEK);
+            if (weekDay == Calendar.SATURDAY || weekDay == Calendar.SUNDAY) {
+                row.findViewById(getCellViewId(i)).setBackgroundColor(highlightColor);
+            }
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
     }
 }

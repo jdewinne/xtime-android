@@ -2,8 +2,9 @@
 <resources>
 
     <color name="xebia_purple">#663366</color>
-    <color name="month_table_background">#f3f3f3</color>
-    <color name="month_table_border">#e0e0e0</color>
+    <color name="month_table_background">#fff3f3f3</color>
+    <color name="month_table_border">#ffe0e0e0</color>
+    <color name="month_weekend_background">#DFD4DF</color>
 
     <style name="LoginFormContainer">
         <item name="android:layout_width">match_parent</item>
