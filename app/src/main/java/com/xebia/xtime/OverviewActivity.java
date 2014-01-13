@@ -56,7 +56,7 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
         map.put("fragment", Fragment.instantiate(this, MonthOverviewFragment.class.getName()));
         data.add(map);
         SimpleAdapter adapter = new SimpleAdapter(this, data,
-                android.R.layout.simple_spinner_dropdown_item, new String[]{"title"},
+                R.layout.ab_nav_dropdown, new String[]{"title"},
                 new int[]{android.R.id.text1});
 
         ActionBar actionBar = getSupportActionBar();

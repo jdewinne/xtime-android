@@ -32,10 +32,6 @@
 
         <!-- Light.DarkActionBar specific -->
         <item name="android:actionBarWidgetTheme">@style/Theme.Xebia.Widget</item>
-
-        <!-- Invert text appearance for spinner dropdown items (fixes action bar dropdown style) -->
-        <item name="android:spinnerDropDownItemStyle">@style/Widget.DropDownItem.Spinner.Xebia
-        </item>
     </style>
 
     <style name="ActionBar.Solid.Xebia" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
