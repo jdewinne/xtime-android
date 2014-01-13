@@ -14,7 +14,7 @@
 
     <style name="MonthOverviewCell">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">38dp</item>
+        <item name="android:layout_height">64dp</item>
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>
         <item name="android:minWidth">40dp</item>
@@ -25,14 +25,17 @@
         <item name="android:layout_marginBottom">1dp</item>
     </style>
 
-    <style name="MonthOverviewCell.ProjectCell">
+    <style name="MonthOverviewProjectCell">
         <item name="android:layout_width">200dp</item>
-        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
-        <item name="android:gravity">left|center_vertical</item>
-        <item name="android:singleLine">true</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:background">@color/month_table_background</item>
+        <item name="android:layout_marginRight">1dp</item>
+        <item name="android:layout_marginBottom">1dp</item>
     </style>
 
     <style name="MonthOverviewCell.Heading">
+        <!-- same height as view pager strip -->
+        <item name="android:layout_height">38dp</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textAppearance">?android:attr/textAppearanceInverse</item>
     </style>
@@ -50,6 +53,25 @@
 
     <style name="MonthOverviewHeading">
         <item name="android:background">@drawable/ab_stacked_solid_xebia</item>
+    </style>
+
+    <style name="MonthOverviewCell.Project">
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:gravity">left|bottom</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/xebia_purple</item>
+    </style>
+
+    <style name="MonthOverviewCell.WorkType">
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:gravity">left|top</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
 </resources>

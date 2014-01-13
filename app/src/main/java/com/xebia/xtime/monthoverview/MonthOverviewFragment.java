@@ -87,20 +87,17 @@ public class MonthOverviewFragment extends Fragment implements LoaderManager
                     .table_month_row, null, false);
             if (null != row) {
                 // set the project name in the first cell of the row
-                TextView project = (TextView) row.findViewById(R.id.project);
-                project.setText(timeSheet.getProject().getName());
+                TextView projectView = (TextView) row.findViewById(R.id.project);
+                projectView.setText(timeSheet.getProject().getName());
+
+                // set the work type in the first cell of the row
+                TextView workTypeView = (TextView) row.findViewById(R.id.work_type);
+                workTypeView.setText(timeSheet.getWorkType().getDescription());
 
                 // set the hours in the cells for the correct days
-                Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("CET"));
-                NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
-                for (TimeCell timeCell : timeSheet.getTimeCells()) {
-                    calendar.setTime(timeCell.getEntryDate());
-                    int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
-                    int resId = getCellViewId(dayOfMonth);
-                    String hours = numberFormat.format(timeCell.getHours());
-                    ((TextView) row.findViewById(resId)).setText(hours);
-                }
+                enterWorkHours(row, timeSheet);
 
+                // highlight cells for weekend days
                 highlightWeekends(row);
 
                 mTable.addView(row);
@@ -136,6 +133,18 @@ public class MonthOverviewFragment extends Fragment implements LoaderManager
                 row.findViewById(getCellViewId(i)).setBackgroundColor(highlightColor);
             }
             calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+    }
+
+    private void enterWorkHours(View row, TimeSheetRow timeSheet) {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("CET"));
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
+        for (TimeCell timeCell : timeSheet.getTimeCells()) {
+            calendar.setTime(timeCell.getEntryDate());
+            int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+            int resId = getCellViewId(dayOfMonth);
+            String hours = numberFormat.format(timeCell.getHours());
+            ((TextView) row.findViewById(resId)).setText(hours);
         }
     }
 }
