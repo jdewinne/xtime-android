@@ -82,4 +82,20 @@ public class TimeSheetUtils {
 
         return result;
     }
+
+    public static double getTotalHours(TimeSheetRow row) {
+        double total = 0;
+        for (TimeCell timeCell : row.getTimeCells()) {
+            total += timeCell.getHours();
+        }
+        return total;
+    }
+
+    public static double getGrandTotalHours(WeekOverview overview) {
+        double total = 0;
+        for (TimeSheetRow row : overview.getTimeSheetRows()) {
+            total += getTotalHours(row);
+        }
+        return total;
+    }
 }

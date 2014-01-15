@@ -1,0 +1,15 @@
+POST /xtime/monthlyApprove.html HTTP/1.1
+Host: xtime.xebia.com
+Connection: keep-alive
+Content-Length: 61
+Cache-Control: max-age=0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Origin: https://xtime.xebia.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36
+Content-Type: application/x-www-form-urlencoded
+Referer: https://xtime.xebia.com/xtime/monthlyApprove.html
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: en-US,en;q=0.8,nl-NL;q=0.6,nl;q=0.4
+Cookie: username=smulder; JSESSIONID=EEA258637E9D390E2AE8DC5779E39917; SPRING_SECURITY_REMEMBER_ME_COOKIE=c211bGRlcjoxMzkwODk3NzEzNTIwOjUzNWUyZDNjY2RlYWJiZTg0ZDkyYTVmMWU1M2Q2MTUx; _ga=GA1.2.69251742.1379142638; _hp2_id.2790962031=4600497982186508.0.0; __utma=179778477.69251742.1379142638.1384503004.1386581122.10; __utmz=179778477.1379142638.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); s_fid=0001184F49D05B24-3B6EB99660721A7C
+
+approvalMonthYear=2014-01-1&approve=Approve&inp_grandTotal=67
