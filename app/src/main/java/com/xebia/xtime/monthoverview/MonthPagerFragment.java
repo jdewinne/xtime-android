@@ -18,7 +18,7 @@ public class MonthPagerFragment extends FragmentWithChildFragmentManager {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_week_pager, container, false);
+        View view = inflater.inflate(R.layout.view_pager, container, false);
         if (view != null) {
             ViewPager pager = (ViewPager) view.findViewById(R.id.pager);
             pager.setAdapter(new MonthPagerAdapter(getChildFragmentManager()));
