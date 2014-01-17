@@ -36,4 +36,6 @@
     <!-- Strings related to month overview activity -->
     <string name="title_month_overview">Month Overview</string>
     <string name="project">Project</string>
+    <string name="empty_month_summary">Summary unavailable</string>
+    <string name="grand_total_label">Grand total</string>
 </resources>
