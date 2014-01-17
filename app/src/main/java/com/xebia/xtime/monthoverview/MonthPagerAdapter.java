@@ -1,12 +1,17 @@
 package com.xebia.xtime.monthoverview;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.util.SparseArray;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -20,11 +25,13 @@ public class MonthPagerAdapter extends FragmentPagerAdapter {
 
     public static final int START_INDEX = 11;
     public static final int COUNT = 13;
-    private SparseArray<Fragment> mFragments;
+    private final DateFormat mDateFormat;
+    private final SparseArray<Fragment> mFragments;
 
     public MonthPagerAdapter(FragmentManager fm) {
         super(fm);
         mFragments = new SparseArray<Fragment>();
+        mDateFormat = getDateFormat();
     }
 
     @Override
@@ -45,8 +52,7 @@ public class MonthPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        Date month = getMonth(position);
-        return MonthSummaryFragment.getTitle(month);
+        return mDateFormat.format(getMonth(position));
     }
 
     private Date getMonth(int index) {
@@ -67,5 +73,17 @@ public class MonthPagerAdapter extends FragmentPagerAdapter {
         calendar.clear(Calendar.MILLISECOND);
 
         return calendar.getTime();
+    }
+
+    @TargetApi(18)
+    private DateFormat getDateFormat() {
+        Locale locale = Locale.getDefault();
+        String pattern = "MMMM yyyy";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            pattern = android.text.format.DateFormat.getBestDateTimePattern(locale, pattern);
+        }
+        DateFormat dateFormat = new SimpleDateFormat(pattern, locale);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
+        return dateFormat;
     }
 }

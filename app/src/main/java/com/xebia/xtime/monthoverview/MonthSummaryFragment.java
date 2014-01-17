@@ -21,13 +21,10 @@ import com.xebia.xtime.shared.TimeSheetUtils;
 import com.xebia.xtime.shared.model.TimeSheetRow;
 import com.xebia.xtime.shared.model.WeekOverview;
 
-import java.text.DateFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class MonthSummaryFragment extends ListFragment implements LoaderManager
         .LoaderCallbacks<WeekOverview>, ApproveTask.Listener {
@@ -40,15 +37,6 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
 
     public MonthSummaryFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * @param month Date indicating the start of the week
-     * @return Title String of the fragment
-     */
-    public static String getTitle(Date month) {
-        DateFormat formatter = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-        return formatter.format(month);
     }
 
     /**
