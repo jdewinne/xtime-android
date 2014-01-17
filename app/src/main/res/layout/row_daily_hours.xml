@@ -1,55 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:paddingLeft="8dp"
-    android:paddingRight="8dp">
-
-    <LinearLayout
-        android:id="@+id/main"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/date"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Sat 14 Mar"
-            tools:ignore="HardcodedText"/>
-
-        <TextView
-            android:id="@+id/hours"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="3.25"
-            tools:ignore="HardcodedText"/>
-
-        <TextView
-            android:id="@+id/hours_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/hours_label"/>
-
-    </LinearLayout>
+    android:paddingRight="8dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/approved"
-        android:visibility="visible"
+        android:id="@+id/date"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Sat 14 Mar"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        android:id="@+id/hours"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/main"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="-6dp"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/approved"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="3.25"
+        tools:ignore="HardcodedText"/>
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/hours_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/hours_label"/>
+
+    <ImageView
+        android:id="@+id/approved"
+        android:src="@android:drawable/ic_lock_lock"
+        android:contentDescription="@string/approved"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+</LinearLayout>

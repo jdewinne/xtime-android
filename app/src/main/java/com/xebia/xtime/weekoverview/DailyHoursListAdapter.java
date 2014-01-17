@@ -3,7 +3,6 @@ package com.xebia.xtime.weekoverview;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.text.format.DateUtils;
@@ -31,15 +30,10 @@ import java.util.TimeZone;
 public class DailyHoursListAdapter extends ArrayAdapter<DayOverview> {
 
     private final DateFormat mDateFormat;
-    private final int mXebiaPurple;
 
     public DailyHoursListAdapter(Context context, List<DayOverview> data) {
         super(context, R.layout.row_daily_hours, R.id.hours, data);
-
         mDateFormat = getDateFormat();
-
-        Resources res = context.getResources();
-        mXebiaPurple = res.getColor(R.color.xebia_purple);
     }
 
     @Override
@@ -57,7 +51,7 @@ public class DailyHoursListAdapter extends ArrayAdapter<DayOverview> {
             TextView dateView = (TextView) row.findViewById(R.id.date);
             TextView hoursView = (TextView) row.findViewById(R.id.hours);
             TextView hoursLabelView = (TextView) row.findViewById(R.id.hours_label);
-            TextView approvedView = (TextView) row.findViewById(R.id.approved);
+            View approvedView = row.findViewById(R.id.approved);
 
             // update the view content
             DayOverview item = getItem(position);
@@ -66,11 +60,12 @@ public class DailyHoursListAdapter extends ArrayAdapter<DayOverview> {
             hoursView.setText(NumberFormat.getNumberInstance().format(item.getTotalHours()));
             approvedView.setVisibility(item.isEditable() ? View.GONE : View.VISIBLE);
             if (DateUtils.isToday(date.getTime())) {
-                row.setBackgroundColor(mXebiaPurple);
+                row.setBackgroundResource(R.drawable.ab_solid_xebia);
                 dateView.setTextColor(Color.WHITE);
                 hoursView.setTextColor(Color.WHITE);
                 hoursLabelView.setTextColor(Color.WHITE);
             } else if (date.getTime() > new Date().getTime()) {
+                row.setBackgroundResource(0);
                 dateView.setTextColor(Color.GRAY);
                 hoursView.setTextColor(Color.GRAY);
                 hoursLabelView.setTextColor(Color.GRAY);
