@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Workaround to fix issue displaying fragments in Gingerbread. -->
+<!-- The default layout and android.R.id.content do not work for Android older than 3.0 -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <!-- Add content programmatically -->
+</LinearLayout>

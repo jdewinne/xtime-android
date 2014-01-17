@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,6 +43,7 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.empty_container);
 
         // get the day overview
         mOverview = getIntent().getParcelableExtra(EXTRA_DAY_OVERVIEW);
@@ -54,8 +56,9 @@ public class DayOverviewActivity extends ActionBarActivity implements DailyTimeS
             ArrayList<TimeSheetEntry> timeSheets = (ArrayList<TimeSheetEntry>) mOverview
                     .getTimeSheetEntries();
             Fragment fragment = DailyTimeSheetFragment.getInstance(timeSheets);
-            getSupportFragmentManager().beginTransaction().add(android.R.id.content, fragment,
-                    "tag").commit();
+            FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+            tx.replace(R.id.content, fragment, "tag");
+            tx.commit();
         }
 
         // set up the title
