@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a row of days with registered work time in the {@link WeekOverview} form.
+ * Represents a row of days with registered work time in the {@link XTimeOverview} form.
  * <p/>
  * The days are represented by a list of {@link TimeCell}. Each row is also related to one specific
  * combination of a certain {@link Project}, a certain {@link WorkType},

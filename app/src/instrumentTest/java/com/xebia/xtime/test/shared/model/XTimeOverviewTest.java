@@ -5,8 +5,8 @@ import android.os.Parcel;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetRow;
-import com.xebia.xtime.shared.model.WeekOverview;
 import com.xebia.xtime.shared.model.WorkType;
+import com.xebia.xtime.shared.model.XTimeOverview;
 
 import junit.framework.TestCase;
 
@@ -15,9 +15,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class WeekOverviewTest extends TestCase {
+public class XTimeOverviewTest extends TestCase {
 
-    private WeekOverview mOverview;
+    private XTimeOverview mOverview;
 
     @Override
     protected void setUp() throws Exception {
@@ -31,7 +31,7 @@ public class WeekOverviewTest extends TestCase {
         String username = "username";
         final boolean approved = true;
         Date transferred = new Date(1234);
-        mOverview = new WeekOverview(timeSheetRows, projects, username, approved, transferred);
+        mOverview = new XTimeOverview(timeSheetRows, projects, username, approved, transferred);
     }
 
     public void testEquals() {
@@ -44,30 +44,30 @@ public class WeekOverviewTest extends TestCase {
         final boolean approved = true;
         Date transferred = new Date(1234);
 
-        assertTrue(mOverview.equals(new WeekOverview(timeSheetRows, projects, username, approved,
+        assertTrue(mOverview.equals(new XTimeOverview(timeSheetRows, projects, username, approved,
                 transferred)));
-        assertFalse(mOverview.equals(new WeekOverview(new ArrayList<TimeSheetRow>(), projects,
+        assertFalse(mOverview.equals(new XTimeOverview(new ArrayList<TimeSheetRow>(), projects,
                 username, approved, transferred)));
-        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, new ArrayList<Project>(),
+        assertFalse(mOverview.equals(new XTimeOverview(timeSheetRows, new ArrayList<Project>(),
                 username, approved, transferred)));
-        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, projects, "wrong", approved,
+        assertFalse(mOverview.equals(new XTimeOverview(timeSheetRows, projects, "wrong", approved,
                 transferred)));
-        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, projects, username, false,
+        assertFalse(mOverview.equals(new XTimeOverview(timeSheetRows, projects, username, false,
                 transferred)));
-        assertFalse(mOverview.equals(new WeekOverview(timeSheetRows, projects, username,
+        assertFalse(mOverview.equals(new XTimeOverview(timeSheetRows, projects, username,
                 approved, new Date(666))));
     }
 
     public void testParcelable() {
         Parcel in = Parcel.obtain();
         Parcel out = Parcel.obtain();
-        WeekOverview result = null;
+        XTimeOverview result = null;
         try {
             in.writeParcelable(mOverview, 0);
             byte[] bytes = in.marshall();
             out.unmarshall(bytes, 0, bytes.length);
             out.setDataPosition(0);
-            result = out.readParcelable(WeekOverview.class.getClassLoader());
+            result = out.readParcelable(XTimeOverview.class.getClassLoader());
         } finally {
             in.recycle();
             out.recycle();

@@ -13,7 +13,7 @@ import android.widget.ListView;
 import com.xebia.xtime.R;
 import com.xebia.xtime.shared.TimeSheetUtils;
 import com.xebia.xtime.shared.model.DayOverview;
-import com.xebia.xtime.shared.model.WeekOverview;
+import com.xebia.xtime.shared.model.XTimeOverview;
 import com.xebia.xtime.weekoverview.loader.WeekOverviewLoader;
 
 import java.text.DateFormat;
@@ -27,17 +27,17 @@ import java.util.Locale;
  * Fragment that represents a week as a list of days.
  * <p/>
  * When the activity is created, the fragment kicks off a AsyncTaskLoader to fetch the
- * WeekOverview from the XTime backend.
+ * XTimeOverview from the XTime backend.
  * <p/>
  * Each row shows the total amount of work that has been registered for that day. Clicking on a
  * day should open up the day details.
  */
 public class DailyHoursListFragment extends ListFragment implements LoaderManager
-        .LoaderCallbacks<WeekOverview> {
+        .LoaderCallbacks<XTimeOverview> {
 
     private static final String ARG_START_DATE = "start_date";
     private Date mStartDate;
-    private WeekOverview mOverview;
+    private XTimeOverview mOverview;
     private Listener mListener;
     private List<DayOverview> mDays;
 
@@ -102,12 +102,12 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     }
 
     @Override
-    public Loader<WeekOverview> onCreateLoader(int id, Bundle args) {
+    public Loader<XTimeOverview> onCreateLoader(int id, Bundle args) {
         return new WeekOverviewLoader(getActivity(), mStartDate);
     }
 
     @Override
-    public void onLoadFinished(Loader<WeekOverview> loader, WeekOverview overview) {
+    public void onLoadFinished(Loader<XTimeOverview> loader, XTimeOverview overview) {
         mOverview = overview;
         updateList();
     }
@@ -127,7 +127,7 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     }
 
     @Override
-    public void onLoaderReset(Loader<WeekOverview> loader) {
+    public void onLoaderReset(Loader<XTimeOverview> loader) {
         mDays.clear();
     }
 

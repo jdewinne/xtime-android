@@ -8,8 +8,8 @@ import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetEntry;
 import com.xebia.xtime.shared.model.TimeSheetRow;
-import com.xebia.xtime.shared.model.WeekOverview;
 import com.xebia.xtime.shared.model.WorkType;
+import com.xebia.xtime.shared.model.XTimeOverview;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,11 +29,11 @@ public class TimeSheetUtils {
      * Each day of the week gets a separate DayOverview model. The list of TimeSheetRows is split
      * up into separate TimeSheetEntries, which are stored in the correct DayOverview
      *
-     * @param overview  WeekOverview to split up
+     * @param overview  XTimeOverview to split up
      * @param startDate The date of the first day of the week
      * @return A list of 7 days
      */
-    public static List<DayOverview> weekToDays(WeekOverview overview, Date startDate) {
+    public static List<DayOverview> weekToDays(XTimeOverview overview, Date startDate) {
 
         Date lastTransferred = overview.getLastTransferred();
 
@@ -91,7 +91,7 @@ public class TimeSheetUtils {
         return total;
     }
 
-    public static double getGrandTotalHours(WeekOverview overview) {
+    public static double getGrandTotalHours(XTimeOverview overview) {
         double total = 0;
         for (TimeSheetRow row : overview.getTimeSheetRows()) {
             total += getTotalHours(row);

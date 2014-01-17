@@ -19,7 +19,7 @@ import com.xebia.xtime.monthoverview.approve.ApproveTask;
 import com.xebia.xtime.monthoverview.loader.MonthOverviewLoader;
 import com.xebia.xtime.shared.TimeSheetUtils;
 import com.xebia.xtime.shared.model.TimeSheetRow;
-import com.xebia.xtime.shared.model.WeekOverview;
+import com.xebia.xtime.shared.model.XTimeOverview;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -27,10 +27,10 @@ import java.util.Date;
 import java.util.List;
 
 public class MonthSummaryFragment extends ListFragment implements LoaderManager
-        .LoaderCallbacks<WeekOverview>, ApproveTask.Listener {
+        .LoaderCallbacks<XTimeOverview>, ApproveTask.Listener {
 
     private static final String ARG_MONTH = "month";
-    private WeekOverview mOverview;
+    private XTimeOverview mOverview;
     private List<TimeSheetRow> mRows;
     private Date mMonth;
     private View mFooterView;
@@ -140,18 +140,19 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
     }
 
     @Override
-    public Loader<WeekOverview> onCreateLoader(int id, Bundle args) {
+    public Loader<XTimeOverview> onCreateLoader(int id, Bundle args) {
         return new MonthOverviewLoader(getActivity(), mMonth);
     }
 
     @Override
-    public void onLoadFinished(Loader<WeekOverview> weekOverviewLoader, WeekOverview weekOverview) {
-        mOverview = weekOverview;
+    public void onLoadFinished(Loader<XTimeOverview> weekOverviewLoader,
+                               XTimeOverview XTimeOverview) {
+        mOverview = XTimeOverview;
         showList();
     }
 
     @Override
-    public void onLoaderReset(Loader<WeekOverview> weekOverviewLoader) {
+    public void onLoaderReset(Loader<XTimeOverview> weekOverviewLoader) {
         // nothing to do
     }
 

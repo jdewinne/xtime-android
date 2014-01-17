@@ -3,14 +3,14 @@ package com.xebia.xtime.weekoverview.loader;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
-import com.xebia.xtime.shared.model.WeekOverview;
-import com.xebia.xtime.shared.parser.OverviewParser;
+import com.xebia.xtime.shared.model.XTimeOverview;
+import com.xebia.xtime.shared.parser.XTimeOverviewParser;
 
 import org.apache.http.auth.AuthenticationException;
 
 import java.util.Date;
 
-public class WeekOverviewLoader extends AsyncTaskLoader<WeekOverview> {
+public class WeekOverviewLoader extends AsyncTaskLoader<XTimeOverview> {
 
     private final Date mDate;
 
@@ -20,10 +20,10 @@ public class WeekOverviewLoader extends AsyncTaskLoader<WeekOverview> {
     }
 
     @Override
-    public WeekOverview loadInBackground() {
+    public XTimeOverview loadInBackground() {
         try {
             String response = new WeekOverviewRequest(mDate).submit();
-            return OverviewParser.parse(response);
+            return XTimeOverviewParser.parse(response);
         } catch (AuthenticationException e) {
             return null;
         }

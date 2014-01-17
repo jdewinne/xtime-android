@@ -9,23 +9,23 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Represents an overview of time registrations for a given week.
+ * Represents an overview of time registrations.
  * <p/>
- * For each week there is a list of {@link TimeSheetRow} that the user already registered time in,
- * and a complete list of all {@link Project} that the user can possibly log time on.
+ * For each overview there is a list of {@link TimeSheetRow} that the user already registered
+ * time in, and a complete list of all {@link Project} that the user can possibly log time on.
  */
-public class WeekOverview implements Parcelable {
+public class XTimeOverview implements Parcelable {
 
-    public static final Creator<WeekOverview> CREATOR = new Creator<WeekOverview>() {
+    public static final Creator<XTimeOverview> CREATOR = new Creator<XTimeOverview>() {
 
         @Override
-        public WeekOverview createFromParcel(Parcel parcel) {
-            return new WeekOverview(parcel);
+        public XTimeOverview createFromParcel(Parcel parcel) {
+            return new XTimeOverview(parcel);
         }
 
         @Override
-        public WeekOverview[] newArray(int size) {
-            return new WeekOverview[size];
+        public XTimeOverview[] newArray(int size) {
+            return new XTimeOverview[size];
         }
     };
     private List<TimeSheetRow> mTimeSheetRows;
@@ -44,8 +44,8 @@ public class WeekOverview implements Parcelable {
      * @param lastTransferred     Date when the data was last sent to Afas (transferred data
      *                            cannot be edited)
      */
-    public WeekOverview(List<TimeSheetRow> timeSheetRows, List<Project> projects,
-                        String username, boolean monthlyDataApproved, Date lastTransferred) {
+    public XTimeOverview(List<TimeSheetRow> timeSheetRows, List<Project> projects,
+                         String username, boolean monthlyDataApproved, Date lastTransferred) {
         mProjects = projects;
         mTimeSheetRows = timeSheetRows;
         mUsername = username;
@@ -53,7 +53,7 @@ public class WeekOverview implements Parcelable {
         mLastTransferred = lastTransferred;
     }
 
-    protected WeekOverview(Parcel parcel) {
+    protected XTimeOverview(Parcel parcel) {
         mProjects = new ArrayList<Project>();
         parcel.readTypedList(mProjects, Project.CREATOR);
         mTimeSheetRows = new ArrayList<TimeSheetRow>();
@@ -130,12 +130,12 @@ public class WeekOverview implements Parcelable {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof WeekOverview) {
-            return mMonthlyDataApproved == ((WeekOverview) o).isMonthlyDataApproved() &&
-                    mLastTransferred.equals(((WeekOverview) o).getLastTransferred()) &&
-                    mProjects.equals(((WeekOverview) o).getProjects()) &&
-                    mTimeSheetRows.equals(((WeekOverview) o).getTimeSheetRows()) &&
-                    mUsername.equals(((WeekOverview) o).getUsername());
+        if (o instanceof XTimeOverview) {
+            return mMonthlyDataApproved == ((XTimeOverview) o).isMonthlyDataApproved() &&
+                    mLastTransferred.equals(((XTimeOverview) o).getLastTransferred()) &&
+                    mProjects.equals(((XTimeOverview) o).getProjects()) &&
+                    mTimeSheetRows.equals(((XTimeOverview) o).getTimeSheetRows()) &&
+                    mUsername.equals(((XTimeOverview) o).getUsername());
         }
         return super.equals(o);
     }

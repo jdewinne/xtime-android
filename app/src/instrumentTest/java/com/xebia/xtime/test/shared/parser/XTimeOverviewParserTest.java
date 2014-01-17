@@ -3,15 +3,15 @@ package com.xebia.xtime.test.shared.parser;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetRow;
-import com.xebia.xtime.shared.model.WeekOverview;
 import com.xebia.xtime.shared.model.WorkType;
-import com.xebia.xtime.shared.parser.OverviewParser;
+import com.xebia.xtime.shared.model.XTimeOverview;
+import com.xebia.xtime.shared.parser.XTimeOverviewParser;
 
 import junit.framework.TestCase;
 
 import java.util.Date;
 
-public class OverviewParserTest extends TestCase {
+public class XTimeOverviewParserTest extends TestCase {
 
     private static final String INPUT_REGULAR = "throw 'allowScriptTagRemoting is false.';\n" +
             "//#DWR-INSERT\n" +
@@ -56,7 +56,7 @@ public class OverviewParserTest extends TestCase {
             "weekEndDates:s2,weekStart:null});\n";
 
     public void testRegularInput() {
-        WeekOverview result = OverviewParser.parse(INPUT_REGULAR);
+        XTimeOverview result = XTimeOverviewParser.parse(INPUT_REGULAR);
 
         // list of projects
         assertEquals(11, result.getProjects().size());
@@ -86,17 +86,17 @@ public class OverviewParserTest extends TestCase {
     }
 
     public void testUnparseableInput() {
-        WeekOverview result = OverviewParser.parse("this is intentionally not parseable");
+        XTimeOverview result = XTimeOverviewParser.parse("this is intentionally not parseable");
         assertNull(result);
     }
 
     public void testEmptyInput() {
-        WeekOverview result = OverviewParser.parse("");
+        XTimeOverview result = XTimeOverviewParser.parse("");
         assertNull(result);
     }
 
     public void testNullInput() {
-        WeekOverview result = OverviewParser.parse(null);
+        XTimeOverview result = XTimeOverviewParser.parse(null);
         assertNull(result);
     }
 }

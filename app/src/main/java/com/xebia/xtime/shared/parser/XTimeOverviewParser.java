@@ -6,8 +6,8 @@ import android.util.Log;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetRow;
-import com.xebia.xtime.shared.model.WeekOverview;
 import com.xebia.xtime.shared.model.WorkType;
+import com.xebia.xtime.shared.model.XTimeOverview;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,18 +22,18 @@ import java.util.regex.Pattern;
  * @see {@link com.xebia.xtime.weekoverview.loader.WeekOverviewRequest}
  * @see {@link com.xebia.xtime.monthoverview.loader.MonthOverviewRequest}
  */
-public class OverviewParser {
+public class XTimeOverviewParser {
 
-    private static final String TAG = "OverviewParser";
+    private static final String TAG = "XTimeOverviewParser";
 
     /**
      * Parses the input from a WeekOverviewRequest or MonthOverviewRequest into a {@link
-     * WeekOverview}.
+     * com.xebia.xtime.shared.model.XTimeOverview}.
      *
      * @param input String with the JavaScript code that is returned to an overview request.
      * @return The week overview, or <code>null</code> when the input could not be parsed
      */
-    public static WeekOverview parse(String input) {
+    public static XTimeOverview parse(String input) {
         if (TextUtils.isEmpty(input)) {
             Log.d(TAG, "No input to parse");
             return null;
@@ -62,7 +62,7 @@ public class OverviewParser {
             String username = matcher.group(5);
             // String weekendDatesVar = matcher.group(6);
             // String weekStart = matcher.group(7);
-            return new WeekOverview(timeSheetRows, projects, username, monthlyDataApproved,
+            return new XTimeOverview(timeSheetRows, projects, username, monthlyDataApproved,
                     new Date(lastTransferredDate));
 
         } else {

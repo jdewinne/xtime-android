@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Represents an overview of the work that has been done for a certain day.
  * <p/>
- * Similar to its big brother, {@link WeekOverview}, each day contains a list of {@link
+ * Similar to its big brother, {@link XTimeOverview}, each day contains a list of {@link
  * TimeSheetEntry} that the user already registered time for, and a complete list of all {@link
  * Project} that the user can possibly log time on. Additionally, the model contains the total
  * amount of time registered for this day.
