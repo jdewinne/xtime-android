@@ -33,8 +33,8 @@ public class OverviewParserTest extends TestCase {
             "s12.description=\"TECHRALLY\";s12.id=\"0072\";\n" +
             "s13.description=\"XKE\";s13.id=\"0062\";\n" +
             "s1[0]=s14;s1[1]=s15;\n" +
-            "s14.clientName=\"Xebia Internal\";s14.description=\"Holiday\";s14.projectId=\"1\";" +
-            "s14.projectName=\"Internal Project\";s14.timeCells=s16;s14.userId=\"1015900\";s14" +
+            "s14.clientName=\"Xebia Internal\";s14.description=\"\";s14.projectId=\"1\";s14" +
+            ".projectName=\"Internal Project\";s14.timeCells=s16;s14.userId=\"1015900\";s14" +
             ".workTypeDescription=\"Holiday\";s14.workTypeId=\"950\";\n" +
             "s16[0]=s17;s16[1]=s18;s16[2]=s19;\n" +
             "s17.approved=true;s17.entryDate=new Date(1388358000000);s17.fromAfas=true;s17" +
@@ -67,7 +67,7 @@ public class OverviewParserTest extends TestCase {
         // list of time sheet rows
         assertEquals(2, result.getTimeSheetRows().size());
         TimeSheetRow row = result.getTimeSheetRows().get(0);
-        assertEquals("Holiday", row.getDescription());
+        assertEquals("", row.getDescription());
         assertEquals(new Project("1", "Internal Project"), row.getProject());
         assertEquals(new WorkType("950", "Holiday"), row.getWorkType());
         assertEquals(3, row.getTimeCells().size());

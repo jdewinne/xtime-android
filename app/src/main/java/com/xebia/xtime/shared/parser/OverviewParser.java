@@ -98,9 +98,14 @@ public class OverviewParser {
             List<TimeCell> timeCells = parseTimeCells(input, matcher.group(6));
             // String userId = matcher.group(7);
             String workTypeDescription = matcher.group(8);
+            if (description.equals(workTypeDescription)) {
+                // XTime returns incorrect description for time sheet rows that come from Afas
+                description = "";
+            }
             String workTypeId = matcher.group(9);
             Project project = new Project(projectId, projectName);
             WorkType workType = new WorkType(workTypeId, workTypeDescription);
+
             timeSheetRows.add(new TimeSheetRow(project, workType, description, timeCells));
         }
 
