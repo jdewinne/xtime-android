@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.shared.TimeSheetUtils;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.WeekOverview;
 import com.xebia.xtime.weekoverview.loader.WeekOverviewLoader;

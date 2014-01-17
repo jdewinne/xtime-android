@@ -1,4 +1,4 @@
-package com.xebia.xtime.weekoverview;
+package com.xebia.xtime.shared;
 
 import android.text.format.DateUtils;
 import android.util.SparseArray;

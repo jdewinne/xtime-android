@@ -1,8 +1,8 @@
 package com.xebia.xtime.monthoverview.approve;
 
+import com.xebia.xtime.shared.TimeSheetUtils;
 import com.xebia.xtime.shared.XTimeRequest;
 import com.xebia.xtime.shared.model.WeekOverview;
-import com.xebia.xtime.weekoverview.TimeSheetUtils;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;
