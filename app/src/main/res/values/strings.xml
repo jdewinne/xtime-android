@@ -36,4 +36,7 @@
     <string name="title_month_overview">Month Overview</string>
     <string name="empty_month_summary">Summary unavailable</string>
     <string name="grand_total_label">Grand total</string>
+    <string name="action_approve">Approve</string>
+    <string name="toast_approve_success">Time sheet approved</string>
+    <string name="toast_approve_failure">Approval failed!</string>
 </resources>

@@ -5,12 +5,17 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.monthoverview.approve.ApproveTask;
 import com.xebia.xtime.monthoverview.loader.MonthOverviewLoader;
 import com.xebia.xtime.shared.TimeSheetUtils;
 import com.xebia.xtime.shared.model.TimeSheetRow;
@@ -25,7 +30,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class MonthSummaryFragment extends ListFragment implements LoaderManager
-        .LoaderCallbacks<WeekOverview> {
+        .LoaderCallbacks<WeekOverview>, ApproveTask.Listener {
 
     private static final String ARG_MONTH = "month";
     private WeekOverview mOverview;
@@ -70,6 +75,7 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
             mRows.addAll(mOverview.getTimeSheetRows());
         }
         showGrandTotal();
+        showApproveButton();
 
         ((ArrayAdapter) getListAdapter()).notifyDataSetChanged();
     }
@@ -81,6 +87,27 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
             ((TextView) mFooterView.findViewById(R.id.grand_total)).setText(NumberFormat
                     .getNumberInstance().format(grandTotal));
         }
+    }
+
+    private void showApproveButton() {
+        // only show options menu if the monthly data is not approved yet
+        setHasOptionsMenu(null != mOverview && !mOverview.isMonthlyDataApproved());
+    }
+
+    private void onApproveClick() {
+        setListShown(false);
+        double grandTotal = TimeSheetUtils.getGrandTotalHours(mOverview);
+        new ApproveTask(this).execute(grandTotal, (double) mMonth.getTime());
+    }
+
+    @Override
+    public void onApproveComplete(Boolean result) {
+        if (null != result && result) {
+            Toast.makeText(getActivity(), R.string.toast_approve_success, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getActivity(), R.string.toast_approve_failure, Toast.LENGTH_LONG).show();
+        }
+        setListShown(true);
     }
 
     @Override
@@ -110,6 +137,21 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.month_summary, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.approve) {
+            onApproveClick();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public Loader<WeekOverview> onCreateLoader(int id, Bundle args) {
         return new MonthOverviewLoader(getActivity(), mMonth);
     }
@@ -123,5 +165,12 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
     @Override
     public void onLoaderReset(Loader<WeekOverview> weekOverviewLoader) {
         // nothing to do
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        // make sure the options menu does not keep showing the 'approve' item
+        setHasOptionsMenu(false);
     }
 }
