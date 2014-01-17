@@ -317,9 +317,9 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
                 // create new entry from the form
                 Project project = (Project) mProjectView.getSelectedItem();
                 WorkType workType = (WorkType) mWorkTypeView.getSelectedItem();
-                String descr = "" + mDescriptionView.getText();
+                String description = ("" + mDescriptionView.getText()).trim();
                 TimeCell timeCell = new TimeCell(mDate, time, false);
-                mSaveEntry = new TimeSheetEntry(project, workType, descr, timeCell);
+                mSaveEntry = new TimeSheetEntry(project, workType, description, timeCell);
                 new SaveEntryTask(this).execute(mSaveEntry);
             } else {
                 // only the time can be changed for existing time sheet entries

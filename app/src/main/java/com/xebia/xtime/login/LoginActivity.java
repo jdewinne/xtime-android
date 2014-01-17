@@ -96,8 +96,8 @@ public class LoginActivity extends ActionBarActivity {
         mPasswordView.setError(null);
 
         // get the username and password
-        String username = mUsernameView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        String username = ("" + mUsernameView.getText()).trim();
+        String password = ("" + mPasswordView.getText()).trim();
 
         boolean cancel = false;
         View focusView = null;
