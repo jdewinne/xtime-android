@@ -10,13 +10,12 @@ import android.widget.SimpleAdapter;
 
 import com.xebia.xtime.dayoverview.DayOverviewActivity;
 import com.xebia.xtime.login.LoginActivity;
-import com.xebia.xtime.monthoverview.MonthSummaryFragment;
+import com.xebia.xtime.monthoverview.MonthPagerFragment;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.weekoverview.DailyHoursListFragment;
 import com.xebia.xtime.weekoverview.WeekPagerFragment;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,7 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
         data.add(map);
         map = new HashMap<String, Object>();
         map.put("title", getString(R.string.title_month_overview));
-        map.put("fragment", MonthSummaryFragment.newInstance(new Date()));
+        map.put("fragment", Fragment.instantiate(this, MonthPagerFragment.class.getName()));
         data.add(map);
         SimpleAdapter adapter = new SimpleAdapter(this, data,
                 R.layout.ab_nav_dropdown, new String[]{"title"},

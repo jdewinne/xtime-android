@@ -42,7 +42,7 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
      * @return Title String of the fragment
      */
     public static String getTitle(Date month) {
-        DateFormat formatter = new SimpleDateFormat("MMMM", Locale.getDefault());
+        DateFormat formatter = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
         return formatter.format(month);
     }
 
