@@ -182,13 +182,18 @@ public class LoginActivity extends ActionBarActivity {
             mUsername = params[0];
             mPassword = params[1];
 
+            String response;
             try {
-                new LoginRequest(mUsername, mPassword).submit();
+                response = new LoginRequest(mUsername, mPassword).submit();
             } catch (AuthenticationException e) {
                 return false;
             }
 
-            return true;
+            if (null != response) {
+                return true;
+            } else {
+                return null;
+            }
         }
 
         @Override

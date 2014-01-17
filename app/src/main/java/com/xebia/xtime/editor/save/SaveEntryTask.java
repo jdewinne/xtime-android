@@ -23,13 +23,18 @@ public class SaveEntryTask extends AsyncTask<TimeSheetEntry, Void, Boolean> {
             throw new NullPointerException("Missing TimeSheetEntry parameter");
         }
 
+        String response;
         try {
-            new SaveTimeSheetRequest(params[0]).submit();
+            response = new SaveTimeSheetRequest(params[0]).submit();
         } catch (AuthenticationException e) {
             return null;
         }
 
-        return true;
+        if (null != response) {
+            return true;
+        } else {
+            return null;
+        }
     }
 
     @Override
