@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.monthoverview.approve.ApproveConfirmDialog;
 import com.xebia.xtime.monthoverview.approve.ApproveTask;
 import com.xebia.xtime.monthoverview.loader.MonthOverviewLoader;
 import com.xebia.xtime.shared.TimeSheetUtils;
@@ -27,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 public class MonthSummaryFragment extends ListFragment implements LoaderManager
-        .LoaderCallbacks<XTimeOverview>, ApproveTask.Listener {
+        .LoaderCallbacks<XTimeOverview>, ApproveTask.Listener, ApproveConfirmDialog.Listener {
 
     private static final String ARG_MONTH = "month";
     private XTimeOverview mOverview;
@@ -83,6 +84,13 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
     }
 
     private void onApproveClick() {
+        ApproveConfirmDialog dialog = new ApproveConfirmDialog();
+        dialog.setListener(this);
+        dialog.show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onApproveConfirmed() {
         setListShown(false);
         double grandTotal = TimeSheetUtils.getGrandTotalHours(mOverview);
         new ApproveTask(this).execute(grandTotal, (double) mMonth.getTime());

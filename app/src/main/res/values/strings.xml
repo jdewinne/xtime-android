@@ -39,4 +39,6 @@
     <string name="action_approve">Approve</string>
     <string name="toast_approve_success">Time sheet approved</string>
     <string name="toast_approve_failure">Approval failed!</string>
+    <string name="approve_confirm_msg">Are you sure you want to approve this month\'s time sheet?</string>
+    <string name="approve_confirm_title">Confirm approval</string>
 </resources>
