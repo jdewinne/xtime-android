@@ -3,6 +3,8 @@ package com.xebia.xtime.monthoverview.loader;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 
+import com.xebia.xtime.shared.Config;
+import com.xebia.xtime.shared.XTimeRequest;
 import com.xebia.xtime.shared.model.XTimeOverview;
 import com.xebia.xtime.shared.parser.XTimeOverviewParser;
 
@@ -21,8 +23,10 @@ public class MonthOverviewLoader extends AsyncTaskLoader<XTimeOverview> {
 
     @Override
     public XTimeOverview loadInBackground() {
+        XTimeRequest request = Config.MOCK_REQUESTS ? new MockMonthOverviewRequest() : new
+                MonthOverviewRequest(mMonth);
         try {
-            String response = new MonthOverviewRequest(mMonth).submit();
+            String response = request.submit();
             return XTimeOverviewParser.parse(response);
         } catch (AuthenticationException e) {
             return null;
