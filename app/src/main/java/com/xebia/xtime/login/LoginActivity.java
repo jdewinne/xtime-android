@@ -3,14 +3,12 @@ package com.xebia.xtime.login;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -29,6 +27,7 @@ public class LoginActivity extends ActionBarActivity {
 
     public static final String PREF_USERNAME = "com.xebia.xtime.extra.USERNAME";
     public static final String PREF_PASSWORD = "com.xebia.xtime.extra.PASSWORD";
+    public static final String PREF_AUTOLOGIN = "com.xebia.xtime.extra.AUTOLOGIN";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -59,7 +58,6 @@ public class LoginActivity extends ActionBarActivity {
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                Log.d("TAG", "event " + id);
                 if (id == R.id.login || id == EditorInfo.IME_NULL ||
                         id == EditorInfo.IME_ACTION_DONE) {
                     attemptLogin();
@@ -79,6 +77,10 @@ public class LoginActivity extends ActionBarActivity {
                 attemptLogin();
             }
         });
+
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PREF_AUTOLOGIN, false)) {
+            attemptLogin();
+        }
     }
 
     /**
@@ -86,7 +88,7 @@ public class LoginActivity extends ActionBarActivity {
      * errors (invalid email, missing fields, etc.), the errors are presented and no actual login
      * attempt is made.
      */
-    public void attemptLogin() {
+    private void attemptLogin() {
         if (mAuthTask != null) {
             return;
         }
@@ -206,16 +208,20 @@ public class LoginActivity extends ActionBarActivity {
                         Toast.LENGTH_LONG).show();
 
             } else if (result) {
-                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences
-                        (LoginActivity.this).edit();
-                editor.putString(PREF_USERNAME, mUsername);
-                editor.putString(PREF_PASSWORD, mPassword);
-                editor.commit();
+                PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit()
+                        .putString(PREF_USERNAME, mUsername)
+                        .putString(PREF_PASSWORD, mPassword)
+                        .putBoolean(PREF_AUTOLOGIN, true)
+                        .apply();
 
                 setResult(RESULT_OK);
                 finish();
 
             } else {
+                PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit()
+                        .putBoolean(PREF_AUTOLOGIN, false)
+                        .apply();
+
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
