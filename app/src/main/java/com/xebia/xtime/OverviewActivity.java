@@ -1,11 +1,16 @@
 package com.xebia.xtime;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.SimpleAdapter;
 
 import com.xebia.xtime.dayoverview.DayOverviewActivity;
@@ -14,6 +19,8 @@ import com.xebia.xtime.monthoverview.MonthPagerFragment;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.weekoverview.DailyHoursListFragment;
 import com.xebia.xtime.weekoverview.WeekPagerFragment;
+
+import org.apache.http.auth.AuthenticationException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +32,7 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
     private static final int REQ_CODE_LOGIN = 1;
     private static final String KEY_LOGGED_IN = "logged_in";
     private boolean mLoggedIn;
+    private LogoutTask mLogoutTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +43,7 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
         }
 
         if (!isLoggedIn()) {
-            Intent login = new Intent(this, LoginActivity.class);
-            startActivityForResult(login, REQ_CODE_LOGIN);
+            showLogin();
         }
 
         setListNavigation();
@@ -73,7 +80,8 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
                         }
                         return true;
                     }
-                });
+                }
+        );
     }
 
     @Override
@@ -81,10 +89,6 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
         Intent intent = new Intent(this, DayOverviewActivity.class);
         intent.putExtra(DayOverviewActivity.EXTRA_DAY_OVERVIEW, overview);
         startActivity(intent);
-    }
-
-    private boolean isLoggedIn() {
-        return mLoggedIn;
     }
 
     @Override
@@ -104,5 +108,84 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
         // remember logged in status across configuration changes
         outState.putBoolean(KEY_LOGGED_IN, mLoggedIn);
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_overview, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.logout:
+                logout();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private boolean isLoggedIn() {
+        return mLoggedIn;
+    }
+
+    private void showLogin() {
+        Intent login = new Intent(this, LoginActivity.class);
+        startActivityForResult(login, REQ_CODE_LOGIN);
+    }
+
+    private void logout() {
+        PreferenceManager.getDefaultSharedPreferences(OverviewActivity.this).edit()
+                .remove(LoginActivity.PREF_USERNAME)
+                .remove(LoginActivity.PREF_PASSWORD)
+                .remove(LoginActivity.PREF_AUTOLOGIN)
+                .apply();
+        mLoggedIn = false;
+
+        if (mLogoutTask == null) {
+            mLogoutTask = new LogoutTask();
+            mLogoutTask.execute();
+        }
+
+        showLogin();
+    }
+
+    /**
+     * Represents an asynchronous task used to log out the user.
+     */
+    private class LogoutTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            if (null == params || params.length < 2) {
+                return null;
+            }
+
+            String response;
+            try {
+                response = new LogoutRequest().submit();
+            } catch (AuthenticationException e) {
+                return false;
+            }
+
+            if (null != response) {
+                return true;
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean result) {
+            // nothing to do
+        }
+
+        @Override
+        protected void onCancelled() {
+            mLogoutTask = null;
+        }
     }
 }

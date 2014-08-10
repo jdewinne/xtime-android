@@ -1,0 +1,10 @@
+GET https://xtime.xebia.com/xtime/logout.jsp
+Accept:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+Accept-Encoding:gzip,deflate,sdch
+Accept-Language:en-US,en;q=0.8,nl;q=0.6,en-GB;q=0.4
+Connection:keep-alive
+Cookie:username=smulder; JSESSIONID=165B9E1A8468054CB33FFEA359D984D4; _ga=GA1.2.1977950122.1403430756; __hstc=232286976.d42515440e52661a8352a62184ce51ff.1403430759281.1403430759281.1403430759281.1; hsfirstvisit=http%3A%2F%2Fxebia.com%2F||1403430759280; hubspotutk=d42515440e52661a8352a62184ce51ff
+DNT:1
+Host:xtime.xebia.com
+Referer:https://xtime.xebia.com/xtime/entryform.html
+User-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36
