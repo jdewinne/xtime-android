@@ -15,7 +15,6 @@ import android.widget.ListView;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
-import com.xebia.xtime.content.XTimeContract.TimeSheets;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.XTimeOverview;
 
@@ -114,9 +113,15 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), TimeEntries.CONTENT_URI, null,
-                TimeSheets.YEAR + "=? AND " + TimeSheets.WEEK + "=?",
-                new String[]{Long.toString(mYear), Long.toString(mWeek)}, null);
+        String selection = TimeEntries.ENTRY_DATE + " BETWEEN ? AND ?";
+        Calendar nextWeek = Calendar.getInstance();
+        nextWeek.setTime(mStartDate);
+        nextWeek.add(Calendar.WEEK_OF_YEAR, 1);
+        String[] selectionArgs = new String[] {Long.toString(mStartDate.getTime()),
+                Long.toString(nextWeek.getTime().getTime())};
+        String orderBy = TimeEntries.ENTRY_DATE + " DESC";
+        return new CursorLoader(getActivity(), TimeEntries.CONTENT_URI, null, selection,
+                selectionArgs, orderBy);
     }
 
     @Override
@@ -127,7 +132,6 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
             mOverview = WeekOverviewUtils.cursorToOverview(cursor);
         } else {
             Log.d(TAG, "No time registrations loaded");
-            mOverview = null;
         }
         updateList();
     }

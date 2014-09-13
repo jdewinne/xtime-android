@@ -13,7 +13,6 @@ import android.util.Log;
 
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
 import com.xebia.xtime.content.XTimeContract.TimeSheetRows;
-import com.xebia.xtime.content.XTimeContract.TimeSheets;
 import com.xebia.xtime.content.XTimeDatabase.Tables;
 
 import java.util.Arrays;
@@ -31,9 +30,6 @@ public class XTimeProvider extends ContentProvider {
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = XTimeContract.CONTENT_AUTHORITY;
-
-        matcher.addURI(authority, Tables.TIME_SHEETS, UriCodes.TIME_SHEETS);
-        matcher.addURI(authority, Tables.TIME_SHEETS + "/*", UriCodes.TIME_SHEET);
 
         matcher.addURI(authority, Tables.TIME_SHEET_ROWS, UriCodes.TIME_SHEET_ROWS);
         matcher.addURI(authority, Tables.TIME_SHEET_ROWS + "/*", UriCodes.TIME_SHEET_ROW);
@@ -59,10 +55,6 @@ public class XTimeProvider extends ContentProvider {
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case UriCodes.TIME_SHEETS:
-                return TimeSheets.CONTENT_TYPE;
-            case UriCodes.TIME_SHEET:
-                return TimeSheets.CONTENT_ITEM_TYPE;
             case UriCodes.TIME_SHEET_ROWS:
                 return TimeSheetRows.CONTENT_TYPE;
             case UriCodes.TIME_SHEET_ROW:
@@ -82,11 +74,6 @@ public class XTimeProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         Log.v(TAG, "insert(uri=" + uri + ", values=" + values + ")");
         switch (match) {
-            case UriCodes.TIME_SHEETS: {
-                long id = db.insertOrThrow(Tables.TIME_SHEETS, null, values);
-                notifyChange(uri);
-                return TimeSheets.buildUri(id);
-            }
             case UriCodes.TIME_SHEET_ROWS: {
                 long id = db.insertOrThrow(Tables.TIME_SHEET_ROWS, null, values);
                 notifyChange(uri);
@@ -159,14 +146,6 @@ public class XTimeProvider extends ContentProvider {
         final SelectionBuilder builder = new SelectionBuilder();
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case UriCodes.TIME_SHEETS: {
-                return builder.table(Tables.TIME_SHEETS);
-            }
-            case UriCodes.TIME_SHEET: {
-                final String id = Long.toString(ContentUris.parseId(uri));
-                return builder.table(Tables.TIME_SHEETS)
-                        .where(TimeSheets._ID + "=?", id);
-            }
             case UriCodes.TIME_SHEET_ROWS: {
                 return builder.table(Tables.TIME_SHEET_ROWS);
             }
@@ -197,15 +176,8 @@ public class XTimeProvider extends ContentProvider {
     private SelectionBuilder buildExpandedSelection(Uri uri, int match) {
         final SelectionBuilder builder = new SelectionBuilder();
         switch (match) {
-            case UriCodes.TIME_SHEETS: {
-                return builder.table(Tables.TIME_SHEETS);
-            }
-            case UriCodes.TIME_SHEET: {
-                final String id = Long.toString(ContentUris.parseId(uri));
-                return builder.table(Tables.TIME_ENTRIES).where(TimeSheets._ID + "=?", id);
-            }
             case UriCodes.TIME_SHEET_ROWS: {
-                return builder.table(Tables.TIME_SHEET_ROWS_JOIN_SHEETS);
+                return builder.table(Tables.TIME_SHEET_ROWS);
             }
             case UriCodes.TIME_SHEET_ROW: {
                 final String id = Long.toString(ContentUris.parseId(uri));
@@ -225,8 +197,6 @@ public class XTimeProvider extends ContentProvider {
     }
 
     private interface UriCodes {
-        int TIME_SHEETS = 100;
-        int TIME_SHEET = 101;
         int TIME_SHEET_ROWS = 200;
         int TIME_SHEET_ROW = 201;
         int TIME_ENTRIES = 300;

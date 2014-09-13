@@ -6,7 +6,6 @@ import android.util.SparseArray;
 
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
 import com.xebia.xtime.content.XTimeContract.TimeSheetRows;
-import com.xebia.xtime.content.XTimeContract.TimeSheets;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeCell;
@@ -33,23 +32,10 @@ public final class WeekOverviewUtils {
 
     public static XTimeOverview cursorToOverview(final Cursor cursor) {
         cursor.moveToFirst();
-        long lastSheetId = -1, lastSheetRowId = -1;
+        long lastSheetRowId = -1;
         XTimeOverview.Builder overviewBuilder = new XTimeOverview.Builder();
         TimeSheetRow.Builder rowBuilder = null;
         while (!cursor.isAfterLast()) {
-            // time sheet details
-            long sheetId = cursor.getLong(cursor.getColumnIndex(TimeSheetRows.SHEET_ID));
-            if (sheetId != lastSheetId) {
-                long lastTransferred =
-                        cursor.getLong(cursor.getColumnIndex(TimeSheets.LAST_TRANSFERRED));
-                overviewBuilder.setYear(cursor.getInt(cursor.getColumnIndex(TimeSheets.YEAR)))
-                        .setWeek(cursor.getInt(cursor.getColumnIndex(TimeSheets.WEEK)))
-                        .setMonthlyDataApproved(
-                                cursor.getInt(cursor.getColumnIndex(TimeSheets.APPROVED)) == 1)
-                        .setLastTransferred(new Date(lastTransferred));
-                lastSheetId = sheetId;
-            }
-
             // time sheet row details
             long sheetRowId = cursor.getLong(cursor.getColumnIndex(TimeEntries.SHEET_ROW_ID));
             if (sheetRowId != lastSheetRowId) {
@@ -99,14 +85,11 @@ public final class WeekOverviewUtils {
      */
     public static List<DayOverview> weekToDays(XTimeOverview overview, Date startDate) {
 
-        Date lastTransferred = overview.getLastTransferred();
-
         // initialize array of day overview entries for the week, indexed by Calendar.DAY_OF_WEEK
         SparseArray<DayOverview> dailyHoursArray = new SparseArray<>();
         for (int i = 0; i < DAILY_INDEXES.length; i++) {
             Date date = new Date(startDate.getTime() + i * DateUtils.DAY_IN_MILLIS);
-            boolean editable = lastTransferred.before(date);
-            DayOverview dayOverview = new DayOverview(date, overview.getProjects(), editable);
+            DayOverview dayOverview = new DayOverview(date, overview.getProjects(), true);
             dailyHoursArray.put(DAILY_INDEXES[i], dayOverview);
         }
 
@@ -130,6 +113,7 @@ public final class WeekOverviewUtils {
                 TimeSheetEntry timeReg = new TimeSheetEntry(project, workType, description,
                         timeCell);
                 dayOverview.getTimeSheetEntries().add(timeReg);
+                dayOverview.setEditable(!timeCell.isApproved());
 
                 // increment total hours
                 dayOverview.setTotalHours(dayOverview.getTotalHours() + timeCell.getHours());
