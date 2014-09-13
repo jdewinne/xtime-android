@@ -107,7 +107,7 @@ public class SyncHelper {
         if (response.contains("UsernameNotFoundException")) {
             throw new CookieExpiredException("UsernameNotFoundException");
         }
-        return XTimeOverviewParser.parse(response, year, week);
+        return DwrOverviewParser.parse(response);
     }
 
     static class CookieExpiredException extends Exception {

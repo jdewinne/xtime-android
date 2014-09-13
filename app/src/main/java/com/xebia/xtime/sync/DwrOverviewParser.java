@@ -1,4 +1,4 @@
-package com.xebia.xtime.shared.parser;
+package com.xebia.xtime.sync;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,28 +18,25 @@ import java.util.regex.Pattern;
 /**
  * Parser for the response to a overview request from XTime. Uses regular expression acrobatics
  * to parse the JavaScript that is returned.
- *
- * @see {@link com.xebia.xtime.weekoverview.loader.WeekOverviewRequest}
- * @see {@link com.xebia.xtime.monthoverview.loader.MonthOverviewRequest}
  */
-public class XTimeOverviewParser {
+public class DwrOverviewParser {
 
-    private static final String TAG = "XTimeOverviewParser";
+    private static final String TAG = "DwrResponseParser";
 
     /**
      * Parses the input from a WeekOverviewRequest or MonthOverviewRequest into a {@link
      * com.xebia.xtime.shared.model.XTimeOverview}.
      *
      * @param input String with the JavaScript code that is returned to an overview request.
-     * @param year  Year of the overview
-     * @param week  Week of the overview
-     * @return The week overview, or <code>null</code> when the input could not be parsed
+     * @return The overview, or <code>null</code> when the input could not be parsed
      */
-    public static XTimeOverview parse(String input, final int year, final int week) {
+    public static XTimeOverview parse(final String input) {
         if (TextUtils.isEmpty(input)) {
             Log.d(TAG, "No input to parse");
             return null;
         }
+
+        XTimeOverview.Builder builder = new XTimeOverview.Builder();
 
         // parse the JSONP callback argument
         String regex = "dwr\\.engine\\._remoteHandleCallback\\(";
@@ -53,19 +50,13 @@ public class XTimeOverviewParser {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(input);
         if (matcher.find()) {
-            // not all data that is returned is actually used in the app
-
-            long lastTransferredDate = Long.parseLong(matcher.group(1));
-            // int monthDaysCount = Integer.parseInt(matcher.group(2));
-            boolean monthlyDataApproved = Boolean.parseBoolean(matcher.group(3));
-            // boolean monthlyDataTransferred = Boolean.parseBoolean(matcher.group(4));
-            List<Project> projects = parseProjects(input);
-            List<TimeSheetRow> timeSheetRows = parseTimeSheetRows(input);
-            String username = matcher.group(5);
-            // String weekendDatesVar = matcher.group(6);
-            // String weekStart = matcher.group(7);
-            return new XTimeOverview(timeSheetRows, projects, username, monthlyDataApproved,
-                    new Date(lastTransferredDate), year, week);
+            // Note: not all data that is returned is actually used in the app
+            builder.setLastTransferred(new Date(Long.parseLong(matcher.group(1))))
+                    .setMonthlyDataApproved(Boolean.parseBoolean(matcher.group(3)))
+                    .setUsername(matcher.group(5));
+            parseProjects(input, builder);
+            parseTimeSheetRows(input, builder);
+            return builder.build();
 
         } else {
             Log.d(TAG, "Failed to parse input '" + input + "'");
@@ -73,9 +64,7 @@ public class XTimeOverviewParser {
         }
     }
 
-    private static List<TimeSheetRow> parseTimeSheetRows(String input) {
-
-        List<TimeSheetRow> timeSheetRows = new ArrayList<>();
+    private static void parseTimeSheetRows(String input, XTimeOverview.Builder builder) {
 
         // match the response for patterns like:
         // xx.clientName="$1"; xx.description="$2"; xx.projectId="$3"; ...
@@ -91,45 +80,36 @@ public class XTimeOverviewParser {
 
         Matcher matcher = pattern.matcher(input);
         while (matcher.find()) {
-            // not all data that is returned is actually used in the app
-
-            // String clientName = matcher.group(2);
+            // Note: not all data that is returned is actually used in the app
             String description = matcher.group(3);
-            String projectId = matcher.group(4);
-            String projectName = matcher.group(5);
-            List<TimeCell> timeCells = parseTimeCells(input, matcher.group(6));
-            // String userId = matcher.group(7);
             String workTypeDescription = matcher.group(8);
             if (description.equals(workTypeDescription)) {
                 // XTime returns incorrect description for time sheet rows that come from Afas
                 description = "";
             }
             String workTypeId = matcher.group(9);
-            Project project = new Project(projectId, projectName);
-            WorkType workType = new WorkType(workTypeId, workTypeDescription);
 
-            timeSheetRows.add(new TimeSheetRow(project, workType, description, timeCells));
+            TimeSheetRow.Builder rowBuilder = new TimeSheetRow.Builder()
+                    .setDescription(description)
+                    .setProject(new Project(matcher.group(4), matcher.group(5)))
+                    .setWorkType(new WorkType(workTypeId, workTypeDescription));
+            parseTimeCells(input, matcher.group(6), rowBuilder);
+
+            builder.addTimeSheetRow(rowBuilder.build());
         }
-
-        return timeSheetRows;
     }
 
-    private static List<TimeCell> parseTimeCells(String input, String varName) {
-
+    private static void parseTimeCells(String input, String varName, TimeSheetRow.Builder builder) {
         List<String> timeCellVarNames = parseTimeCellVars(input, varName);
-
-        List<TimeCell> timeCells = new ArrayList<>();
         for (String timeCellVarName : timeCellVarNames) {
-            timeCells.add(parseTimeCellDetails(input, timeCellVarName));
+            builder.addTimeCell(parseTimeCellDetails(input, timeCellVarName));
         }
-
-        return timeCells;
     }
 
     private static TimeCell parseTimeCellDetails(String input, String varName) {
 
         // match the response for patterns like:
-        // xx.approved=$1; xx.entryDate=new Date($2); xx.fromtAfas=$3; x.hour="$4"; ...
+        // xx.approved=$1; xx.entryDate=new Date($2); xx.fromAfas=$3; x.hour="$4"; ...
         String regex = varName + "\\.approved=([^;]*);";
         regex += ".*" + varName + "\\.entryDate=new Date\\(([^\\)]*)\\);";
         regex += ".*" + varName + "\\.fromAfas=([^;]*);";
@@ -170,8 +150,7 @@ public class XTimeOverviewParser {
         return varNames;
     }
 
-    private static List<Project> parseProjects(String input) {
-        List<Project> projects = new ArrayList<>();
+    private static void parseProjects(String input, XTimeOverview.Builder builder) {
 
         // match the response for patterns like:
         // xx.description="$1"; xx.id="$2";
@@ -183,9 +162,7 @@ public class XTimeOverviewParser {
         while (matcher.find()) {
             String description = matcher.group(2);
             String id = matcher.group(3);
-            projects.add(new Project(id, description));
+            builder.addProject(new Project(id, description));
         }
-
-        return projects;
     }
 }

@@ -2,9 +2,12 @@ package com.xebia.xtime.monthoverview;
 
 import android.app.ListFragment;
 import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,22 +19,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.content.XTimeContract.TimeEntries;
 import com.xebia.xtime.monthoverview.approve.ApproveConfirmDialog;
 import com.xebia.xtime.monthoverview.approve.ApproveTask;
-import com.xebia.xtime.monthoverview.loader.MonthOverviewLoader;
 import com.xebia.xtime.shared.TimeSheetUtils;
 import com.xebia.xtime.shared.model.TimeSheetRow;
 import com.xebia.xtime.shared.model.XTimeOverview;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class MonthSummaryFragment extends ListFragment implements LoaderManager
-        .LoaderCallbacks<XTimeOverview>, ApproveTask.Listener, ApproveConfirmDialog.Listener {
+        .LoaderCallbacks<Cursor>, ApproveTask.Listener, ApproveConfirmDialog.Listener {
 
     private static final String ARG_MONTH = "month";
+    private static final String TAG = "MonthSummaryFragment";
     private XTimeOverview mOverview;
     private List<TimeSheetRow> mRows;
     private Date mMonth;
@@ -73,7 +78,7 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
     private void showGrandTotal() {
         mFooterView.setVisibility(null != mRows && mRows.size() > 0 ? View.VISIBLE : View.GONE);
         if (null != mOverview) {
-            double grandTotal = TimeSheetUtils.getGrandTotalHours(mOverview);
+            double grandTotal = MonthOverviewUtils.getGrandTotalHours(mOverview);
             ((TextView) mFooterView.findViewById(R.id.grand_total)).setText(NumberFormat
                     .getNumberInstance().format(grandTotal));
         }
@@ -93,7 +98,7 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
     @Override
     public void onApproveConfirmed() {
         setListShown(false);
-        double grandTotal = TimeSheetUtils.getGrandTotalHours(mOverview);
+        double grandTotal = MonthOverviewUtils.getGrandTotalHours(mOverview);
         new ApproveTask(this).execute(grandTotal, (double) mMonth.getTime());
     }
 
@@ -149,19 +154,35 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
     }
 
     @Override
-    public Loader<XTimeOverview> onCreateLoader(int id, Bundle args) {
-        return new MonthOverviewLoader(getActivity(), mMonth);
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String selection = TimeEntries.ENTRY_DATE + " BETWEEN ? AND ?";
+        Calendar nextMonth = Calendar.getInstance();
+        nextMonth.setTime(mMonth);
+        nextMonth.add(Calendar.MONTH, 1);
+        String[] selectionArgs = new String[]{Long.toString(mMonth.getTime()),
+                Long.toString(nextMonth.getTime().getTime())};
+        String orderBy = TimeEntries.ENTRY_DATE + " DESC";
+        return new CursorLoader(getActivity(), TimeEntries.CONTENT_URI, null, selection,
+                selectionArgs, orderBy);
     }
 
     @Override
-    public void onLoadFinished(Loader<XTimeOverview> weekOverviewLoader,
-                               XTimeOverview XTimeOverview) {
-        mOverview = XTimeOverview;
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d(TAG, "load finished");
+        if (data != null && data.getCount() > 0) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(mMonth);
+            int month = calendar.get(Calendar.MONTH) + 1;
+            Log.d(TAG, "Loaded " + data.getCount() + " time registrations for month " + month);
+            mOverview = TimeSheetUtils.cursorToOverview(data);
+        } else {
+            Log.d(TAG, "No time registrations loaded");
+        }
         showList();
     }
 
     @Override
-    public void onLoaderReset(Loader<XTimeOverview> weekOverviewLoader) {
+    public void onLoaderReset(Loader<Cursor> loader) {
         // nothing to do
     }
 

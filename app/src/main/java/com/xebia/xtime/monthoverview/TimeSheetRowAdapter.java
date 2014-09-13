@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.shared.TimeSheetUtils;
 import com.xebia.xtime.shared.model.TimeSheetRow;
 
 import java.text.NumberFormat;
@@ -53,7 +52,7 @@ public class TimeSheetRowAdapter extends ArrayAdapter<TimeSheetRow> {
                     View.VISIBLE);
 
             TextView hoursView = (TextView) row.findViewById(R.id.hours);
-            double hours = TimeSheetUtils.getTotalHours(item);
+            double hours = MonthOverviewUtils.getTotalHours(item);
             hoursView.setText(NumberFormat.getNumberInstance().format(hours));
         }
 

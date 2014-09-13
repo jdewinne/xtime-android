@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -28,8 +29,7 @@ public class XTimeOverview implements Parcelable {
             return new XTimeOverview[size];
         }
     };
-    private final int mYear;
-    private final int mWeek;
+
     private final List<TimeSheetRow> mTimeSheetRows;
     private final List<Project> mProjects;
     private final String mUsername;
@@ -45,18 +45,14 @@ public class XTimeOverview implements Parcelable {
      * @param monthlyDataApproved <code>true</code> if the data for this month is already approved.
      * @param lastTransferred     Date when the data was last sent to Afas (transferred data
      *                            cannot be edited)
-     * @param year                Year of the overview
-     * @param week                Week of overview
      */
     public XTimeOverview(List<TimeSheetRow> timeSheetRows, List<Project> projects, String username,
-                         boolean monthlyDataApproved, Date lastTransferred, int year, int week) {
+                         boolean monthlyDataApproved, Date lastTransferred) {
         mProjects = projects;
         mTimeSheetRows = timeSheetRows;
         mUsername = username;
         mMonthlyDataApproved = monthlyDataApproved;
         mLastTransferred = lastTransferred;
-        mYear = year;
-        mWeek = week;
     }
 
     protected XTimeOverview(Parcel parcel) {
@@ -67,8 +63,6 @@ public class XTimeOverview implements Parcelable {
         mUsername = parcel.readString();
         mMonthlyDataApproved = parcel.readInt() > 0;
         mLastTransferred = new Date(parcel.readLong());
-        mYear = parcel.readInt();
-        mWeek = parcel.readInt();
     }
 
     /**
@@ -106,14 +100,6 @@ public class XTimeOverview implements Parcelable {
         return mMonthlyDataApproved;
     }
 
-    public int getYear() {
-        return mYear;
-    }
-
-    public int getWeek() {
-        return mWeek;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -126,20 +112,18 @@ public class XTimeOverview implements Parcelable {
         parcel.writeString(mUsername);
         parcel.writeInt(mMonthlyDataApproved ? 1 : 0);
         parcel.writeLong(mLastTransferred.getTime());
-        parcel.writeInt(mYear);
-        parcel.writeInt(mWeek);
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof XTimeOverview) {
             return mMonthlyDataApproved == ((XTimeOverview) o).isMonthlyDataApproved()
-                    && mLastTransferred.equals(((XTimeOverview) o).getLastTransferred())
-                    && mProjects.equals(((XTimeOverview) o).getProjects())
-                    && mTimeSheetRows.equals(((XTimeOverview) o).getTimeSheetRows())
                     && mUsername.equals(((XTimeOverview) o).getUsername())
-                    && mYear == (((XTimeOverview) o).getYear())
-                    && mWeek == (((XTimeOverview) o).getWeek());
+                    && mLastTransferred.equals(((XTimeOverview) o).getLastTransferred())
+                    && Arrays.equals(mProjects.toArray(),
+                    ((XTimeOverview) o).getProjects().toArray())
+                    && Arrays.equals(mTimeSheetRows.toArray(),
+                    ((XTimeOverview) o).getTimeSheetRows().toArray());
         }
         return super.equals(o);
     }
@@ -148,15 +132,13 @@ public class XTimeOverview implements Parcelable {
 
         private final List<TimeSheetRow> mTimeSheetRows = new ArrayList<>();
         private final List<Project> mProjects = new ArrayList<>();
-        private int mYear;
-        private int mWeek;
         private String mUsername;
         private boolean mMonthlyDataApproved;
         private Date mLastTransferred;
 
         public XTimeOverview build() {
             return new XTimeOverview(mTimeSheetRows, mProjects, mUsername, mMonthlyDataApproved,
-                    mLastTransferred, mYear, mWeek);
+                    mLastTransferred);
         }
 
         public Builder addProject(final Project project) {
@@ -181,16 +163,6 @@ public class XTimeOverview implements Parcelable {
 
         public Builder setUsername(final String username) {
             mUsername = username;
-            return this;
-        }
-
-        public Builder setWeek(final int week) {
-            mWeek = week;
-            return this;
-        }
-
-        public Builder setYear(final int year) {
-            mYear = year;
             return this;
         }
     }

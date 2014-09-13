@@ -31,8 +31,7 @@ public class XTimeOverviewTest extends TestCase {
         String username = "username";
         final boolean approved = true;
         Date transferred = new Date(1234);
-        mOverview = new XTimeOverview(timeSheetRows, projects, username, approved, transferred,
-                2014, 1);
+        mOverview = new XTimeOverview(timeSheetRows, projects, username, approved, transferred);
     }
 
     public void testEquals() {
@@ -46,17 +45,17 @@ public class XTimeOverviewTest extends TestCase {
         Date transferred = new Date(1234);
 
         assertTrue(mOverview.equals(new XTimeOverview(timeSheetRows, projects, username, approved,
-                transferred, 2014, 1)));
+                transferred)));
         assertFalse(mOverview.equals(new XTimeOverview(new ArrayList<TimeSheetRow>(), projects,
-                username, approved, transferred, 2014, 1)));
+                username, approved, transferred)));
         assertFalse(mOverview.equals(new XTimeOverview(timeSheetRows, new ArrayList<Project>(),
-                username, approved, transferred, 2014, 1)));
+                username, approved, transferred)));
         assertFalse(mOverview.equals(new XTimeOverview(timeSheetRows, projects, "wrong", approved,
-                transferred, 2014, 1)));
+                transferred)));
         assertFalse(mOverview.equals(new XTimeOverview(timeSheetRows, projects, username, false,
-                transferred, 2014, 1)));
+                transferred)));
         assertFalse(mOverview.equals(new XTimeOverview(timeSheetRows, projects, username,
-                approved, new Date(666), 2014, 1)));
+                approved, new Date(666))));
     }
 
     public void testParcelable() {

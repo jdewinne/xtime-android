@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
+import com.xebia.xtime.shared.TimeSheetUtils;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.XTimeOverview;
 
@@ -44,8 +45,6 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     private XTimeOverview mOverview;
     private Listener mListener;
     private List<DayOverview> mDays;
-    private int mYear;
-    private int mWeek;
 
     public DailyHoursListFragment() {
         // Required empty public constructor
@@ -78,10 +77,6 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
         super.onActivityCreated(savedInstanceState);
         if (getArguments() != null) {
             mStartDate = new Date(getArguments().getLong(ARG_START_DATE, -1));
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(mStartDate);
-            mYear = calendar.get(Calendar.YEAR);
-            mWeek = calendar.get(Calendar.WEEK_OF_YEAR);
         }
         setEmptyText(getText(R.string.empty_week_overview));
 
@@ -128,8 +123,11 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         Log.d(TAG, "load finished");
         if (null != cursor && cursor.getCount() > 0) {
-            Log.d(TAG, "Loaded " + cursor.getCount() + " time registrations for week " + mWeek);
-            mOverview = WeekOverviewUtils.cursorToOverview(cursor);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(mStartDate);
+            int week = calendar.get(Calendar.WEEK_OF_YEAR);
+            Log.d(TAG, "Loaded " + cursor.getCount() + " time registrations for week " + week);
+            mOverview = TimeSheetUtils.cursorToOverview(cursor);
         } else {
             Log.d(TAG, "No time registrations loaded");
         }
