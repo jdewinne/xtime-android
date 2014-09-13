@@ -4,12 +4,10 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
-import android.annotation.TargetApi;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -27,9 +25,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         super(context, autoInitialize);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public SyncAdapter(Context context, boolean autoInitialize, boolean allowParallelSyncs) {
-        // This form of the constructor maintains compatibility with Android 3.0 and up
         super(context, autoInitialize, allowParallelSyncs);
     }
 

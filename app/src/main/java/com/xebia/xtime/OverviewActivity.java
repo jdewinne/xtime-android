@@ -4,13 +4,13 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
+import android.app.ActionBar;
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OverviewActivity extends ActionBarActivity implements DailyHoursListFragment.Listener {
+public class OverviewActivity extends Activity implements DailyHoursListFragment.Listener {
 
     private static final String TAG = "OverviewActivity";
     private AccountManager mAccountManager;
@@ -88,7 +88,7 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
                 R.layout.ab_nav_dropdown, new String[]{"title"},
                 new int[]{android.R.id.text1});
 
-        ActionBar actionBar = getSupportActionBar();
+        ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         actionBar.setListNavigationCallbacks(adapter,
@@ -98,7 +98,7 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
                         Map<String, Object> map = data.get(itemPosition);
                         Object o = map.get("fragment");
                         if (o instanceof Fragment) {
-                            FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+                            FragmentTransaction tx = getFragmentManager().beginTransaction();
                             tx.replace(android.R.id.content, (Fragment) o);
                             tx.commit();
                         }
