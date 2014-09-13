@@ -14,12 +14,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.xebia.xtime.authenticator.Authenticator;
-import com.xebia.xtime.shared.model.XTimeOverview;
-import com.xebia.xtime.shared.parser.XTimeOverviewParser;
-import com.xebia.xtime.shared.webservice.XTimeWebService;
 
 import java.io.IOException;
-import java.util.Date;
 
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
 
@@ -40,26 +36,19 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-        Log.d(TAG, "Performing sync for account '" + account.name + "'");
+        Log.d(TAG, "Performing sync for " + account);
+
         String cookie = "";
         try {
             cookie = getCookie(account);
-            XTimeOverview overview = requestOverview(cookie);
-            if (null != overview) {
-                Log.d(TAG, "Parsed overview");
-                mRetryCount = 0;
-                // TODO: Store overview
-            } else {
-                Log.w(TAG, "Parse failed");
-                syncResult.stats.numParseExceptions++;
-            }
+            new SyncHelper().performSync(cookie, provider, syncResult);
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to authenticate! Connection error: '" + e.getMessage() + "'");
+            syncResult.stats.numIoExceptions++;
         } catch (OperationCanceledException | AuthenticatorException e) {
             Log.w(TAG, "Failed to sync! Authentication error: '" + e.getMessage() + "'");
             syncResult.stats.numAuthExceptions++;
-        } catch (IOException e) {
-            Log.w(TAG, "Failed to sync! Connection error: '" + e.getMessage() + "'");
-            syncResult.stats.numIoExceptions++;
-        } catch (CookieExpiredException e) {
+        } catch (SyncHelper.CookieExpiredException e) {
             Log.w(TAG, "Cookie expired!");
             AccountManager accountManager = AccountManager.get(getContext());
             accountManager.invalidateAuthToken(Authenticator.ACCOUNT_TYPE, cookie);
@@ -78,20 +67,5 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
             OperationCanceledException, IOException {
         AccountManager accountManager = AccountManager.get(getContext());
         return accountManager.blockingGetAuthToken(account, Authenticator.AUTH_TYPE, false);
-    }
-
-    private XTimeOverview requestOverview(final String cookie) throws CookieExpiredException,
-            IOException {
-        String response = XTimeWebService.getInstance().getWeekOverview(new Date(), cookie);
-        if (response.contains("UsernameNotFoundException")) {
-            throw new CookieExpiredException("UsernameNotFoundException");
-        }
-        return XTimeOverviewParser.parse(response);
-    }
-
-    private static class CookieExpiredException extends Exception {
-        public CookieExpiredException(String message) {
-            super(message);
-        }
     }
 }
