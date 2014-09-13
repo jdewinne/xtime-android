@@ -1,0 +1,134 @@
+package com.xebia.xtime.sync;
+
+import android.content.ContentProviderClient;
+import android.content.ContentProviderOperation;
+import android.content.OperationApplicationException;
+import android.content.SyncResult;
+import android.os.RemoteException;
+import android.util.Log;
+
+import com.xebia.xtime.content.XTimeContract.TimeEntries;
+import com.xebia.xtime.content.XTimeContract.TimeSheetRows;
+import com.xebia.xtime.content.XTimeContract.TimeSheets;
+import com.xebia.xtime.shared.model.TimeCell;
+import com.xebia.xtime.shared.model.TimeSheetRow;
+import com.xebia.xtime.shared.model.XTimeOverview;
+import com.xebia.xtime.shared.parser.XTimeOverviewParser;
+import com.xebia.xtime.shared.webservice.XTimeWebService;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.TimeZone;
+
+public class SyncHelper {
+
+    /**
+     * The first week to sync data for is 4 weeks old.
+     */
+    public static final int OLDEST_WEEK = -4;
+    /**
+     * The last week to sync data for is 1 week in the future.
+     */
+    public static final int NEWEST_WEEK = 1;
+    private static final String TAG = "SyncHelper";
+
+    public void performSync(final String cookie, final ContentProviderClient provider,
+                            final SyncResult syncResult) throws CookieExpiredException {
+        try {
+            List<XTimeOverview> overviews = new ArrayList<>();
+            for (int offset = OLDEST_WEEK; offset <= NEWEST_WEEK; offset++) {
+                XTimeOverview overview = requestWeekOverview(cookie, offset);
+                if (null != overview) {
+                    Log.d(TAG, "Parsed overview");
+                    overviews.add(overview);
+                } else {
+                    Log.w(TAG, "Parse failed");
+                    syncResult.stats.numParseExceptions++;
+                }
+            }
+            storeTimeSheets(overviews, provider);
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to sync! Connection error: '" + e.getMessage() + "'");
+            syncResult.stats.numIoExceptions++;
+        } catch (RemoteException | OperationApplicationException e) {
+            Log.w(TAG, "Failed to store data! RemoteException: '" + e.getMessage() + "'");
+            syncResult.stats.numParseExceptions++;
+        }
+    }
+
+    private int storeTimeSheets(final List<XTimeOverview> overviews,
+                                final ContentProviderClient provider) throws
+            RemoteException, OperationApplicationException {
+        Log.d(TAG, "Store time sheets");
+
+        ArrayList<ContentProviderOperation> batch = new ArrayList<>();
+        for (XTimeOverview overview : overviews) {
+            // delete any existing time sheet for this week
+            batch.add(ContentProviderOperation.newDelete(TimeSheets.CONTENT_URI)
+                    .withSelection(TimeSheets.YEAR + "=? AND " + TimeSheets.WEEK + "=?",
+                            new String[]{Long.toString(overview.getYear()),
+                                    Long.toString(overview.getWeek())})
+                    .build());
+
+            // insert the time sheet
+            batch.add(ContentProviderOperation.newInsert(TimeSheets.CONTENT_URI)
+                    .withValue(TimeSheets.APPROVED, overview.isMonthlyDataApproved())
+                    .withValue(TimeSheets.LAST_TRANSFERRED,
+                            overview.getLastTransferred().getTime())
+                    .withValue(TimeSheets.YEAR, overview.getYear())
+                    .withValue(TimeSheets.WEEK, overview.getWeek())
+                    .build());
+
+            // insert the time sheet rows with back reference to the time sheet ID
+            int indexOfTimeSheet = batch.size() - 1;
+            for (TimeSheetRow sheetRow : overview.getTimeSheetRows()) {
+                batch.add(ContentProviderOperation.newInsert(TimeSheetRows.CONTENT_URI)
+                        .withValue(TimeSheetRows.DESCRIPTION, sheetRow.getDescription())
+                        .withValue(TimeSheetRows.PROJECT_ID, sheetRow.getProject().getId())
+                        .withValue(TimeSheetRows.PROJECT_NAME, sheetRow.getProject().getName())
+                        .withValue(TimeSheetRows.WORKTYPE_ID, sheetRow.getWorkType().getId())
+                        .withValue(TimeSheetRows.WORKTYPE_NAME,
+                                sheetRow.getWorkType().getDescription())
+                        .withValueBackReference(TimeSheetRows.SHEET_ID, indexOfTimeSheet)
+                        .build());
+
+                // insert the time entries with back reference to the time sheet row ID
+                int indexOfTimeSheetRow = batch.size() - 1;
+                for (TimeCell timeEntry : sheetRow.getTimeCells()) {
+                    batch.add(ContentProviderOperation.newInsert(TimeEntries.CONTENT_URI)
+                            .withValue(TimeEntries.APPROVED, timeEntry.isApproved())
+                            .withValue(TimeEntries.ENTRY_DATE, timeEntry.getEntryDate().getTime())
+                            .withValue(TimeEntries.HOURS, timeEntry.getHours())
+                            .withValueBackReference(TimeEntries.SHEET_ROW_ID, indexOfTimeSheetRow)
+                            .build());
+                }
+            }
+        }
+        provider.applyBatch(batch);
+        return batch.size();
+    }
+
+    private XTimeOverview requestWeekOverview(final String cookie, int weekOffset)
+            throws CookieExpiredException, IOException {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.WEEK_OF_YEAR, weekOffset);
+        calendar.setTimeZone(TimeZone.getTimeZone("CET"));
+        int year = calendar.get(Calendar.YEAR);
+        int week = calendar.get(Calendar.WEEK_OF_YEAR);
+
+        String response = XTimeWebService.getInstance().getWeekOverview(calendar.getTime(), cookie);
+        if (response.contains("UsernameNotFoundException")) {
+            throw new CookieExpiredException("UsernameNotFoundException");
+        }
+        return XTimeOverviewParser.parse(response, year, week);
+    }
+
+    static class CookieExpiredException extends Exception {
+        public CookieExpiredException(String message) {
+            super(message);
+        }
+    }
+}

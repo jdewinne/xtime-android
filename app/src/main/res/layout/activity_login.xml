@@ -1,6 +1,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.xebia.xtime.login.LoginActivity">
+    tools:context="com.xebia.xtime.authenticator.AuthenticatorActivity">
 
     <!-- Login progress -->
     <LinearLayout

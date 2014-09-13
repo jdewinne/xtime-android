@@ -31,9 +31,11 @@ public class XTimeOverviewParser {
      * com.xebia.xtime.shared.model.XTimeOverview}.
      *
      * @param input String with the JavaScript code that is returned to an overview request.
+     * @param year  Year of the overview
+     * @param week  Week of the overview
      * @return The week overview, or <code>null</code> when the input could not be parsed
      */
-    public static XTimeOverview parse(String input) {
+    public static XTimeOverview parse(String input, final int year, final int week) {
         if (TextUtils.isEmpty(input)) {
             Log.d(TAG, "No input to parse");
             return null;
@@ -63,7 +65,7 @@ public class XTimeOverviewParser {
             // String weekendDatesVar = matcher.group(6);
             // String weekStart = matcher.group(7);
             return new XTimeOverview(timeSheetRows, projects, username, monthlyDataApproved,
-                    new Date(lastTransferredDate));
+                    new Date(lastTransferredDate), year, week);
 
         } else {
             Log.d(TAG, "Failed to parse input '" + input + "'");
@@ -73,7 +75,7 @@ public class XTimeOverviewParser {
 
     private static List<TimeSheetRow> parseTimeSheetRows(String input) {
 
-        List<TimeSheetRow> timeSheetRows = new ArrayList<TimeSheetRow>();
+        List<TimeSheetRow> timeSheetRows = new ArrayList<>();
 
         // match the response for patterns like:
         // xx.clientName="$1"; xx.description="$2"; xx.projectId="$3"; ...
@@ -116,7 +118,7 @@ public class XTimeOverviewParser {
 
         List<String> timeCellVarNames = parseTimeCellVars(input, varName);
 
-        List<TimeCell> timeCells = new ArrayList<TimeCell>();
+        List<TimeCell> timeCells = new ArrayList<>();
         for (String timeCellVarName : timeCellVarNames) {
             timeCells.add(parseTimeCellDetails(input, timeCellVarName));
         }
@@ -151,7 +153,7 @@ public class XTimeOverviewParser {
     }
 
     private static List<String> parseTimeCellVars(String input, String varName) {
-        List<String> varNames = new ArrayList<String>();
+        List<String> varNames = new ArrayList<>();
 
         // match the response for patterns like:
         // xx[0]=$1; xx[1]=$2; ...
@@ -169,7 +171,7 @@ public class XTimeOverviewParser {
     }
 
     private static List<Project> parseProjects(String input) {
-        List<Project> projects = new ArrayList<Project>();
+        List<Project> projects = new ArrayList<>();
 
         // match the response for patterns like:
         // xx.description="$1"; xx.id="$2";

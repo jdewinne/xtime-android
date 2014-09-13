@@ -1,14 +1,17 @@
-package com.xebia.xtime.login;
+package com.xebia.xtime.authenticator;
 
+import android.accounts.Account;
+import android.accounts.AccountAuthenticatorActivity;
+import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -17,21 +20,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xebia.xtime.R;
+import com.xebia.xtime.shared.webservice.XTimeWebService;
 
-import org.apache.http.auth.AuthenticationException;
+import java.io.IOException;
 
 /**
  * Activity which displays a login screen to the user
  */
-public class LoginActivity extends ActionBarActivity {
+public class AuthenticatorActivity extends AccountAuthenticatorActivity {
 
-    public static final String PREF_USERNAME = "com.xebia.xtime.extra.USERNAME";
-    public static final String PREF_PASSWORD = "com.xebia.xtime.extra.PASSWORD";
-    public static final String PREF_AUTOLOGIN = "com.xebia.xtime.extra.AUTOLOGIN";
+    public static final String KEY_ADD_NEW_ACCOUNT =  "com.xebia.xtime.extra.ADD_NEW_ACCOUNT";
+    private static final String TAG = "AuthenticatorActivity";
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private AuthenticationTask mAuthTask = null;
+    private String mUsername;
+    private String mPassword;
+
     // UI references.
     private EditText mUsernameView;
     private EditText mPasswordView;
@@ -47,13 +53,11 @@ public class LoginActivity extends ActionBarActivity {
 
         // Set up the login form.
         mUsernameView = (EditText) findViewById(R.id.username);
-        String username = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(PREF_USERNAME, null);
+        String username = getIntent().getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
         mUsernameView.setText(username);
 
         mPasswordView = (EditText) findViewById(R.id.password);
-        String password = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(PREF_PASSWORD, null);
+        String password = getIntent().getStringExtra(AccountManager.KEY_PASSWORD);
         mPasswordView.setText(password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -77,15 +81,11 @@ public class LoginActivity extends ActionBarActivity {
                 attemptLogin();
             }
         });
-
-        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PREF_AUTOLOGIN, false)) {
-            attemptLogin();
-        }
     }
 
     /**
-     * Attempts to sign in or register the account specified by the login form. If there are form
-     * errors (invalid email, missing fields, etc.), the errors are presented and no actual login
+     * Attempts to sign in the account specified by the login form. If there are form errors
+     * (invalid email, missing fields, etc.), the errors are presented and no actual login
      * attempt is made.
      */
     private void attemptLogin() {
@@ -125,8 +125,10 @@ public class LoginActivity extends ActionBarActivity {
             // Show a progress spinner, and kick off a background task to perform the login attempt
             mLoginStatusMessageView.setText(R.string.login_progress_signing_in);
             showProgress(true);
-            mAuthTask = new UserLoginTask();
-            mAuthTask.execute(username.trim(), password.trim());
+            mAuthTask = new AuthenticationTask();
+            mUsername = username.trim();
+            mPassword = password.trim();
+            mAuthTask.execute(mUsername, mPassword);
         }
     }
 
@@ -165,65 +167,75 @@ public class LoginActivity extends ActionBarActivity {
         }
     }
 
+    private void finishLogin(String cookie) {
+
+        // add/update account in account manager
+        AccountManager accountManager = AccountManager.get(this);
+        final Account account = new Account(mUsername, Authenticator.ACCOUNT_TYPE);
+        if (getIntent().getBooleanExtra(KEY_ADD_NEW_ACCOUNT, false)) {
+            // Creating the account on the device and setting the auth token we got
+            // (Not setting the auth token will cause another call to the server to authenticate the user)
+            accountManager.addAccountExplicitly(account, mPassword, null);
+            accountManager.setAuthToken(account, Authenticator.AUTH_TYPE, cookie);
+            accountManager.setPassword(account, mPassword);
+        } else {
+            accountManager.setPassword(account, mPassword);
+        }
+
+        // return authentication result
+        final Intent res = new Intent();
+        res.putExtra(AccountManager.KEY_ACCOUNT_NAME, mUsername);
+        res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Authenticator.ACCOUNT_TYPE);
+        res.putExtra(AccountManager.KEY_AUTHTOKEN, cookie);
+        res.putExtra(AccountManager.KEY_PASSWORD, mPassword);
+        setAccountAuthenticatorResult(res.getExtras());
+        setResult(RESULT_OK, res);
+        finish();
+    }
+
     /**
      * Represents an asynchronous login task used to authenticate the user. Expects Strings for
      * username and password as execution parameters.
      */
-    private class UserLoginTask extends AsyncTask<String, Void, Boolean> {
+    private class AuthenticationTask extends AsyncTask<String, Void, String> {
 
-        private String mUsername;
-        private String mPassword;
+        private Exception mException;
 
         @Override
-        protected Boolean doInBackground(String... params) {
+        protected String doInBackground(String... params) {
             if (null == params || params.length < 2) {
                 return null;
             }
-
-            // get login arguments
-            mUsername = params[0];
-            mPassword = params[1];
-
-            String response;
+            String username = params[0];
+            String password = params[1];
+            String cookie;
             try {
-                response = new LoginRequest(mUsername, mPassword).submit();
-            } catch (AuthenticationException e) {
-                return false;
+                Log.d(TAG, "Login request: " + username + ", " + password);
+                cookie = XTimeWebService.getInstance().login(username, password);
+                Log.d(TAG, "Login request result: " + cookie);
+            } catch (IOException e) {
+                Log.w(TAG, "Login request failed: '" + e.getMessage() + "'");
+                mException = e;
+                cookie = null;
             }
-
-            if (null != response) {
-                return true;
-            } else {
-                return null;
-            }
+            return cookie;
         }
 
         @Override
-        protected void onPostExecute(final Boolean result) {
+        protected void onPostExecute(final String cookie) {
             mAuthTask = null;
             showProgress(false);
 
-            if (null == result) {
-                Toast.makeText(LoginActivity.this, R.string.error_request_failed,
+            if (null != mException) {
+                Toast.makeText(AuthenticatorActivity.this, R.string.error_request_failed,
                         Toast.LENGTH_LONG).show();
 
-            } else if (result) {
-                PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit()
-                        .putString(PREF_USERNAME, mUsername)
-                        .putString(PREF_PASSWORD, mPassword)
-                        .putBoolean(PREF_AUTOLOGIN, true)
-                        .apply();
-
-                setResult(RESULT_OK);
-                finish();
-
-            } else {
-                PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit()
-                        .putBoolean(PREF_AUTOLOGIN, false)
-                        .apply();
-
+            } else if (TextUtils.isEmpty(cookie)) {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
+
+            } else {
+                finishLogin(cookie);
             }
         }
 

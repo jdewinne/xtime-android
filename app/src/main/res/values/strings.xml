@@ -10,12 +10,13 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_request_failed">Failed to connect to XTime server</string>
     <string name="error_field_required">This field is required</string>
+    <string name="auth_token_label">XTime</string>
     <!-- week overview activity -->
     <string name="title_week_overview">Week Overview</string>
     <string name="empty_week_overview">Week overview unavailable</string>
     <string name="hours_label">hours</string>
     <string name="approved">approved</string>
-    <string name="action_sign_out">Sign out</string>
+    <string name="action_sync">Refresh</string>
     <!-- day overview activity -->
     <string name="title_activity_day_overview">Day Overview</string>
     <string name="empty_day_overview">Empty time sheet</string>

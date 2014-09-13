@@ -1,24 +1,28 @@
 package com.xebia.xtime.weekoverview;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.shared.TimeSheetUtils;
+import com.xebia.xtime.content.XTimeContract.TimeEntries;
+import com.xebia.xtime.content.XTimeContract.TimeSheets;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.XTimeOverview;
-import com.xebia.xtime.weekoverview.loader.WeekOverviewLoader;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -33,13 +37,16 @@ import java.util.Locale;
  * day should open up the day details.
  */
 public class DailyHoursListFragment extends ListFragment implements LoaderManager
-        .LoaderCallbacks<XTimeOverview> {
+        .LoaderCallbacks<Cursor> {
 
+    public static final String TAG = "DailyHoursListFragment";
     private static final String ARG_START_DATE = "start_date";
     private Date mStartDate;
     private XTimeOverview mOverview;
     private Listener mListener;
     private List<DayOverview> mDays;
+    private int mYear;
+    private int mWeek;
 
     public DailyHoursListFragment() {
         // Required empty public constructor
@@ -72,6 +79,10 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
         super.onActivityCreated(savedInstanceState);
         if (getArguments() != null) {
             mStartDate = new Date(getArguments().getLong(ARG_START_DATE, -1));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(mStartDate);
+            mYear = calendar.get(Calendar.YEAR);
+            mWeek = calendar.get(Calendar.WEEK_OF_YEAR);
         }
         setEmptyText(getText(R.string.empty_week_overview));
 
@@ -102,32 +113,41 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     }
 
     @Override
-    public Loader<XTimeOverview> onCreateLoader(int id, Bundle args) {
-        return new WeekOverviewLoader(getActivity(), mStartDate);
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getActivity(), TimeEntries.CONTENT_URI, null,
+                TimeSheets.YEAR + "=? AND " + TimeSheets.WEEK + "=?",
+                new String[]{Long.toString(mYear), Long.toString(mWeek)}, null);
     }
 
     @Override
-    public void onLoadFinished(Loader<XTimeOverview> loader, XTimeOverview overview) {
-        mOverview = overview;
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        Log.d(TAG, "load finished");
+        if (null != cursor && cursor.getCount() > 0) {
+            Log.d(TAG, "Loaded " + cursor.getCount() + " time registrations for week " + mWeek);
+            mOverview = WeekOverviewUtils.cursorToOverview(cursor);
+        } else {
+            Log.d(TAG, "No time registrations loaded");
+            mOverview = null;
+        }
         updateList();
     }
 
     private void updateList() {
         if (null == mDays) {
-            mDays = new ArrayList<DayOverview>();
+            mDays = new ArrayList<>();
             setListAdapter(new DailyHoursListAdapter(getActivity(), mDays));
         } else {
             mDays.clear();
         }
 
         if (null != mOverview && null != mOverview.getTimeSheetRows()) {
-            mDays.addAll(TimeSheetUtils.weekToDays(mOverview, mStartDate));
+            mDays.addAll(WeekOverviewUtils.weekToDays(mOverview, mStartDate));
         }
         ((ArrayAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
     @Override
-    public void onLoaderReset(Loader<XTimeOverview> loader) {
+    public void onLoaderReset(Loader<Cursor> loader) {
         mDays.clear();
     }
 

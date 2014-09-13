@@ -28,11 +28,13 @@ public class XTimeOverview implements Parcelable {
             return new XTimeOverview[size];
         }
     };
-    private List<TimeSheetRow> mTimeSheetRows;
-    private List<Project> mProjects;
-    private String mUsername;
-    private boolean mMonthlyDataApproved;
-    private Date mLastTransferred;
+    private final int mYear;
+    private final int mWeek;
+    private final List<TimeSheetRow> mTimeSheetRows;
+    private final List<Project> mProjects;
+    private final String mUsername;
+    private final boolean mMonthlyDataApproved;
+    private final Date mLastTransferred;
 
     /**
      * Constructor.
@@ -43,24 +45,30 @@ public class XTimeOverview implements Parcelable {
      * @param monthlyDataApproved <code>true</code> if the data for this month is already approved.
      * @param lastTransferred     Date when the data was last sent to Afas (transferred data
      *                            cannot be edited)
+     * @param year                Year of the overview
+     * @param week                Week of overview
      */
-    public XTimeOverview(List<TimeSheetRow> timeSheetRows, List<Project> projects,
-                         String username, boolean monthlyDataApproved, Date lastTransferred) {
+    public XTimeOverview(List<TimeSheetRow> timeSheetRows, List<Project> projects, String username,
+                         boolean monthlyDataApproved, Date lastTransferred, int year, int week) {
         mProjects = projects;
         mTimeSheetRows = timeSheetRows;
         mUsername = username;
         mMonthlyDataApproved = monthlyDataApproved;
         mLastTransferred = lastTransferred;
+        mYear = year;
+        mWeek = week;
     }
 
     protected XTimeOverview(Parcel parcel) {
-        mProjects = new ArrayList<Project>();
+        mProjects = new ArrayList<>();
         parcel.readTypedList(mProjects, Project.CREATOR);
-        mTimeSheetRows = new ArrayList<TimeSheetRow>();
+        mTimeSheetRows = new ArrayList<>();
         parcel.readTypedList(mTimeSheetRows, TimeSheetRow.CREATOR);
         mUsername = parcel.readString();
         mMonthlyDataApproved = parcel.readInt() > 0;
         mLastTransferred = new Date(parcel.readLong());
+        mYear = parcel.readInt();
+        mWeek = parcel.readInt();
     }
 
     /**
@@ -70,10 +78,6 @@ public class XTimeOverview implements Parcelable {
         return mProjects;
     }
 
-    public void setProjects(List<Project> projects) {
-        mProjects = projects;
-    }
-
     /**
      * @return List of active time sheet rows.
      */
@@ -81,19 +85,11 @@ public class XTimeOverview implements Parcelable {
         return mTimeSheetRows;
     }
 
-    public void setTimeSheetRows(List<TimeSheetRow> timeSheetRows) {
-        mTimeSheetRows = timeSheetRows;
-    }
-
     /**
      * @return Full user name.
      */
     public String getUsername() {
         return mUsername;
-    }
-
-    public void setUsername(String username) {
-        mUsername = username;
     }
 
     /**
@@ -110,8 +106,12 @@ public class XTimeOverview implements Parcelable {
         return mMonthlyDataApproved;
     }
 
-    public void setMonthlyDataApproved(boolean monthlyDataApproved) {
-        mMonthlyDataApproved = monthlyDataApproved;
+    public int getYear() {
+        return mYear;
+    }
+
+    public int getWeek() {
+        return mWeek;
     }
 
     @Override
@@ -126,17 +126,72 @@ public class XTimeOverview implements Parcelable {
         parcel.writeString(mUsername);
         parcel.writeInt(mMonthlyDataApproved ? 1 : 0);
         parcel.writeLong(mLastTransferred.getTime());
+        parcel.writeInt(mYear);
+        parcel.writeInt(mWeek);
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof XTimeOverview) {
-            return mMonthlyDataApproved == ((XTimeOverview) o).isMonthlyDataApproved() &&
-                    mLastTransferred.equals(((XTimeOverview) o).getLastTransferred()) &&
-                    mProjects.equals(((XTimeOverview) o).getProjects()) &&
-                    mTimeSheetRows.equals(((XTimeOverview) o).getTimeSheetRows()) &&
-                    mUsername.equals(((XTimeOverview) o).getUsername());
+            return mMonthlyDataApproved == ((XTimeOverview) o).isMonthlyDataApproved()
+                    && mLastTransferred.equals(((XTimeOverview) o).getLastTransferred())
+                    && mProjects.equals(((XTimeOverview) o).getProjects())
+                    && mTimeSheetRows.equals(((XTimeOverview) o).getTimeSheetRows())
+                    && mUsername.equals(((XTimeOverview) o).getUsername())
+                    && mYear == (((XTimeOverview) o).getYear())
+                    && mWeek == (((XTimeOverview) o).getWeek());
         }
         return super.equals(o);
+    }
+
+    public static class Builder {
+
+        private final List<TimeSheetRow> mTimeSheetRows = new ArrayList<>();
+        private final List<Project> mProjects = new ArrayList<>();
+        private int mYear;
+        private int mWeek;
+        private String mUsername;
+        private boolean mMonthlyDataApproved;
+        private Date mLastTransferred;
+
+        public XTimeOverview build() {
+            return new XTimeOverview(mTimeSheetRows, mProjects, mUsername, mMonthlyDataApproved,
+                    mLastTransferred, mYear, mWeek);
+        }
+
+        public Builder addProject(final Project project) {
+            mProjects.add(project);
+            return this;
+        }
+
+        public Builder addTimeSheetRow(final TimeSheetRow sheetRow) {
+            mTimeSheetRows.add(sheetRow);
+            return this;
+        }
+
+        public Builder setMonthlyDataApproved(final boolean approved) {
+            mMonthlyDataApproved = approved;
+            return this;
+        }
+
+        public Builder setLastTransferred(final Date lastTransferred) {
+            mLastTransferred = lastTransferred;
+            return this;
+        }
+
+        public Builder setUsername(final String username) {
+            mUsername = username;
+            return this;
+        }
+
+        public Builder setWeek(final int week) {
+            mWeek = week;
+            return this;
+        }
+
+        public Builder setYear(final int year) {
+            mYear = year;
+            return this;
+        }
     }
 }

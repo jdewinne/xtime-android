@@ -26,10 +26,10 @@ public class TimeSheetRow implements Parcelable {
             return new TimeSheetRow[size];
         }
     };
-    private String mDescription;
-    private Project mProject;
-    private List<TimeCell> mTimeCells;
-    private WorkType mWorkType;
+    private final String mDescription;
+    private final Project mProject;
+    private final List<TimeCell> mTimeCells;
+    private final WorkType mWorkType;
 
     /**
      * Constructor.
@@ -52,7 +52,7 @@ public class TimeSheetRow implements Parcelable {
         mProject = parcel.readParcelable(Project.class.getClassLoader());
         mWorkType = parcel.readParcelable(WorkType.class.getClassLoader());
         mDescription = parcel.readString();
-        mTimeCells = new ArrayList<TimeCell>();
+        mTimeCells = new ArrayList<>();
         parcel.readTypedList(mTimeCells, TimeCell.CREATOR);
     }
 
@@ -63,19 +63,11 @@ public class TimeSheetRow implements Parcelable {
         return mDescription;
     }
 
-    public void setDescription(String description) {
-        mDescription = description;
-    }
-
     /**
      * @return The project to register time for
      */
     public Project getProject() {
         return mProject;
-    }
-
-    public void setProject(Project project) {
-        mProject = project;
     }
 
     /**
@@ -86,19 +78,11 @@ public class TimeSheetRow implements Parcelable {
         return mTimeCells;
     }
 
-    public void setTimeCells(List<TimeCell> timeCells) {
-        mTimeCells = timeCells;
-    }
-
     /**
      * @return The type of work that was performed
      */
     public WorkType getWorkType() {
         return mWorkType;
-    }
-
-    public void setWorkType(WorkType workType) {
-        mWorkType = workType;
     }
 
     @Override
@@ -124,5 +108,37 @@ public class TimeSheetRow implements Parcelable {
 
         }
         return super.equals(o);
+    }
+
+    public static class Builder {
+
+        private final List<TimeCell> mTimeCells = new ArrayList<>();
+        private String mDescription;
+        private Project mProject;
+        private WorkType mWorkType;
+
+        public TimeSheetRow build() {
+            return new TimeSheetRow(mProject, mWorkType, mDescription, mTimeCells);
+        }
+
+        public Builder addTimeCell(final TimeCell timeCell) {
+            mTimeCells.add(timeCell);
+            return this;
+        }
+
+        public Builder setDescription(final String description) {
+            mDescription = description;
+            return this;
+        }
+
+        public Builder setProject(final Project project) {
+            mProject = project;
+            return this;
+        }
+
+        public Builder setWorkType(final WorkType workType) {
+            mWorkType = workType;
+            return this;
+        }
     }
 }
