@@ -30,11 +30,11 @@ public class XTimeOverview implements Parcelable {
     };
     private final int mYear;
     private final int mWeek;
-    private List<TimeSheetRow> mTimeSheetRows;
-    private List<Project> mProjects;
-    private String mUsername;
-    private boolean mMonthlyDataApproved;
-    private Date mLastTransferred;
+    private final List<TimeSheetRow> mTimeSheetRows;
+    private final List<Project> mProjects;
+    private final String mUsername;
+    private final boolean mMonthlyDataApproved;
+    private final Date mLastTransferred;
 
     /**
      * Constructor.
@@ -78,10 +78,6 @@ public class XTimeOverview implements Parcelable {
         return mProjects;
     }
 
-    public void setProjects(List<Project> projects) {
-        mProjects = projects;
-    }
-
     /**
      * @return List of active time sheet rows.
      */
@@ -94,10 +90,6 @@ public class XTimeOverview implements Parcelable {
      */
     public String getUsername() {
         return mUsername;
-    }
-
-    public void setUsername(String username) {
-        mUsername = username;
     }
 
     /**
@@ -150,5 +142,56 @@ public class XTimeOverview implements Parcelable {
                     && mWeek == (((XTimeOverview) o).getWeek());
         }
         return super.equals(o);
+    }
+
+    public static class Builder {
+
+        private final List<TimeSheetRow> mTimeSheetRows = new ArrayList<>();
+        private final List<Project> mProjects = new ArrayList<>();
+        private int mYear;
+        private int mWeek;
+        private String mUsername;
+        private boolean mMonthlyDataApproved;
+        private Date mLastTransferred;
+
+        public XTimeOverview build() {
+            return new XTimeOverview(mTimeSheetRows, mProjects, mUsername, mMonthlyDataApproved,
+                    mLastTransferred, mYear, mWeek);
+        }
+
+        public Builder addProject(final Project project) {
+            mProjects.add(project);
+            return this;
+        }
+
+        public Builder addTimeSheetRow(final TimeSheetRow sheetRow) {
+            mTimeSheetRows.add(sheetRow);
+            return this;
+        }
+
+        public Builder setMonthlyDataApproved(final boolean approved) {
+            mMonthlyDataApproved = approved;
+            return this;
+        }
+
+        public Builder setLastTransferred(final Date lastTransferred) {
+            mLastTransferred = lastTransferred;
+            return this;
+        }
+
+        public Builder setUsername(final String username) {
+            mUsername = username;
+            return this;
+        }
+
+        public Builder setWeek(final int week) {
+            mWeek = week;
+            return this;
+        }
+
+        public Builder setYear(final int year) {
+            mYear = year;
+            return this;
+        }
     }
 }

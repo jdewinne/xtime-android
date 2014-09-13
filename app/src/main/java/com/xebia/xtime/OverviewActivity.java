@@ -4,8 +4,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,16 +12,18 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.SimpleAdapter;
 
 import com.xebia.xtime.authenticator.Authenticator;
+import com.xebia.xtime.content.XTimeContract;
 import com.xebia.xtime.dayoverview.DayOverviewActivity;
 import com.xebia.xtime.monthoverview.MonthPagerFragment;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.weekoverview.DailyHoursListFragment;
 import com.xebia.xtime.weekoverview.WeekPagerFragment;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,23 +39,20 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
         super.onCreate(savedInstanceState);
 
         mAccountManager = AccountManager.get(this);
-        if (hasXTimeAccount()) {
+        Account account = getXTimeAccount();
+        if (null != account) {
+            ContentResolver.setSyncAutomatically(account, XTimeContract.CONTENT_AUTHORITY, true);
+            forceSync();
             setListNavigation();
         } else {
             Log.d(TAG, "Add account");
             AccountManagerCallback<Bundle> callback = new AccountManagerCallback<Bundle>() {
                 @Override
                 public void run(AccountManagerFuture<Bundle> future) {
-                    try {
-                        Log.d(TAG, "AccountManagerCallback called");
-                        if (future.isDone()) {
-                            Bundle result = future.getResult();
-                            String authToken = result.getString(AccountManager.KEY_AUTHTOKEN);
-                            Log.i(TAG, "Auth token: '" + authToken + "'");
-                            setListNavigation();
-                        }
-                    } catch (OperationCanceledException | IOException | AuthenticatorException e) {
-                        Log.e(TAG, "Failed to get auth token", e);
+                    Log.d(TAG, "AccountManagerCallback called");
+                    if (future.isDone()) {
+                        forceSync();
+                        setListNavigation();
                     }
                 }
             };
@@ -63,9 +61,16 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
         }
     }
 
-    private boolean hasXTimeAccount() {
+    private Account getXTimeAccount() {
         Account[] accounts = mAccountManager.getAccountsByType(Authenticator.ACCOUNT_TYPE);
-        return accounts.length > 0;
+        return accounts.length > 0 ? accounts[0] : null;
+    }
+
+    private void forceSync() {
+        Account account = getXTimeAccount();
+        if (null != account) {
+            ContentResolver.requestSync(account, XTimeContract.CONTENT_AUTHORITY, new Bundle());
+        }
     }
 
     private void setListNavigation() {
@@ -101,6 +106,21 @@ public class OverviewActivity extends ActionBarActivity implements DailyHoursLis
                     }
                 }
         );
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_overview, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        if (item.getItemId() == R.id.sync) {
+            forceSync();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
