@@ -56,7 +56,7 @@ public class XTimeOverviewParserTest extends TestCase {
             "weekEndDates:s2,weekStart:null});\n";
 
     public void testRegularInput() {
-        XTimeOverview result = XTimeOverviewParser.parse(INPUT_REGULAR);
+        XTimeOverview result = XTimeOverviewParser.parse(INPUT_REGULAR, 2014, 1);
 
         // list of projects
         assertEquals(11, result.getProjects().size());
@@ -86,17 +86,18 @@ public class XTimeOverviewParserTest extends TestCase {
     }
 
     public void testUnparseableInput() {
-        XTimeOverview result = XTimeOverviewParser.parse("this is intentionally not parseable");
+        XTimeOverview result = XTimeOverviewParser.parse("this is intentionally not parseable",
+                2014, 1);
         assertNull(result);
     }
 
     public void testEmptyInput() {
-        XTimeOverview result = XTimeOverviewParser.parse("");
+        XTimeOverview result = XTimeOverviewParser.parse("", 2014, 1);
         assertNull(result);
     }
 
     public void testNullInput() {
-        XTimeOverview result = XTimeOverviewParser.parse(null);
+        XTimeOverview result = XTimeOverviewParser.parse(null, 2014, 1);
         assertNull(result);
     }
 }

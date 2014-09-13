@@ -23,7 +23,7 @@ public class WeekOverviewLoader extends AsyncTaskLoader<XTimeOverview> {
     public XTimeOverview loadInBackground() {
         try {
             String response = new WeekOverviewRequest(mDate).submit();
-            return XTimeOverviewParser.parse(response);
+            return XTimeOverviewParser.parse(response, 2014, 1);
         } catch (AuthenticationException e) {
             return null;
         }

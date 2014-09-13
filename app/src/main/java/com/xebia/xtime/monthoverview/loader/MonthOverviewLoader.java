@@ -27,7 +27,7 @@ public class MonthOverviewLoader extends AsyncTaskLoader<XTimeOverview> {
                 MonthOverviewRequest(mMonth);
         try {
             String response = request.submit();
-            return XTimeOverviewParser.parse(response);
+            return XTimeOverviewParser.parse(response, 2014, 1);
         } catch (AuthenticationException e) {
             return null;
         }
