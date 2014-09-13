@@ -1,4 +1,4 @@
-package com.xebia.xtime.shared.webservice;
+package com.xebia.xtime.webservice;
 
 import android.net.Uri;
 import android.util.Log;
@@ -47,6 +47,18 @@ public class XTimeWebService {
             response = response.priorResponse();
         }
         return response.header("Set-Cookie");
+    }
+
+    public String getMonthOverview(final Date month, final String cookie) throws IOException {
+        if (BuildConfig.DEBUG) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(month);
+            Log.d(TAG, "Get overview for month " + calendar.get(Calendar.MONTH));
+        }
+        RequestBody body = new GetMonthOverviewRequestBuilder().month(month).build();
+        Response response = doRequest(body, "dwr/call/plaincall/" +
+                "TimeEntryServiceBean.getMonthOverview.dwr", cookie);
+        return response.isSuccessful() ? response.body().string() : null;
     }
 
     public String getWeekOverview(final Date week, final String cookie) throws IOException {

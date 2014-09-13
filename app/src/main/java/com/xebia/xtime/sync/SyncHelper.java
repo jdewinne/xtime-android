@@ -12,8 +12,7 @@ import com.xebia.xtime.content.XTimeContract.TimeSheetRows;
 import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetRow;
 import com.xebia.xtime.shared.model.XTimeOverview;
-import com.xebia.xtime.shared.parser.XTimeOverviewParser;
-import com.xebia.xtime.shared.webservice.XTimeWebService;
+import com.xebia.xtime.webservice.XTimeWebService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,21 +23,21 @@ import java.util.TimeZone;
 public class SyncHelper {
 
     /**
-     * The first week to sync data for is 4 weeks old.
+     * The first time sheet to sync data for is 2 month old.
      */
-    public static final int OLDEST_WEEK = -4;
+    public static final int OLDEST_WEEK = -2;
     /**
-     * The last week to sync data for is 1 week in the future.
+     * The last time sheet to sync data for is 1 month in the future.
      */
-    public static final int NEWEST_WEEK = 1;
+    public static final int NEWEST_MONTH = 1;
     private static final String TAG = "SyncHelper";
 
     public void performSync(final String cookie, final ContentProviderClient provider,
                             final SyncResult syncResult) throws CookieExpiredException {
         try {
             List<XTimeOverview> overviews = new ArrayList<>();
-            for (int offset = OLDEST_WEEK; offset <= NEWEST_WEEK; offset++) {
-                XTimeOverview overview = requestWeekOverview(cookie, offset);
+            for (int offset = OLDEST_WEEK; offset <= NEWEST_MONTH; offset++) {
+                XTimeOverview overview = requestMonthOverview(cookie, offset);
                 if (null != overview) {
                     Log.d(TAG, "Parsed overview");
                     overviews.add(overview);
@@ -96,16 +95,15 @@ public class SyncHelper {
         return batch.size();
     }
 
-    private XTimeOverview requestWeekOverview(final String cookie, int weekOffset)
+    private XTimeOverview requestMonthOverview(final String cookie, int monthOffset)
             throws CookieExpiredException, IOException {
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.WEEK_OF_YEAR, weekOffset);
+        calendar.add(Calendar.MONTH, monthOffset);
         calendar.setTimeZone(TimeZone.getTimeZone("CET"));
-        int year = calendar.get(Calendar.YEAR);
-        int week = calendar.get(Calendar.WEEK_OF_YEAR);
 
-        String response = XTimeWebService.getInstance().getWeekOverview(calendar.getTime(), cookie);
+        String response = XTimeWebService.getInstance().getMonthOverview(calendar.getTime(),
+                cookie);
         if (response.contains("UsernameNotFoundException")) {
             throw new CookieExpiredException("UsernameNotFoundException");
         }

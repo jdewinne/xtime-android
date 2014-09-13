@@ -1,4 +1,4 @@
-package com.xebia.xtime.shared.webservice;
+package com.xebia.xtime.webservice;
 
 import com.squareup.okhttp.MediaType;
 
