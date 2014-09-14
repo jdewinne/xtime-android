@@ -23,10 +23,8 @@ class XTimeDatabase extends SQLiteOpenHelper {
                     + TimeSheetRowColumns.PROJECT_ID + TEXT_TYPE + COMMA
                     + TimeSheetRowColumns.PROJECT_NAME + TEXT_TYPE + COMMA
                     + TimeSheetRowColumns.WORKTYPE_ID + TEXT_TYPE + COMMA
-                    + TimeSheetRowColumns.WORKTYPE_NAME + TEXT_TYPE + COMMA
-                    + " UNIQUE (" + TimeSheetRowColumns.DESCRIPTION + COMMA
-                    + TimeSheetRowColumns.PROJECT_ID + COMMA + TimeSheetRowColumns.WORKTYPE_ID
-                    + ") ON CONFLICT REPLACE)";
+                    + TimeSheetRowColumns.WORKTYPE_NAME + TEXT_TYPE
+                    + ")";
     private static final String NOT_NULL = " NOT NULL";
     private static final String SQL_CREATE_TIME_ENTRIES =
             "CREATE TABLE " + Tables.TIME_ENTRIES + " ("

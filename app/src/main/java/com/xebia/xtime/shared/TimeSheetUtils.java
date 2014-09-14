@@ -2,7 +2,8 @@ package com.xebia.xtime.shared;
 
 import android.database.Cursor;
 
-import com.xebia.xtime.content.XTimeContract;
+import com.xebia.xtime.content.XTimeContract.TimeEntries;
+import com.xebia.xtime.content.XTimeContract.TimeSheetRows;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetRow;
@@ -24,35 +25,29 @@ public final class TimeSheetUtils {
         TimeSheetRow.Builder rowBuilder = null;
         while (!cursor.isAfterLast()) {
             // time sheet row details
-            long sheetRowId = cursor.getLong(cursor.getColumnIndex(XTimeContract.TimeEntries
-                    .SHEET_ROW_ID));
+            long sheetRowId = cursor.getLong(cursor.getColumnIndex(TimeEntries.SHEET_ROW_ID));
             if (sheetRowId != lastSheetRowId) {
                 if (null != rowBuilder) {
                     overviewBuilder.addTimeSheetRow(rowBuilder.build());
                 }
                 rowBuilder = new TimeSheetRow.Builder()
                         .setDescription(
-                                cursor.getString(cursor.getColumnIndex(XTimeContract
-                                        .TimeSheetRows.DESCRIPTION)))
+                                cursor.getString(cursor.getColumnIndex(TimeSheetRows.DESCRIPTION)))
                         .setProject(new Project(
-                                cursor.getString(cursor.getColumnIndex(XTimeContract
-                                        .TimeSheetRows.PROJECT_ID)),
+                                cursor.getString(cursor.getColumnIndex(TimeSheetRows.PROJECT_ID)),
                                 cursor.getString(cursor.getColumnIndex(
-                                        XTimeContract.TimeSheetRows.PROJECT_NAME))))
+                                        TimeSheetRows.PROJECT_NAME))))
                         .setWorkType(new WorkType(
-                                cursor.getString(cursor.getColumnIndex(XTimeContract
-                                        .TimeSheetRows.WORKTYPE_ID)),
+                                cursor.getString(cursor.getColumnIndex(TimeSheetRows.WORKTYPE_ID)),
                                 cursor.getString(cursor.getColumnIndex(
-                                        XTimeContract.TimeSheetRows.WORKTYPE_NAME))));
+                                        TimeSheetRows.WORKTYPE_NAME))));
                 lastSheetRowId = sheetRowId;
             }
 
             // time entry details
-            double hours = cursor.getDouble(cursor.getColumnIndex(XTimeContract.TimeEntries.HOURS));
-            boolean approved = cursor.getLong(cursor.getColumnIndex(XTimeContract.TimeEntries
-                    .APPROVED)) == 1;
-            long entryDate = cursor.getLong(cursor.getColumnIndex(XTimeContract.TimeEntries
-                    .ENTRY_DATE));
+            double hours = cursor.getDouble(cursor.getColumnIndex(TimeEntries.HOURS));
+            boolean approved = cursor.getLong(cursor.getColumnIndex(TimeEntries.APPROVED)) == 1;
+            long entryDate = cursor.getLong(cursor.getColumnIndex(TimeEntries.ENTRY_DATE));
             if (null != rowBuilder) {
                 rowBuilder.addTimeCell(new TimeCell(new Date(entryDate), hours, approved));
             }

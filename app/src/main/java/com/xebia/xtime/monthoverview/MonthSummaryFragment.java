@@ -161,7 +161,7 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
         nextMonth.add(Calendar.MONTH, 1);
         String[] selectionArgs = new String[]{Long.toString(mMonth.getTime()),
                 Long.toString(nextMonth.getTime().getTime())};
-        String orderBy = TimeEntries.ENTRY_DATE + " DESC";
+        String orderBy = TimeEntries.SHEET_ROW_ID + " DESC";
         return new CursorLoader(getActivity(), TimeEntries.CONTENT_URI, null, selection,
                 selectionArgs, orderBy);
     }
