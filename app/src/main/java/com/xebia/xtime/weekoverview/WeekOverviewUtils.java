@@ -39,30 +39,36 @@ public final class WeekOverviewUtils {
     public static List<DayOverview> aggregate(List<TimeEntry> timeEntries, Date startDate) {
 
         // initialize array of day overview entries for the week, indexed by Calendar.DAY_OF_WEEK
-        SparseArray<DayOverview> dailyHoursArray = new SparseArray<>();
+        SparseArray<DayOverview.Builder> dailyHoursArray = new SparseArray<>();
         for (int i = 0; i < DAILY_INDEXES.length; i++) {
             Date date = new Date(startDate.getTime() + i * DateUtils.DAY_IN_MILLIS);
-            dailyHoursArray.put(DAILY_INDEXES[i], new DayOverview(date));
+            dailyHoursArray.put(DAILY_INDEXES[i], new DayOverview.Builder().setDate(date));
         }
 
-        // group the time cells by day of the week
+        // group the time entries by day of the week
+        Calendar entryCal = Calendar.getInstance();
+        entryCal.setTimeZone(TimeZone.getTimeZone("CET"));
+        boolean editable = true;
         for (TimeEntry timeEntry : timeEntries) {
-            // get day overview for this day from array
-            Calendar entryCal = Calendar.getInstance();
             entryCal.setTime(timeEntry.getEntryDate());
-            entryCal.setTimeZone(TimeZone.getTimeZone("CET"));
-            DayOverview dayOverview = dailyHoursArray.get(entryCal.get(Calendar.DAY_OF_WEEK));
-
-            // add time registration entry
-            dayOverview.getTimeEntries().add(timeEntry);
-
-            dailyHoursArray.put(entryCal.get(Calendar.DAY_OF_WEEK), dayOverview);
+            dailyHoursArray.get(entryCal.get(Calendar.DAY_OF_WEEK)).addTimeEntry(timeEntry);
+            editable &= !timeEntry.isFromAfas();
         }
 
-        // return list of totalHours, ordered by date
+        // return list of day overviews, ordered by date
         List<DayOverview> result = new ArrayList<>();
         for (int day : DAILY_INDEXES) {
-            result.add(dailyHoursArray.get(day));
+            DayOverview.Builder builder = dailyHoursArray.get(day);
+            if (builder.getTimeEntries().size() == 0) {
+                // special case to determine if the day locked without time entries
+                Calendar startCal = Calendar.getInstance();
+                startCal.setTime(startDate);
+                entryCal.setTime(builder.getDate());
+                if (entryCal.get(Calendar.MONTH) == startCal.get(Calendar.MONTH)) {
+                    builder.setEditable(editable);
+                }
+            }
+            result.add(builder.build());
         }
 
         return result;

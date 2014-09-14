@@ -26,8 +26,8 @@ public interface TestValues {
     Date ENTRY_DATE = new Date(1234);
     double HOURS = 3.14;
     boolean APPROVED = true;
-    TimeEntry TIME_CELL = new TimeEntry(TASK, ENTRY_DATE, HOURS, APPROVED);
-    List<TimeEntry> TIME_ENTRIES = Arrays.asList(TIME_CELL, new TimeEntry(TASK, new Date(665), 7,
+    TimeEntry TIME_ENTRY = new TimeEntry(TASK, ENTRY_DATE, HOURS, APPROVED);
+    List<TimeEntry> TIME_ENTRIES = Arrays.asList(TIME_ENTRY, new TimeEntry(TASK, new Date(665), 7,
             true));
 
     String USERNAME = "username";

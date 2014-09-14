@@ -31,18 +31,22 @@ public class DayOverview implements Parcelable {
         }
     };
     private final Date mDate;
+    private final boolean mEditable;
     private final List<TimeEntry> mTimeEntries;
 
     /**
      * @param date Day of this overview
      */
-    public DayOverview(final Date date) {
+    private DayOverview(final Date date, final boolean editable,
+                        final List<TimeEntry> timeEntries) {
         mDate = date;
-        mTimeEntries = new ArrayList<>();
+        mEditable = editable;
+        mTimeEntries = timeEntries;
     }
 
     protected DayOverview(Parcel parcel) {
         mDate = new Date(parcel.readLong());
+        mEditable = parcel.readInt() == 1;
         mTimeEntries = new ArrayList<>();
         parcel.readTypedList(mTimeEntries, TimeEntry.CREATOR);
     }
@@ -76,11 +80,7 @@ public class DayOverview implements Parcelable {
      * @return <code>true</code> if the data for this day is not transferred to Afas yet
      */
     public boolean isEditable() {
-        boolean editable = true;
-        for (TimeEntry timeEntry : mTimeEntries) {
-            editable &= !timeEntry.isFromAfas();
-        }
-        return editable;
+        return mEditable;
     }
 
     @Override
@@ -91,6 +91,7 @@ public class DayOverview implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeLong(mDate.getTime());
+        parcel.writeInt(mEditable ? 1 : 0);
         parcel.writeTypedList(mTimeEntries);
     }
 
@@ -107,4 +108,42 @@ public class DayOverview implements Parcelable {
         return super.equals(o);
     }
 
+    public static class Builder {
+
+        private Date mDate;
+        private List<TimeEntry> mTimeEntries = new ArrayList<>();
+        private boolean mEditable;
+
+        public DayOverview build() {
+            // if the editable property only has to be set if there are no time entries
+            boolean editable = mEditable;
+            for (TimeEntry timeEntry : mTimeEntries) {
+                editable |= !timeEntry.isFromAfas();
+            }
+            return new DayOverview(mDate, editable, mTimeEntries);
+        }
+
+        public Builder addTimeEntry(final TimeEntry timeEntry) {
+            mTimeEntries.add(timeEntry);
+            return this;
+        }
+
+        public Builder setEditable(final boolean editable) {
+            mEditable = editable;
+            return this;
+        }
+
+        public Date getDate() {
+            return mDate;
+        }
+
+        public Builder setDate(final Date date) {
+            mDate = date;
+            return this;
+        }
+
+        public List<TimeEntry> getTimeEntries() {
+            return mTimeEntries;
+        }
+    }
 }
