@@ -134,7 +134,13 @@ public class XTimeProvider extends ContentProvider {
     }
 
     private void notifyChange(final Uri uri) {
-        getContext().getContentResolver().notifyChange(uri, null);
+        // We only notify changes if the caller is not the sync adapter.
+        // The sync adapter has the responsibility of notifying changes (it can do so
+        // more intelligently than we can -- for example, doing it only once at the end
+        // of the sync instead of issuing thousands of notifications for each record).
+        if (!XTimeContract.hasCallerIsSyncAdapterParameter(uri)) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
     }
 
     /**

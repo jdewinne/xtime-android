@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.xebia.xtime.authenticator.Authenticator;
+import com.xebia.xtime.content.XTimeContract.Tasks;
+import com.xebia.xtime.content.XTimeContract.TimeEntries;
 
 import java.io.IOException;
 
@@ -38,6 +40,11 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         try {
             cookie = getCookie(account);
             new SyncHelper().performSync(cookie, provider, syncResult);
+
+            // notify any listeners that the sync is done
+            getContext().getContentResolver().notifyChange(TimeEntries.CONTENT_URI, null);
+            getContext().getContentResolver().notifyChange(Tasks.CONTENT_URI, null);
+
         } catch (IOException e) {
             Log.w(TAG, "Failed to authenticate! Connection error: '" + e.getMessage() + "'");
             syncResult.stats.numIoExceptions++;
