@@ -5,8 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.xebia.xtime.content.XTimeContract.TaskColumns;
 import com.xebia.xtime.content.XTimeContract.TimeEntryColumns;
-import com.xebia.xtime.content.XTimeContract.TimeSheetRowColumns;
 
 class XTimeDatabase extends SQLiteOpenHelper {
 
@@ -16,24 +16,7 @@ class XTimeDatabase extends SQLiteOpenHelper {
     private static final String FLOAT_TYPE = " REAL";
     private static final String INT_TYPE = " INTEGER";
     private static final String COMMA = ", ";
-    private static final String SQL_CREATE_TIME_SHEET_ROWS =
-            "CREATE TABLE " + Tables.TIME_SHEET_ROWS + " ("
-                    + TimeSheetRowColumns._ID + " INTEGER PRIMARY KEY" + COMMA
-                    + TimeSheetRowColumns.DESCRIPTION + TEXT_TYPE + COMMA
-                    + TimeSheetRowColumns.PROJECT_ID + TEXT_TYPE + COMMA
-                    + TimeSheetRowColumns.PROJECT_NAME + TEXT_TYPE + COMMA
-                    + TimeSheetRowColumns.WORKTYPE_ID + TEXT_TYPE + COMMA
-                    + TimeSheetRowColumns.WORKTYPE_NAME + TEXT_TYPE
-                    + ")";
     private static final String NOT_NULL = " NOT NULL";
-    private static final String SQL_CREATE_TIME_ENTRIES =
-            "CREATE TABLE " + Tables.TIME_ENTRIES + " ("
-                    + TimeEntryColumns._ID + " INTEGER PRIMARY KEY" + COMMA
-                    + TimeEntryColumns.SHEET_ROW_ID + INT_TYPE + COMMA
-                    + TimeEntryColumns.HOURS + FLOAT_TYPE + NOT_NULL + COMMA
-                    + TimeEntryColumns.ENTRY_DATE + INT_TYPE + NOT_NULL + COMMA
-                    + TimeEntryColumns.APPROVED + INT_TYPE
-                    + ")";
     private static final String TAG = "XTimeDatabase";
 
     public XTimeDatabase(Context context) {
@@ -43,14 +26,27 @@ class XTimeDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(TAG, "Create database");
-        db.execSQL(SQL_CREATE_TIME_SHEET_ROWS);
-        db.execSQL(SQL_CREATE_TIME_ENTRIES);
-
-        db.execSQL("CREATE TRIGGER " + Triggers.TIME_SHEET_ROW_ENTRIES_DELETE
-                + " AFTER DELETE ON " + Tables.TIME_SHEET_ROWS
+        db.execSQL("CREATE TABLE " + Tables.TASKS + " ("
+                + TaskColumns._ID + " INTEGER PRIMARY KEY" + COMMA
+                + TaskColumns.DESCRIPTION + TEXT_TYPE + COMMA
+                + TaskColumns.PROJECT_ID + TEXT_TYPE + COMMA
+                + TaskColumns.PROJECT_NAME + TEXT_TYPE + COMMA
+                + TaskColumns.WORKTYPE_ID + TEXT_TYPE + COMMA
+                + TaskColumns.WORKTYPE_NAME + TEXT_TYPE
+                + ")");
+        db.execSQL("CREATE TABLE " + Tables.TIME_ENTRIES + " ("
+                + TimeEntryColumns._ID + " INTEGER PRIMARY KEY" + COMMA
+                + TimeEntryColumns.TASK_ID + INT_TYPE + COMMA
+                + TimeEntryColumns.HOURS + FLOAT_TYPE + NOT_NULL + COMMA
+                + TimeEntryColumns.ENTRY_DATE + INT_TYPE + NOT_NULL + COMMA
+                + TimeEntryColumns.APPROVED + INT_TYPE
+                + ")");
+        // delete time entries when the task is deleted
+        db.execSQL("CREATE TRIGGER " + Triggers.TASK_ENTRIES_DELETE
+                + " AFTER DELETE ON " + Tables.TASKS
                 + " BEGIN DELETE FROM " + Tables.TIME_ENTRIES
-                + " WHERE " + Tables.TIME_ENTRIES + "." + TimeEntryColumns.SHEET_ROW_ID
-                + "=old." + TimeSheetRowColumns._ID + ";" + " END;");
+                + " WHERE " + Tables.TIME_ENTRIES + "." + TimeEntryColumns.TASK_ID
+                + "=old." + TaskColumns._ID + ";" + " END;");
     }
 
     @Override
@@ -58,7 +54,7 @@ class XTimeDatabase extends SQLiteOpenHelper {
         Log.d(TAG, "Update database: " + oldVersion + " -> " + newVersion);
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
-        db.execSQL("DROP TABLE IF EXISTS " + Tables.TIME_SHEET_ROWS + ";");
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.TASKS + ";");
         db.execSQL("DROP TABLE IF EXISTS " + Tables.TIME_ENTRIES + ";");
         onCreate(db);
     }
@@ -70,15 +66,15 @@ class XTimeDatabase extends SQLiteOpenHelper {
     }
 
     interface Tables {
-        String TIME_SHEET_ROWS = "time_sheet_rows";
+        String TASKS = "tasks";
         String TIME_ENTRIES = "time_entries";
-        String TIME_ENTRIES_JOIN_ROWS_AND_SHEETS = TIME_ENTRIES
-                + " LEFT OUTER JOIN " + TIME_SHEET_ROWS + " ON "
-                + TIME_ENTRIES + "." + TimeEntryColumns.SHEET_ROW_ID + "="
-                + TIME_SHEET_ROWS + "." + TimeSheetRowColumns._ID;
+        String TIME_ENTRIES_JOIN_TASKS = TIME_ENTRIES
+                + " LEFT OUTER JOIN " + TASKS + " ON "
+                + TIME_ENTRIES + "." + TimeEntryColumns.TASK_ID + "="
+                + TASKS + "." + TaskColumns._ID;
     }
 
     interface Triggers {
-        String TIME_SHEET_ROW_ENTRIES_DELETE = "time_sheet_row_entries_delete";
+        String TASK_ENTRIES_DELETE = "task_entries_delete";
     }
 }

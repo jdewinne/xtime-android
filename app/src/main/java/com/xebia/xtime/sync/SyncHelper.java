@@ -7,8 +7,8 @@ import android.content.SyncResult;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.xebia.xtime.content.XTimeContract.Tasks;
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
-import com.xebia.xtime.content.XTimeContract.TimeSheetRows;
 import com.xebia.xtime.shared.model.TimeCell;
 import com.xebia.xtime.shared.model.TimeSheetRow;
 import com.xebia.xtime.shared.model.XTimeOverview;
@@ -63,20 +63,19 @@ public class SyncHelper {
 
         ArrayList<ContentProviderOperation> batch = new ArrayList<>();
 
-        batch.add(ContentProviderOperation.newDelete(TimeSheetRows.CONTENT_URI).build());
+        batch.add(ContentProviderOperation.newDelete(Tasks.CONTENT_URI).build());
         batch.add(ContentProviderOperation.newDelete(TimeEntries.CONTENT_URI).build());
 
         for (XTimeOverview overview : overviews) {
 
             // insert the time sheet rows with back reference to the time sheet ID
             for (TimeSheetRow sheetRow : overview.getTimeSheetRows()) {
-                batch.add(ContentProviderOperation.newInsert(TimeSheetRows.CONTENT_URI)
-                        .withValue(TimeSheetRows.DESCRIPTION, sheetRow.getDescription())
-                        .withValue(TimeSheetRows.PROJECT_ID, sheetRow.getProject().getId())
-                        .withValue(TimeSheetRows.PROJECT_NAME, sheetRow.getProject().getName())
-                        .withValue(TimeSheetRows.WORKTYPE_ID, sheetRow.getWorkType().getId())
-                        .withValue(TimeSheetRows.WORKTYPE_NAME,
-                                sheetRow.getWorkType().getDescription())
+                batch.add(ContentProviderOperation.newInsert(Tasks.CONTENT_URI)
+                        .withValue(Tasks.DESCRIPTION, sheetRow.getDescription())
+                        .withValue(Tasks.PROJECT_ID, sheetRow.getProject().getId())
+                        .withValue(Tasks.PROJECT_NAME, sheetRow.getProject().getName())
+                        .withValue(Tasks.WORKTYPE_ID, sheetRow.getWorkType().getId())
+                        .withValue(Tasks.WORKTYPE_NAME, sheetRow.getWorkType().getDescription())
                         .build());
 
                 // insert the time entries with back reference to the time sheet row ID
@@ -86,7 +85,7 @@ public class SyncHelper {
                             .withValue(TimeEntries.APPROVED, timeEntry.isApproved())
                             .withValue(TimeEntries.ENTRY_DATE, timeEntry.getEntryDate().getTime())
                             .withValue(TimeEntries.HOURS, timeEntry.getHours())
-                            .withValueBackReference(TimeEntries.SHEET_ROW_ID, indexOfTimeSheetRow)
+                            .withValueBackReference(TimeEntries.TASK_ID, indexOfTimeSheetRow)
                             .build());
                 }
             }

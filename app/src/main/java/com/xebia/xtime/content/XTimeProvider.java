@@ -11,8 +11,8 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.xebia.xtime.content.XTimeContract.Tasks;
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
-import com.xebia.xtime.content.XTimeContract.TimeSheetRows;
 import com.xebia.xtime.content.XTimeDatabase.Tables;
 
 import java.util.Arrays;
@@ -31,8 +31,8 @@ public class XTimeProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = XTimeContract.CONTENT_AUTHORITY;
 
-        matcher.addURI(authority, Tables.TIME_SHEET_ROWS, UriCodes.TIME_SHEET_ROWS);
-        matcher.addURI(authority, Tables.TIME_SHEET_ROWS + "/*", UriCodes.TIME_SHEET_ROW);
+        matcher.addURI(authority, Tables.TASKS, UriCodes.TIME_SHEET_ROWS);
+        matcher.addURI(authority, Tables.TASKS + "/*", UriCodes.TIME_SHEET_ROW);
 
         matcher.addURI(authority, Tables.TIME_ENTRIES, UriCodes.TIME_ENTRIES);
         matcher.addURI(authority, Tables.TIME_ENTRIES + "/*", UriCodes.TIME_ENTRY);
@@ -56,9 +56,9 @@ public class XTimeProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case UriCodes.TIME_SHEET_ROWS:
-                return TimeSheetRows.CONTENT_TYPE;
+                return Tasks.CONTENT_TYPE;
             case UriCodes.TIME_SHEET_ROW:
-                return TimeSheetRows.CONTENT_ITEM_TYPE;
+                return Tasks.CONTENT_ITEM_TYPE;
             case UriCodes.TIME_ENTRIES:
                 return TimeEntries.CONTENT_TYPE;
             case UriCodes.TIME_ENTRY:
@@ -75,9 +75,9 @@ public class XTimeProvider extends ContentProvider {
         Log.v(TAG, "insert(uri=" + uri + ", values=" + values + ")");
         switch (match) {
             case UriCodes.TIME_SHEET_ROWS: {
-                long id = db.insertOrThrow(Tables.TIME_SHEET_ROWS, null, values);
+                long id = db.insertOrThrow(Tables.TASKS, null, values);
                 notifyChange(uri);
-                return TimeSheetRows.buildUri(id);
+                return Tasks.buildUri(id);
             }
             case UriCodes.TIME_ENTRIES: {
                 long id = db.insertOrThrow(Tables.TIME_ENTRIES, null, values);
@@ -147,20 +147,18 @@ public class XTimeProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case UriCodes.TIME_SHEET_ROWS: {
-                return builder.table(Tables.TIME_SHEET_ROWS);
+                return builder.table(Tables.TASKS);
             }
             case UriCodes.TIME_SHEET_ROW: {
                 final String id = Long.toString(ContentUris.parseId(uri));
-                return builder.table(Tables.TIME_SHEET_ROWS)
-                        .where(TimeSheetRows._ID + "=?", id);
+                return builder.table(Tables.TASKS).where(Tasks._ID + "=?", id);
             }
             case UriCodes.TIME_ENTRIES: {
                 return builder.table(Tables.TIME_ENTRIES);
             }
             case UriCodes.TIME_ENTRY: {
                 final String id = Long.toString(ContentUris.parseId(uri));
-                return builder.table(Tables.TIME_ENTRIES)
-                        .where(TimeEntries._ID + "=?", id);
+                return builder.table(Tables.TIME_ENTRIES).where(TimeEntries._ID + "=?", id);
             }
             default: {
                 throw new UnsupportedOperationException("Unknown uri for " + match + ": " + uri);
@@ -177,14 +175,14 @@ public class XTimeProvider extends ContentProvider {
         final SelectionBuilder builder = new SelectionBuilder();
         switch (match) {
             case UriCodes.TIME_SHEET_ROWS: {
-                return builder.table(Tables.TIME_SHEET_ROWS);
+                return builder.table(Tables.TASKS);
             }
             case UriCodes.TIME_SHEET_ROW: {
                 final String id = Long.toString(ContentUris.parseId(uri));
-                return builder.table(Tables.TIME_SHEET_ROWS).where(TimeSheetRows._ID + "=?", id);
+                return builder.table(Tables.TASKS).where(Tasks._ID + "=?", id);
             }
             case UriCodes.TIME_ENTRIES: {
-                return builder.table(Tables.TIME_ENTRIES_JOIN_ROWS_AND_SHEETS);
+                return builder.table(Tables.TIME_ENTRIES_JOIN_TASKS);
             }
             case UriCodes.TIME_ENTRY: {
                 final String id = Long.toString(ContentUris.parseId(uri));
