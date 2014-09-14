@@ -3,32 +3,29 @@ package com.xebia.xtime.shared.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Represents a row of days with registered work time in the {@link XTimeOverview} form.
- * <p/>
- * The days are represented by a list of {@link TimeCell}. Each row is also related to one specific
+ * <p>
+ * The days are represented by a list of {@link TimeEntry}. Each row is also related to one specific
  * combination of a certain {@link Project}, a certain {@link WorkType},
  * and sometimes a short description text.
+ * </p>
  */
-public class TimeSheetRow implements Parcelable {
+public class Task implements Parcelable {
 
-    public static final Creator<TimeSheetRow> CREATOR = new Creator<TimeSheetRow>() {
+    public static final Creator<Task> CREATOR = new Creator<Task>() {
         @Override
-        public TimeSheetRow createFromParcel(Parcel parcel) {
-            return new TimeSheetRow(parcel);
+        public Task createFromParcel(Parcel parcel) {
+            return new Task(parcel);
         }
 
         @Override
-        public TimeSheetRow[] newArray(int size) {
-            return new TimeSheetRow[size];
+        public Task[] newArray(int size) {
+            return new Task[size];
         }
     };
     private final String mDescription;
     private final Project mProject;
-    private final List<TimeCell> mTimeCells;
     private final WorkType mWorkType;
 
     /**
@@ -37,23 +34,17 @@ public class TimeSheetRow implements Parcelable {
      * @param project     The project to register time for
      * @param workType    The type of work that was performed
      * @param description Optional free form description of the work
-     * @param timeCells   List of time cells that contain the amount of time that is registered
-     *                    for this project/work type
      */
-    public TimeSheetRow(Project project, WorkType workType, String description,
-                        List<TimeCell> timeCells) {
+    public Task(Project project, WorkType workType, String description) {
         mProject = project;
         mWorkType = workType;
         mDescription = description;
-        mTimeCells = timeCells;
     }
 
-    protected TimeSheetRow(Parcel parcel) {
+    protected Task(Parcel parcel) {
         mProject = parcel.readParcelable(Project.class.getClassLoader());
         mWorkType = parcel.readParcelable(WorkType.class.getClassLoader());
         mDescription = parcel.readString();
-        mTimeCells = new ArrayList<>();
-        parcel.readTypedList(mTimeCells, TimeCell.CREATOR);
     }
 
     /**
@@ -68,14 +59,6 @@ public class TimeSheetRow implements Parcelable {
      */
     public Project getProject() {
         return mProject;
-    }
-
-    /**
-     * @return List of time cells that contain the amount of time that is registered for this
-     * project/work type
-     */
-    public List<TimeCell> getTimeCells() {
-        return mTimeCells;
     }
 
     /**
@@ -95,35 +78,32 @@ public class TimeSheetRow implements Parcelable {
         parcel.writeParcelable(getProject(), flags);
         parcel.writeParcelable(getWorkType(), flags);
         parcel.writeString(getDescription());
-        parcel.writeTypedList(getTimeCells());
+    }
+
+    @Override
+    public int hashCode() {
+        return 23 * getDescription().hashCode() * mProject.hashCode() * mWorkType.hashCode();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof TimeSheetRow) {
-            return mDescription.equals(((TimeSheetRow) o).mDescription) &&
-                    mProject.equals(((TimeSheetRow) o).getProject()) &&
-                    mTimeCells.equals(((TimeSheetRow) o).getTimeCells()) &&
-                    mWorkType.equals(((TimeSheetRow) o).getWorkType());
-
+        if (o instanceof Task) {
+            Task that = (Task) o;
+            return this.getDescription().equals(that.getDescription())
+                    && this.getProject().equals(that.getProject())
+                    && this.getWorkType().equals(that.getWorkType());
         }
         return super.equals(o);
     }
 
     public static class Builder {
 
-        private final List<TimeCell> mTimeCells = new ArrayList<>();
         private String mDescription;
         private Project mProject;
         private WorkType mWorkType;
 
-        public TimeSheetRow build() {
-            return new TimeSheetRow(mProject, mWorkType, mDescription, mTimeCells);
-        }
-
-        public Builder addTimeCell(final TimeCell timeCell) {
-            mTimeCells.add(timeCell);
-            return this;
+        public Task build() {
+            return new Task(mProject, mWorkType, mDescription);
         }
 
         public Builder setDescription(final String description) {

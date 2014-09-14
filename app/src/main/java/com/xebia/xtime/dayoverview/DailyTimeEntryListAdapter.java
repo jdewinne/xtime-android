@@ -10,15 +10,15 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.TimeEntry;
 
 import java.text.NumberFormat;
 import java.util.List;
 
-public class DailyTimeSheetListAdapter extends ArrayAdapter<TimeSheetEntry> {
+public class DailyTimeEntryListAdapter extends ArrayAdapter<TimeEntry> {
 
-    public DailyTimeSheetListAdapter(Context context, List<TimeSheetEntry> objects) {
-        super(context, R.layout.row_time_sheet_entry, 0, objects);
+    public DailyTimeEntryListAdapter(Context context, List<TimeEntry> objects) {
+        super(context, R.layout.row_time_entry, 0, objects);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class DailyTimeSheetListAdapter extends ArrayAdapter<TimeSheetEntry> {
         View row = convertView;
         if (row == null) {
             LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
-            row = inflater.inflate(R.layout.row_time_sheet_entry, parent, false);
+            row = inflater.inflate(R.layout.row_time_entry, parent, false);
         }
 
         // find the view
@@ -39,15 +39,15 @@ public class DailyTimeSheetListAdapter extends ArrayAdapter<TimeSheetEntry> {
             TextView hoursView = (TextView) row.findViewById(R.id.hours);
 
             // update the view content
-            TimeSheetEntry item = getItem(position);
-            projectView.setText(item.getProject().getName());
-            workTypeView.setText(item.getWorkType().getDescription());
-            descriptionView.setText(item.getDescription());
-            double hours = item.getTimeCell().getHours();
+            TimeEntry item = getItem(position);
+            projectView.setText(item.getTask().getProject().getName());
+            workTypeView.setText(item.getTask().getWorkType().getDescription());
+            descriptionView.setText(item.getTask().getDescription());
+            double hours = item.getHours();
             hoursView.setText(NumberFormat.getNumberInstance().format(hours));
 
-            descriptionView.setVisibility(TextUtils.isEmpty(item.getDescription()) ? View.GONE :
-                    View.VISIBLE);
+            descriptionView.setVisibility(
+                    TextUtils.isEmpty(item.getTask().getDescription()) ? View.GONE : View.VISIBLE);
         }
 
         return row;

@@ -4,8 +4,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.xebia.xtime.shared.model.Project;
-import com.xebia.xtime.shared.model.TimeCell;
-import com.xebia.xtime.shared.model.TimeSheetRow;
+import com.xebia.xtime.shared.model.Task;
+import com.xebia.xtime.shared.model.TimeEntry;
 import com.xebia.xtime.shared.model.WorkType;
 import com.xebia.xtime.shared.model.XTimeOverview;
 
@@ -89,24 +89,24 @@ public class DwrOverviewParser {
             }
             String workTypeId = matcher.group(9);
 
-            TimeSheetRow.Builder rowBuilder = new TimeSheetRow.Builder()
+            Task task = new Task.Builder()
                     .setDescription(description)
                     .setProject(new Project(matcher.group(4), matcher.group(5)))
-                    .setWorkType(new WorkType(workTypeId, workTypeDescription));
-            parseTimeCells(input, matcher.group(6), rowBuilder);
-
-            builder.addTimeSheetRow(rowBuilder.build());
+                    .setWorkType(new WorkType(workTypeId, workTypeDescription))
+                    .build();
+            parseTimeCells(input, matcher.group(6), task, builder);
         }
     }
 
-    private static void parseTimeCells(String input, String varName, TimeSheetRow.Builder builder) {
+    private static void parseTimeCells(String input, String varName, Task task,
+                                       XTimeOverview.Builder builder) {
         List<String> timeCellVarNames = parseTimeCellVars(input, varName);
         for (String timeCellVarName : timeCellVarNames) {
-            builder.addTimeCell(parseTimeCellDetails(input, timeCellVarName));
+            builder.addTimeEntry(parseTimeCellDetails(input, timeCellVarName, task));
         }
     }
 
-    private static TimeCell parseTimeCellDetails(String input, String varName) {
+    private static TimeEntry parseTimeCellDetails(String input, String varName, Task task) {
 
         // match the response for patterns like:
         // xx.approved=$1; xx.entryDate=new Date($2); xx.fromAfas=$3; x.hour="$4"; ...
@@ -121,12 +121,12 @@ public class DwrOverviewParser {
         if (matcher.find()) {
             // not all data that is returned is actually used in the app
 
-            boolean approved = "true".equals(matcher.group(1));
+            // boolean approved = "true".equals(matcher.group(1));
             long entryDate = Long.parseLong(matcher.group(2));
-            // boolean fromAfas = "true".equals(matcher.group(3));
+            boolean fromAfas = "true".equals(matcher.group(3));
             double hour = Double.parseDouble(matcher.group(4));
             // boolean transferredToAfas = "true".equals(matcher.group(5));
-            return new TimeCell(new Date(entryDate), hour, approved);
+            return new TimeEntry(task, new Date(entryDate), hour, fromAfas);
         }
 
         return null;

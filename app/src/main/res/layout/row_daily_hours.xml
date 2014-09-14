@@ -37,9 +37,9 @@
         android:text="@string/hours_label"/>
 
     <ImageView
-        android:id="@+id/approved"
+        android:id="@+id/locked"
         android:src="@android:drawable/ic_lock_lock"
-        android:contentDescription="@string/approved"
+        android:contentDescription="@string/locked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="8dp"

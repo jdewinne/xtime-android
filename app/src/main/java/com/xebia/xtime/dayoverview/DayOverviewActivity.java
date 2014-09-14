@@ -11,10 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.editor.EditTimeSheetActivity;
+import com.xebia.xtime.editor.EditTimeEntryActivity;
 import com.xebia.xtime.shared.model.DayOverview;
-import com.xebia.xtime.shared.model.Project;
-import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.TimeEntry;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -23,12 +22,13 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * Activity that displays a list of {@link TimeSheetEntry} in a {@link DailyTimeSheetFragment}.
- * <p/>
- * Clicking on a time sheet entry opens up the {@link EditTimeSheetActivity},
+ * Activity that displays a list of {@link com.xebia.xtime.shared.model.TimeEntry} in a {@link DailyTimeEntryFragment}.
+ * <p>
+ * Clicking on a time sheet entry opens up the {@link com.xebia.xtime.editor.EditTimeEntryActivity},
  * and the action bar also contains an option to create a new time sheet entry.
+ * </p>
  */
-public class DayOverviewActivity extends Activity implements DailyTimeSheetFragment.Listener {
+public class DayOverviewActivity extends Activity implements DailyTimeEntryFragment.Listener {
 
     /**
      * Key for intent extra that contains the day overview to display
@@ -37,7 +37,7 @@ public class DayOverviewActivity extends Activity implements DailyTimeSheetFragm
     private static final int REQ_CODE_EDIT = 1;
     private static final int REQ_CODE_CREATE = 2;
     private DayOverview mOverview;
-    private TimeSheetEntry mSelectedEntry;
+    private TimeEntry mSelectedEntry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +52,8 @@ public class DayOverviewActivity extends Activity implements DailyTimeSheetFragm
 
         // set up the UI
         if (savedInstanceState == null) {
-            ArrayList<TimeSheetEntry> timeSheets = (ArrayList<TimeSheetEntry>) mOverview
-                    .getTimeSheetEntries();
-            Fragment fragment = DailyTimeSheetFragment.getInstance(timeSheets);
+            ArrayList<TimeEntry> timeSheets = (ArrayList<TimeEntry>) mOverview.getTimeEntries();
+            Fragment fragment = DailyTimeEntryFragment.getInstance(timeSheets);
             FragmentTransaction tx = getFragmentManager().beginTransaction();
             tx.replace(R.id.content, fragment, "tag");
             tx.commit();
@@ -82,19 +81,17 @@ public class DayOverviewActivity extends Activity implements DailyTimeSheetFragm
     }
 
     @Override
-    public void onTimeSheetEntrySelected(TimeSheetEntry selected) {
+    public void onTimeCellSelected(TimeEntry selected) {
         if (mOverview.isEditable()) {
             mSelectedEntry = selected;
             startEditor(selected, REQ_CODE_EDIT);
         }
     }
 
-    private void startEditor(TimeSheetEntry entry, int requestCode) {
-        Intent editor = new Intent(this, EditTimeSheetActivity.class);
-        editor.putExtra(EditTimeSheetActivity.EXTRA_DATE, mOverview.getDate().getTime());
-        editor.putParcelableArrayListExtra(EditTimeSheetActivity.EXTRA_PROJECTS,
-                (ArrayList<Project>) mOverview.getProjects());
-        editor.putExtra(EditTimeSheetActivity.EXTRA_TIME_SHEET, entry);
+    private void startEditor(TimeEntry entry, int requestCode) {
+        Intent editor = new Intent(this, EditTimeEntryActivity.class);
+        editor.putExtra(EditTimeEntryActivity.EXTRA_DATE, mOverview.getDate().getTime());
+        editor.putExtra(EditTimeEntryActivity.EXTRA_TIME_CELL, entry);
         startActivityForResult(editor, requestCode);
     }
 
@@ -103,20 +100,18 @@ public class DayOverviewActivity extends Activity implements DailyTimeSheetFragm
         switch (requestCode) {
             case REQ_CODE_EDIT:
                 if (RESULT_OK == resultCode) {
-                    TimeSheetEntry edited = data.getParcelableExtra(EditTimeSheetActivity
-                            .EXTRA_TIME_SHEET);
+                    TimeEntry edited = data.getParcelableExtra(EditTimeEntryActivity
+                            .EXTRA_TIME_CELL);
                     onEntryEdited(edited);
-                } else if (EditTimeSheetActivity.RESULT_DELETE == resultCode) {
-                    TimeSheetEntry deleted = data.getParcelableExtra(EditTimeSheetActivity
-                            .EXTRA_TIME_SHEET);
-                    onEntryDeleted(deleted);
+                } else if (EditTimeEntryActivity.RESULT_DELETE == resultCode) {
+                    onEntryDeleted();
                 }
                 mSelectedEntry = null;
                 break;
             case REQ_CODE_CREATE:
                 if (RESULT_OK == resultCode) {
-                    TimeSheetEntry created = data.getParcelableExtra(EditTimeSheetActivity
-                            .EXTRA_TIME_SHEET);
+                    TimeEntry created = data.getParcelableExtra(EditTimeEntryActivity
+                            .EXTRA_TIME_CELL);
                     onEntryCreated(created);
                 }
                 break;
@@ -125,19 +120,19 @@ public class DayOverviewActivity extends Activity implements DailyTimeSheetFragm
         }
     }
 
-    private void onEntryDeleted(TimeSheetEntry deleted) {
-        int index = mOverview.getTimeSheetEntries().indexOf(deleted);
-        mOverview.getTimeSheetEntries().remove(index);
+    private void onEntryDeleted() {
+        mOverview.getTimeEntries().remove(mSelectedEntry);
         onDataSetChanged();
     }
 
-    private void onEntryEdited(TimeSheetEntry edited) {
-        mSelectedEntry.getTimeCell().setHours(edited.getTimeCell().getHours());
+    private void onEntryEdited(TimeEntry edited) {
+        mOverview.getTimeEntries().remove(mSelectedEntry);
+        mOverview.getTimeEntries().add(edited);
         onDataSetChanged();
     }
 
-    private void onEntryCreated(TimeSheetEntry created) {
-        mOverview.getTimeSheetEntries().add(created);
+    private void onEntryCreated(TimeEntry created) {
+        mOverview.getTimeEntries().add(created);
         onDataSetChanged();
     }
 
@@ -157,7 +152,7 @@ public class DayOverviewActivity extends Activity implements DailyTimeSheetFragm
      * Notifies the list fragment that the data set changed and the list might have to be updated.
      */
     private void onDataSetChanged() {
-        DailyTimeSheetFragment fragment = (DailyTimeSheetFragment) getFragmentManager()
+        DailyTimeEntryFragment fragment = (DailyTimeEntryFragment) getFragmentManager()
                 .findFragmentByTag("tag");
         fragment.onDataSetChanged();
     }

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Represents an overview of time registrations.
  * <p/>
- * For each overview there is a list of {@link TimeSheetRow} that the user already registered
+ * For each overview there is a list of {@link Task} that the user already registered
  * time in, and a complete list of all {@link Project} that the user can possibly log time on.
  */
 public class XTimeOverview implements Parcelable {
@@ -30,7 +30,7 @@ public class XTimeOverview implements Parcelable {
         }
     };
 
-    private final List<TimeSheetRow> mTimeSheetRows;
+    private final List<TimeEntry> mTimeEntries;
     private final List<Project> mProjects;
     private final String mUsername;
     private final boolean mMonthlyDataApproved;
@@ -39,17 +39,18 @@ public class XTimeOverview implements Parcelable {
     /**
      * Constructor.
      *
-     * @param timeSheetRows       List of active time sheet rows.
+     * @param timeEntries             List of active time cells.
      * @param projects            List of available projects for this week.
      * @param username            Full user name.
      * @param monthlyDataApproved <code>true</code> if the data for this month is already approved.
      * @param lastTransferred     Date when the data was last sent to Afas (transferred data
      *                            cannot be edited)
      */
-    public XTimeOverview(List<TimeSheetRow> timeSheetRows, List<Project> projects, String username,
-                         boolean monthlyDataApproved, Date lastTransferred) {
+    public XTimeOverview(final List<TimeEntry> timeEntries, final List<Project> projects,
+                         final String username, final boolean monthlyDataApproved,
+                         final Date lastTransferred) {
         mProjects = projects;
-        mTimeSheetRows = timeSheetRows;
+        mTimeEntries = timeEntries;
         mUsername = username;
         mMonthlyDataApproved = monthlyDataApproved;
         mLastTransferred = lastTransferred;
@@ -58,25 +59,19 @@ public class XTimeOverview implements Parcelable {
     protected XTimeOverview(Parcel parcel) {
         mProjects = new ArrayList<>();
         parcel.readTypedList(mProjects, Project.CREATOR);
-        mTimeSheetRows = new ArrayList<>();
-        parcel.readTypedList(mTimeSheetRows, TimeSheetRow.CREATOR);
+        mTimeEntries = new ArrayList<>();
+        parcel.readTypedList(mTimeEntries, TimeEntry.CREATOR);
         mUsername = parcel.readString();
         mMonthlyDataApproved = parcel.readInt() > 0;
         mLastTransferred = new Date(parcel.readLong());
     }
 
-    /**
-     * @return List of available projects for this week.
-     */
     public List<Project> getProjects() {
         return mProjects;
     }
 
-    /**
-     * @return List of active time sheet rows.
-     */
-    public List<TimeSheetRow> getTimeSheetRows() {
-        return mTimeSheetRows;
+    public List<TimeEntry> getTimeEntries() {
+        return mTimeEntries;
     }
 
     /**
@@ -108,7 +103,7 @@ public class XTimeOverview implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeTypedList(mProjects);
-        parcel.writeTypedList(mTimeSheetRows);
+        parcel.writeTypedList(mTimeEntries);
         parcel.writeString(mUsername);
         parcel.writeInt(mMonthlyDataApproved ? 1 : 0);
         parcel.writeLong(mLastTransferred.getTime());
@@ -117,27 +112,27 @@ public class XTimeOverview implements Parcelable {
     @Override
     public boolean equals(Object o) {
         if (o instanceof XTimeOverview) {
-            return mMonthlyDataApproved == ((XTimeOverview) o).isMonthlyDataApproved()
-                    && mUsername.equals(((XTimeOverview) o).getUsername())
-                    && mLastTransferred.equals(((XTimeOverview) o).getLastTransferred())
-                    && Arrays.equals(mProjects.toArray(),
-                    ((XTimeOverview) o).getProjects().toArray())
-                    && Arrays.equals(mTimeSheetRows.toArray(),
-                    ((XTimeOverview) o).getTimeSheetRows().toArray());
+            XTimeOverview that = (XTimeOverview) o;
+            return this.isMonthlyDataApproved() == that.isMonthlyDataApproved()
+                    && this.getUsername().equals(that.getUsername())
+                    && this.getLastTransferred().equals(that.getLastTransferred())
+                    && Arrays.equals(this.getProjects().toArray(), that.getProjects().toArray())
+                    && Arrays.equals(this.getTimeEntries().toArray(),
+                    that.getTimeEntries().toArray());
         }
         return super.equals(o);
     }
 
     public static class Builder {
 
-        private final List<TimeSheetRow> mTimeSheetRows = new ArrayList<>();
+        private final List<TimeEntry> mTimeEntries = new ArrayList<>();
         private final List<Project> mProjects = new ArrayList<>();
         private String mUsername;
         private boolean mMonthlyDataApproved;
         private Date mLastTransferred;
 
         public XTimeOverview build() {
-            return new XTimeOverview(mTimeSheetRows, mProjects, mUsername, mMonthlyDataApproved,
+            return new XTimeOverview(mTimeEntries, mProjects, mUsername, mMonthlyDataApproved,
                     mLastTransferred);
         }
 
@@ -146,8 +141,8 @@ public class XTimeOverview implements Parcelable {
             return this;
         }
 
-        public Builder addTimeSheetRow(final TimeSheetRow sheetRow) {
-            mTimeSheetRows.add(sheetRow);
+        public Builder addTimeEntry(final TimeEntry timeEntry) {
+            mTimeEntries.add(timeEntry);
             return this;
         }
 

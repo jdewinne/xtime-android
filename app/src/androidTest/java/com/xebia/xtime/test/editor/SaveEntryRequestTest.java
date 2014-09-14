@@ -1,16 +1,16 @@
 package com.xebia.xtime.test.editor;
 
-import com.xebia.xtime.editor.save.SaveTimeSheetRequest;
+import com.xebia.xtime.editor.save.SaveEntryRequest;
 import com.xebia.xtime.shared.model.Project;
-import com.xebia.xtime.shared.model.TimeCell;
-import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.Task;
+import com.xebia.xtime.shared.model.TimeEntry;
 import com.xebia.xtime.shared.model.WorkType;
 
 import junit.framework.TestCase;
 
 import java.util.Date;
 
-public class SaveTimeSheetRequestTest extends TestCase {
+public class SaveEntryRequestTest extends TestCase {
 
     public static final String EXPECTED = "startDate=9+Mar+2015" +
             "&endDate=15+Mar+2015" +
@@ -62,10 +62,9 @@ public class SaveTimeSheetRequestTest extends TestCase {
         WorkType workType = new WorkType("100", "some work description");
         String description = "foo bar";
         Date date = new Date(1426287600000l); // Sat, 14 Mar 2015, 0:00:00 CET
-        TimeCell timeCell = new TimeCell(date, 3.14, false);
-        TimeSheetEntry timeSheetEntry = new TimeSheetEntry(project, workType, description,
-                timeCell);
-        SaveTimeSheetRequest request = new SaveTimeSheetRequest(timeSheetEntry);
+        TimeEntry timeEntry = new TimeEntry(new Task(project, workType, description), date, 3.14,
+                false);
+        SaveEntryRequest request = new SaveEntryRequest(timeEntry);
 
         String data = request.getRequestData();
 

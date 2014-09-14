@@ -1,15 +1,15 @@
 package com.xebia.xtime.weekoverview;
 
+import android.database.Cursor;
 import android.text.format.DateUtils;
 import android.util.SparseArray;
 
+import com.xebia.xtime.content.XTimeContract;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.Project;
-import com.xebia.xtime.shared.model.TimeCell;
-import com.xebia.xtime.shared.model.TimeSheetEntry;
-import com.xebia.xtime.shared.model.TimeSheetRow;
+import com.xebia.xtime.shared.model.Task;
+import com.xebia.xtime.shared.model.TimeEntry;
 import com.xebia.xtime.shared.model.WorkType;
-import com.xebia.xtime.shared.model.XTimeOverview;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,52 +28,34 @@ public final class WeekOverviewUtils {
     }
 
     /**
-     * Converts a week overview into a list of 7 day overviews.
-     * <p/>
-     * Each day of the week gets a separate DayOverview model. The list of TimeSheetRows is split
-     * up into separate TimeSheetEntries, which are stored in the correct DayOverview
+     * Aggregates a list of TimeCells into separate DayOverview objects,
+     * one for each day of the week.
      *
-     * @param overview  XTimeOverview to split up
+     * @param timeEntries TimeEntry list to aggregateTimeCells
      * @param startDate The date of the first day of the week
-     * @return A list of 7 days
+     * @return A list of 7 day overviews
      */
-    public static List<DayOverview> weekToDays(XTimeOverview overview, Date startDate) {
+    public static List<DayOverview> aggregate(List<TimeEntry> timeEntries, Date startDate) {
 
         // initialize array of day overview entries for the week, indexed by Calendar.DAY_OF_WEEK
         SparseArray<DayOverview> dailyHoursArray = new SparseArray<>();
         for (int i = 0; i < DAILY_INDEXES.length; i++) {
             Date date = new Date(startDate.getTime() + i * DateUtils.DAY_IN_MILLIS);
-            DayOverview dayOverview = new DayOverview(date, overview.getProjects(), true);
-            dailyHoursArray.put(DAILY_INDEXES[i], dayOverview);
+            dailyHoursArray.put(DAILY_INDEXES[i], new DayOverview(date));
         }
 
-        // fill the array with data from the overview
-        for (TimeSheetRow row : overview.getTimeSheetRows()) {
+        // group the time cells by day of the week
+        for (TimeEntry timeEntry : timeEntries) {
+            // get day overview for this day from array
+            Calendar entryCal = Calendar.getInstance();
+            entryCal.setTime(timeEntry.getEntryDate());
+            entryCal.setTimeZone(TimeZone.getTimeZone("CET"));
+            DayOverview dayOverview = dailyHoursArray.get(entryCal.get(Calendar.DAY_OF_WEEK));
 
-            // find the project that is related to this row
-            Project project = row.getProject();
-            WorkType workType = row.getWorkType();
-            String description = row.getDescription();
+            // add time registration entry
+            dayOverview.getTimeEntries().add(timeEntry);
 
-            // group the time cells by day of the week
-            for (TimeCell timeCell : row.getTimeCells()) {
-                // get day overview for this day from array
-                Calendar entryCal = Calendar.getInstance();
-                entryCal.setTime(timeCell.getEntryDate());
-                entryCal.setTimeZone(TimeZone.getTimeZone("CET"));
-                DayOverview dayOverview = dailyHoursArray.get(entryCal.get(Calendar.DAY_OF_WEEK));
-
-                // add time registration entry
-                TimeSheetEntry timeReg = new TimeSheetEntry(project, workType, description,
-                        timeCell);
-                dayOverview.getTimeSheetEntries().add(timeReg);
-                dayOverview.setEditable(!timeCell.isApproved());
-
-                // increment total hours
-                dayOverview.setTotalHours(dayOverview.getTotalHours() + timeCell.getHours());
-
-                dailyHoursArray.put(entryCal.get(Calendar.DAY_OF_WEEK), dayOverview);
-            }
+            dailyHoursArray.put(entryCal.get(Calendar.DAY_OF_WEEK), dayOverview);
         }
 
         // return list of totalHours, ordered by date
@@ -83,5 +65,38 @@ public final class WeekOverviewUtils {
         }
 
         return result;
+    }
+
+    public static List<TimeEntry> cursorToTimeCells(final Cursor cursor) {
+        List<TimeEntry> timeEntries = new ArrayList<>();
+        cursor.moveToFirst();
+        long lastTaskId = -1;
+        Task task = null;
+        while (!cursor.isAfterLast()) {
+            // task details
+            long taskId = cursor.getLong(cursor.getColumnIndex(XTimeContract.TimeEntries.TASK_ID));
+            if (taskId != lastTaskId) {
+                task = new Task.Builder()
+                        .setDescription(
+                                cursor.getString(cursor.getColumnIndex(XTimeContract.Tasks.DESCRIPTION)))
+                        .setProject(new Project(
+                                cursor.getString(cursor.getColumnIndex(XTimeContract.Tasks.PROJECT_ID)),
+                                cursor.getString(cursor.getColumnIndex(XTimeContract.Tasks.PROJECT_NAME))))
+                        .setWorkType(new WorkType(
+                                cursor.getString(cursor.getColumnIndex(XTimeContract.Tasks.WORKTYPE_ID)),
+                                cursor.getString(cursor.getColumnIndex(XTimeContract.Tasks.WORKTYPE_NAME))))
+                        .build();
+                lastTaskId = taskId;
+            }
+
+            // time entry details
+            double hours = cursor.getDouble(cursor.getColumnIndex(XTimeContract.TimeEntries.HOURS));
+            boolean approved = cursor.getLong(cursor.getColumnIndex(XTimeContract.TimeEntries.APPROVED)) == 1;
+            long entryDate = cursor.getLong(cursor.getColumnIndex(XTimeContract.TimeEntries.ENTRY_DATE));
+            timeEntries.add(new TimeEntry(task, new Date(entryDate), hours, approved));
+
+            cursor.moveToNext();
+        }
+        return timeEntries;
     }
 }

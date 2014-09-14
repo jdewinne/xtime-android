@@ -8,37 +8,38 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.TimeEntry;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Fragment that displays a list of {@link TimeSheetEntry} in a ListView.
- * <p/>
+ * Fragment that displays a list of {@link com.xebia.xtime.shared.model.TimeEntry} in a ListView.
+ * <p>
  * Each row displays the details of the time sheet entry (project, work type,
  * hours registered). Clicking on an item should open up an editor.
+ * </p>
  */
-public class DailyTimeSheetFragment extends ListFragment {
+public class DailyTimeEntryFragment extends ListFragment {
 
-    private static final String ARG_TIME_SHEETS = "time_sheets";
-    private List<TimeSheetEntry> mTimeSheetEntries;
+    private static final String ARG_TIME_CELLS = "time_cells";
+    private List<TimeEntry> mTimeEntries;
     private Listener mListener;
 
-    public DailyTimeSheetFragment() {
+    public DailyTimeEntryFragment() {
         // Required empty public constructor
     }
 
-    public static DailyTimeSheetFragment getInstance(ArrayList<TimeSheetEntry> timeSheetEntries) {
+    public static DailyTimeEntryFragment getInstance(ArrayList<TimeEntry> timeSheetEntries) {
         Bundle args = new Bundle();
-        args.putParcelableArrayList(ARG_TIME_SHEETS, timeSheetEntries);
-        DailyTimeSheetFragment fragment = new DailyTimeSheetFragment();
+        args.putParcelableArrayList(ARG_TIME_CELLS, timeSheetEntries);
+        DailyTimeEntryFragment fragment = new DailyTimeEntryFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     /**
-     * Callback to refresh the list view when the list of time sheets has been changed
+     * Callback to refresh the list view when the list of time cells has been changed
      */
     public void onDataSetChanged() {
         ((ArrayAdapter) getListView().getAdapter()).notifyDataSetChanged();
@@ -49,14 +50,14 @@ public class DailyTimeSheetFragment extends ListFragment {
         super.onActivityCreated(savedInstanceState);
 
         if (null != getArguments()) {
-            mTimeSheetEntries = getArguments().getParcelableArrayList(ARG_TIME_SHEETS);
+            mTimeEntries = getArguments().getParcelableArrayList(ARG_TIME_CELLS);
         }
-        if (null == mTimeSheetEntries) {
-            throw new NullPointerException("Missing ARG_TIME_SHEETS argument");
+        if (null == mTimeEntries) {
+            throw new NullPointerException("Missing ARG_TIME_CELLS argument");
         }
 
-        DailyTimeSheetListAdapter adapter = new DailyTimeSheetListAdapter(getActivity(),
-                mTimeSheetEntries);
+        DailyTimeEntryListAdapter adapter = new DailyTimeEntryListAdapter(getActivity(),
+                mTimeEntries);
         setListAdapter(adapter);
 
         setEmptyText(getActivity().getString(R.string.empty_day_overview));
@@ -64,8 +65,8 @@ public class DailyTimeSheetFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        TimeSheetEntry item = (TimeSheetEntry) l.getItemAtPosition(position);
-        mListener.onTimeSheetEntrySelected(item);
+        TimeEntry item = (TimeEntry) l.getItemAtPosition(position);
+        mListener.onTimeCellSelected(item);
     }
 
     @Override
@@ -86,9 +87,9 @@ public class DailyTimeSheetFragment extends ListFragment {
     }
 
     /**
-     * Interface for handling clicks on the list of TimeSheetEntries
+     * Interface for handling clicks on the list of TimeCells
      */
     public interface Listener {
-        public abstract void onTimeSheetEntrySelected(TimeSheetEntry selected);
+        public abstract void onTimeCellSelected(TimeEntry selected);
     }
 }

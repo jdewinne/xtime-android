@@ -1,7 +1,7 @@
 package com.xebia.xtime.editor.save;
 
 import com.xebia.xtime.shared.XTimeRequest;
-import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.TimeEntry;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -12,13 +12,13 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class SaveTimeSheetRequest extends XTimeRequest {
+public class SaveEntryRequest extends XTimeRequest {
 
     private static final String XTIME_URL = "https://xtime.xebia.com/xtime/entryform.html";
-    private final TimeSheetEntry mTimeSheetEntry;
+    private final TimeEntry mTimeEntry;
 
-    public SaveTimeSheetRequest(TimeSheetEntry timeSheetEntry) {
-        mTimeSheetEntry = timeSheetEntry;
+    public SaveEntryRequest(TimeEntry timeEntry) {
+        mTimeEntry = timeEntry;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class SaveTimeSheetRequest extends XTimeRequest {
 
         // start date and end date of the week
         Calendar cal = Calendar.getInstance();
-        cal.setTime(mTimeSheetEntry.getTimeCell().getEntryDate());
+        cal.setTime(mTimeEntry.getEntryDate());
         cal.setTimeZone(TimeZone.getTimeZone("CET")); // use central european time
         while (cal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
             cal.add(Calendar.DAY_OF_WEEK, -1);
@@ -55,19 +55,18 @@ public class SaveTimeSheetRequest extends XTimeRequest {
 
         // time sheet entry info
         Calendar entryCal = Calendar.getInstance();
-        entryCal.setTime(mTimeSheetEntry.getTimeCell().getEntryDate());
+        entryCal.setTime(mTimeEntry.getEntryDate());
         entryCal.setTimeZone(TimeZone.getTimeZone("CET")); // use central european time
         int entryWeekDay = entryCal.get(Calendar.DAY_OF_WEEK);
         String description = "";
         try {
-            description = URLEncoder.encode(mTimeSheetEntry.getDescription(), "UTF-8");
+            description = URLEncoder.encode(mTimeEntry.getTask().getDescription(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             // should never happen
         }
-        String hours = NumberFormat.getNumberInstance().format(mTimeSheetEntry.getTimeCell
-                ().getHours());
-        data += "&projectId=" + mTimeSheetEntry.getProject().getId() +
-                "&workType=" + mTimeSheetEntry.getWorkType().getId() +
+        String hours = NumberFormat.getNumberInstance().format(mTimeEntry.getHours());
+        data += "&projectId=" + mTimeEntry.getTask().getProject().getId() +
+                "&workType=" + mTimeEntry.getTask().getWorkType().getId() +
                 "&description=" + description +
                 "&monday=" + (entryWeekDay == Calendar.MONDAY ? hours : "") +
                 "&tuesday=" + (entryWeekDay == Calendar.TUESDAY ? hours : "") +

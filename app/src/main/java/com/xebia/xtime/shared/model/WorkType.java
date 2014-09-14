@@ -19,10 +19,10 @@ public class WorkType implements Parcelable {
             return new WorkType[size];
         }
     };
-    private String mId;
-    private String mDescription;
+    private final String mId;
+    private final String mDescription;
 
-    public WorkType(String id, String description) {
+    public WorkType(final String id, final String description) {
         mId = id;
         mDescription = description;
     }
@@ -36,16 +36,8 @@ public class WorkType implements Parcelable {
         return mId;
     }
 
-    public void setId(String id) {
-        mId = id;
-    }
-
     public String getDescription() {
         return mDescription;
-    }
-
-    public void setDescription(String description) {
-        mDescription = description;
     }
 
     @Override
@@ -59,11 +51,16 @@ public class WorkType implements Parcelable {
         parcel.writeString(mDescription);
     }
 
+    @Override public int hashCode() {
+        return 5 * mId.hashCode() * mDescription.hashCode();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof WorkType) {
-            return mId.equals(((WorkType) o).getId()) &&
-                    mDescription.equals(((WorkType) o).getDescription());
+            WorkType that = (WorkType) o;
+            return this.getId().equals(that.getId())
+                    && this.getDescription().equals(that.getDescription());
         }
         return super.equals(o);
     }

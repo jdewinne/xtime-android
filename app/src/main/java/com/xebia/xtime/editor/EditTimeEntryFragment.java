@@ -26,8 +26,8 @@ import com.xebia.xtime.editor.delete.DeleteEntryTask;
 import com.xebia.xtime.editor.save.SaveEntryTask;
 import com.xebia.xtime.editor.worktypesloader.WorkTypeListLoader;
 import com.xebia.xtime.shared.model.Project;
-import com.xebia.xtime.shared.model.TimeCell;
-import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.Task;
+import com.xebia.xtime.shared.model.TimeEntry;
 import com.xebia.xtime.shared.model.WorkType;
 
 import java.text.NumberFormat;
@@ -39,24 +39,27 @@ import java.util.List;
 /**
  * Fragment for a time sheet entry editor. Contains spinners for selecting the project and type
  * of work, and text boxes for the description and the amount of time to register.
- * <p/>
+ * <p>
  * If a time sheet entry is provided as an argument, only the time field is editable. When
  * creating a new entry, all fields are enabled.
- * <p/>
+ * </p>
+ * <p>
  * The list of possible work types is fetched dynamically whenever a new project is selected,
  * using an AsyncTaskLoader. The list of projects is predefined.
- * <p/>
+ * </p>
+ * <p>
  * The action bar contains an option to save the changes, which triggers an AsyncTask that sends
- * a {@link com.xebia.xtime.editor.save.SaveTimeSheetRequest} to the XTime backend. When the task
+ * a {@link com.xebia.xtime.editor.save.SaveEntryRequest} to the XTime backend. When the task
  * finishes,
  * the parent activity is notified.
+ * </p>
  */
-public class EditTimeSheetFragment extends Fragment implements LoaderManager
+public class EditTimeEntryFragment extends Fragment implements LoaderManager
         .LoaderCallbacks<List<WorkType>>, SaveEntryTask.Listener, DeleteEntryTask.Listener {
 
     private static final String ARG_PROJECTS = "projects";
     private static final String ARG_DATE = "date";
-    private static final String ARG_TIME_SHEET = "time_sheet";
+    private static final String ARG_TIME_SHEET = "time_cell";
     private static final String TAG = "EditTimeSheetFragment";
     /**
      * List of work type IDs where the description is required.
@@ -64,8 +67,8 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     // TODO: Replace static list of description work types with data from XTime backend
     private static final List<String> REQUIRE_DESCR = Arrays.asList("960", "940", "920", "935");
     private Listener mListener;
-    private TimeSheetEntry mSaveEntry;
-    private TimeSheetEntry mTimeSheetEntry;
+    private TimeEntry mSaveEntry;
+    private TimeEntry mTimeEntry;
     private List<Project> mProjects;
     private Date mDate;
     private List<WorkType> mWorkTypes;
@@ -76,7 +79,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     private EditText mDescriptionView;
     private EditText mTimeView;
 
-    public EditTimeSheetFragment() {
+    public EditTimeEntryFragment() {
         // required empty constructor
     }
 
@@ -84,17 +87,14 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
      * Factory method
      *
      * @param date     Date to edit/create TimeSheetEntry for
-     * @param projects List of available projects on this data
      * @param entry    (Optional) TimeSheetEntry to view/edit
      * @return Fragment
      */
-    public static EditTimeSheetFragment getInstance(Date date, ArrayList<Project> projects,
-                                                    TimeSheetEntry entry) {
+    public static EditTimeEntryFragment getInstance(final Date date, final TimeEntry entry) {
         Bundle args = new Bundle();
         args.putLong(ARG_DATE, date.getTime());
-        args.putParcelableArrayList(ARG_PROJECTS, projects);
         args.putParcelable(ARG_TIME_SHEET, entry);
-        EditTimeSheetFragment fragment = new EditTimeSheetFragment();
+        EditTimeEntryFragment fragment = new EditTimeEntryFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -106,12 +106,12 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         if (null != getArguments()) {
             mDate = new Date(getArguments().getLong(ARG_DATE));
             mProjects = getArguments().getParcelableArrayList(ARG_PROJECTS);
-            mTimeSheetEntry = getArguments().getParcelable(ARG_TIME_SHEET);
+            mTimeEntry = getArguments().getParcelable(ARG_TIME_SHEET);
             mWorkTypes = new ArrayList<>();
         }
 
-        if (null != mTimeSheetEntry) {
-            mWorkTypes.add(mTimeSheetEntry.getWorkType());
+        if (null != mTimeEntry) {
+            mWorkTypes.add(mTimeEntry.getTask().getWorkType());
         }
 
         setHasOptionsMenu(true);
@@ -120,7 +120,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_edit_time_cell, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_edit_time_entry, container, false);
         if (null == rootView) {
             return null;
         }
@@ -136,11 +136,10 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         // set up the views
         initProjectView();
         initWorkTypeView();
-        if (null != mTimeSheetEntry) {
-            mDescriptionView.setText(mTimeSheetEntry.getDescription());
+        if (null != mTimeEntry) {
+            mDescriptionView.setText(mTimeEntry.getTask().getDescription());
             mDescriptionView.setEnabled(false);
-            mTimeView.setText(NumberFormat.getNumberInstance()
-                    .format(mTimeSheetEntry.getTimeCell().getHours()));
+            mTimeView.setText(NumberFormat.getNumberInstance().format(mTimeEntry.getHours()));
         }
 
         return rootView;
@@ -154,7 +153,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         mWorkTypeView.setAdapter(adapter);
 
         // only enable the spinner if the work type is not already defined
-        mWorkTypeView.setEnabled(null == mTimeSheetEntry || null == mTimeSheetEntry.getWorkType());
+        mWorkTypeView.setEnabled(null == mTimeEntry || null == mTimeEntry.getTask().getWorkType());
     }
 
     private void initProjectView() {
@@ -164,8 +163,8 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mProjectView.setAdapter(adapter);
 
-        if (null != mTimeSheetEntry && null != mTimeSheetEntry.getProject()) {
-            selectProject(mTimeSheetEntry.getProject());
+        if (null != mTimeEntry && null != mTimeEntry.getTask().getProject()) {
+            selectProject(mTimeEntry.getTask().getProject());
             mProjectView.setEnabled(false);
         } else {
             listenProjectSelection();
@@ -220,7 +219,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_edit_time_cell, menu);
-        if (null == mTimeSheetEntry) {
+        if (null == mTimeEntry) {
             // do not show delete button when creating new entries
             menu.removeItem(R.id.delete);
         }
@@ -311,18 +310,18 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
             showBusyIndicator(true);
 
             double time = getTimeInput();
-            if (null == mTimeSheetEntry) {
+            if (null == mTimeEntry) {
                 // create new entry from the form
                 Project project = (Project) mProjectView.getSelectedItem();
                 WorkType workType = (WorkType) mWorkTypeView.getSelectedItem();
                 String description = ("" + mDescriptionView.getText()).trim();
-                TimeCell timeCell = new TimeCell(mDate, time, false);
-                mSaveEntry = new TimeSheetEntry(project, workType, description, timeCell);
+                Task task = new Task(project, workType, description);
+                mSaveEntry = new TimeEntry(task, mDate, time, false);
                 new SaveEntryTask(this).execute(mSaveEntry);
             } else {
                 // only the time can be changed for existing time sheet entries
-                mSaveEntry = mTimeSheetEntry;
-                mSaveEntry.getTimeCell().setHours(time);
+                mSaveEntry = new TimeEntry(mTimeEntry.getTask(), mTimeEntry.getEntryDate(), time,
+                        mTimeEntry.isFromAfas());
                 new SaveEntryTask(this).execute(mSaveEntry);
             }
         }
@@ -330,7 +329,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
 
     private void onDeleteClick() {
         showBusyIndicator(true);
-        new DeleteEntryTask(this).execute(mTimeSheetEntry);
+        new DeleteEntryTask(this).execute(mTimeEntry);
     }
 
     private double getTimeInput() {
@@ -347,7 +346,7 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
     @Override
     public void onDeleteComplete(Boolean result) {
         if (null != result && result) {
-            mListener.onEntryDelete(mTimeSheetEntry);
+            mListener.onEntryDelete(mTimeEntry);
         } else {
             showBusyIndicator(false);
             Toast.makeText(getActivity(), R.string.toast_delete_fail, Toast.LENGTH_LONG).show();
@@ -414,11 +413,11 @@ public class EditTimeSheetFragment extends Fragment implements LoaderManager
         /**
          * @param entry The entry that was updated.
          */
-        public abstract void onEntryUpdate(TimeSheetEntry entry);
+        public abstract void onEntryUpdate(TimeEntry entry);
 
         /**
          * @param entry The entry that was deleted.
          */
-        public abstract void onEntryDelete(TimeSheetEntry entry);
+        public abstract void onEntryDelete(TimeEntry entry);
     }
 }

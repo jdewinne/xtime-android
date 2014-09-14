@@ -3,15 +3,13 @@ package com.xebia.xtime.test.shared.model;
 import android.os.Parcel;
 
 import com.xebia.xtime.shared.model.DayOverview;
-import com.xebia.xtime.shared.model.Project;
-import com.xebia.xtime.shared.model.TimeSheetEntry;
 
 import junit.framework.TestCase;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
+
+import static com.xebia.xtime.test.shared.model.TestValues.ENTRY_DATE;
+import static com.xebia.xtime.test.shared.model.TestValues.TIME_CELL;
 
 public class DayOverviewTest extends TestCase {
 
@@ -20,39 +18,20 @@ public class DayOverviewTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        List<Project> projects = Arrays.asList(new Project("project id", "project name"));
-        mOverview = new DayOverview(new Date(1234), projects, true);
-        mOverview.setTotalHours(42);
-        mOverview.setTimeSheetEntries(new ArrayList<TimeSheetEntry>());
+        mOverview = new DayOverview(ENTRY_DATE);
+        mOverview.getTimeEntries().add(TIME_CELL);
     }
 
     public void testEquals() {
-        List<Project> projects = Arrays.asList(new Project("project id", "project name"));
-        DayOverview compare = new DayOverview(new Date(1234), projects, true);
-        compare.setTotalHours(42);
-        compare.setTimeSheetEntries(new ArrayList<TimeSheetEntry>());
-        assertTrue(mOverview.equals(compare));
+        DayOverview wrongDate = new DayOverview(new Date(-1));
+        assertFalse(mOverview.equals(wrongDate));
 
-        compare.setTotalHours(13);
-        assertFalse(mOverview.equals(compare));
-        compare.setTotalHours(42);
-        assertTrue(mOverview.equals(compare));
+        DayOverview noTimeCells = new DayOverview(ENTRY_DATE);
+        assertFalse(mOverview.equals(noTimeCells));
 
-        compare.getTimeSheetEntries().add(new TimeSheetEntry(null, null, null, null));
-        assertFalse(mOverview.equals(compare));
-        compare.getTimeSheetEntries().clear();
-        assertTrue(mOverview.equals(compare));
-
-        compare.setEditable(false);
-        assertFalse(mOverview.equals(compare));
-        compare.setEditable(true);
-        assertTrue(mOverview.equals(compare));
-
-        DayOverview shouldNotEqual = new DayOverview(new Date(1234), new ArrayList<Project>(),
-                true);
-        shouldNotEqual.setTotalHours(42);
-        shouldNotEqual.setTimeSheetEntries(new ArrayList<TimeSheetEntry>());
-        assertFalse(mOverview.equals(shouldNotEqual));
+        DayOverview correct = new DayOverview(ENTRY_DATE);
+        correct.getTimeEntries().add(TIME_CELL);
+        assertEquals(mOverview, correct);
     }
 
     public void testParcelable() {

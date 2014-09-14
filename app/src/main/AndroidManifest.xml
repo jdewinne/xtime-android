@@ -29,7 +29,7 @@
             android:name=".dayoverview.DayOverviewActivity"
             android:label="@string/title_activity_day_overview"/>
         <activity
-            android:name=".editor.EditTimeSheetActivity"
+            android:name=".editor.EditTimeEntryActivity"
             android:label="@string/title_activity_edit_time_cell"/>
         <activity
             android:name=".authenticator.AuthenticatorActivity"

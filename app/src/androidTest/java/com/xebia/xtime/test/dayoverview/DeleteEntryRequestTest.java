@@ -2,8 +2,8 @@ package com.xebia.xtime.test.dayoverview;
 
 import com.xebia.xtime.editor.delete.DeleteEntryRequest;
 import com.xebia.xtime.shared.model.Project;
-import com.xebia.xtime.shared.model.TimeCell;
-import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.Task;
+import com.xebia.xtime.shared.model.TimeEntry;
 import com.xebia.xtime.shared.model.WorkType;
 
 import junit.framework.TestCase;
@@ -28,9 +28,9 @@ public class DeleteEntryRequestTest extends TestCase {
     public void testRequestData() {
         // request to get the week overview for pi day
         Date date = new Date(1426287600000l); // Sat, 14 Mar 2015, 0:00:00 CET
-        TimeSheetEntry timeSheetEntry = new TimeSheetEntry(new Project("1", "foo"),
-                new WorkType("940", "bar"), "description", new TimeCell(date, 8, false));
-        DeleteEntryRequest request = new DeleteEntryRequest(timeSheetEntry);
+        TimeEntry timeEntry = new TimeEntry(new Task(new Project("1", "foo"),
+                new WorkType("940", "bar"), "description"), date, 8, false);
+        DeleteEntryRequest request = new DeleteEntryRequest(timeEntry);
 
         String data = request.getRequestData();
 

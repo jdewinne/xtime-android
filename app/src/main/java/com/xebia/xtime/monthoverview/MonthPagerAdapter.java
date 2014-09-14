@@ -23,8 +23,8 @@ import java.util.TimeZone;
  */
 public class MonthPagerAdapter extends FragmentPagerAdapter {
 
-    public static final int START_INDEX = 11;
-    public static final int COUNT = 13;
+    public static final int START_INDEX = 1;
+    public static final int COUNT = 3;
     private final DateFormat mDateFormat;
     private final SparseArray<Fragment> mFragments;
 

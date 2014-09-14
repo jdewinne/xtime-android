@@ -24,10 +24,10 @@ public class Project implements Parcelable {
             return new Project[size];
         }
     };
-    private String mId;
-    private String mName;
+    private final String mId;
+    private final String mName;
 
-    public Project(String id, String name) {
+    public Project(final String id, final String name) {
         mId = id;
         mName = name;
     }
@@ -41,16 +41,8 @@ public class Project implements Parcelable {
         return mId;
     }
 
-    public void setId(String id) {
-        mId = id;
-    }
-
     public String getName() {
         return mName;
-    }
-
-    public void setName(String name) {
-        mName = name;
     }
 
     @Override
@@ -65,10 +57,15 @@ public class Project implements Parcelable {
     }
 
     @Override
+    public int hashCode() {
+        return 17 * mId.hashCode() * mName.hashCode();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o instanceof Project) {
-            return mId.equals(((Project) o).getId()) &&
-                    mName.equals(((Project) o).getName());
+            Project that = (Project) o;
+            return this.getId().equals(that.getId()) && this.getName().equals(that.getName());
         }
         return super.equals(o);
     }

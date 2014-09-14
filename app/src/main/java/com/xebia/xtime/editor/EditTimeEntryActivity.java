@@ -6,36 +6,30 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.shared.model.Project;
-import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.TimeEntry;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Activity that wraps a {@link EditTimeSheetFragment}.
- * <p/>
- * When the activity is created, it checks the {@link #EXTRA_TIME_SHEET} Intent extra for a time
+ * Activity that wraps a {@link EditTimeEntryFragment}.
+ * <p>
+ * When the activity is created, it checks the {@link #EXTRA_TIME_CELL} Intent extra for a time
  * sheet entry to edit. If the time sheet is not present, a new one will be created.
+ * </p>
  */
-public class EditTimeSheetActivity extends Activity implements EditTimeSheetFragment
-        .Listener {
+public class EditTimeEntryActivity extends Activity implements EditTimeEntryFragment.Listener {
 
-    /**
-     * Key for intent extra that contains the list of projects
-     */
-    public static final String EXTRA_PROJECTS = "projects";
     /**
      * Key for intent extra that contains time stamp of the day
      */
     public static final String EXTRA_DATE = "date";
     /**
-     * Key for (optional) intent extra that contains the TimeSheetEntry to edit,
+     * Key for (optional) intent extra that contains the TimeEntry to edit,
      * leave null to create a new entry
      */
-    public static final String EXTRA_TIME_SHEET = "time_sheet";
+    public static final String EXTRA_TIME_CELL = "time_cell";
     /**
-     * Result code for when the entry was deleted
+     * Result code for when the time cell was deleted
      */
     public static final int RESULT_DELETE = 2;
 
@@ -49,33 +43,28 @@ public class EditTimeSheetActivity extends Activity implements EditTimeSheetFrag
             throw new NullPointerException("Missing EXTRA_DATE");
         }
 
-        ArrayList<Project> projects = getIntent().getParcelableArrayListExtra(EXTRA_PROJECTS);
-        if (null == projects) {
-            throw new NullPointerException("Missing EXTRA_PROJECTS");
-        }
-
-        TimeSheetEntry entry = getIntent().getParcelableExtra(EXTRA_TIME_SHEET);
+        TimeEntry timeEntry = getIntent().getParcelableExtra(EXTRA_TIME_CELL);
 
         if (savedInstanceState == null) {
-            Fragment fragment = EditTimeSheetFragment.getInstance(date, projects, entry);
+            Fragment fragment = EditTimeEntryFragment.getInstance(date, timeEntry);
             getFragmentManager().beginTransaction().replace(R.id.content, fragment).commit();
         }
     }
 
     @Override
-    public void onEntryUpdate(TimeSheetEntry entry) {
+    public void onEntryUpdate(TimeEntry timeEntry) {
         // put the time sheet in the result data
         Intent data = new Intent();
-        data.putExtra(EXTRA_TIME_SHEET, entry);
+        data.putExtra(EXTRA_TIME_CELL, timeEntry);
         setResult(RESULT_OK, data);
         finish();
     }
 
     @Override
-    public void onEntryDelete(TimeSheetEntry entry) {
+    public void onEntryDelete(TimeEntry timeEntry) {
         // put the time sheet in the result data
         Intent data = new Intent();
-        data.putExtra(EXTRA_TIME_SHEET, entry);
+        data.putExtra(EXTRA_TIME_CELL, timeEntry);
         setResult(RESULT_DELETE, data);
         finish();
     }

@@ -2,14 +2,14 @@ package com.xebia.xtime.editor.delete;
 
 import android.os.AsyncTask;
 
-import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.TimeEntry;
 
 import org.apache.http.auth.AuthenticationException;
 
 /**
- * Asynchronous task to delete a time sheet entry
+ * Asynchronous task to delete a time cell
  */
-public class DeleteEntryTask extends AsyncTask<TimeSheetEntry, Void, Boolean> {
+public class DeleteEntryTask extends AsyncTask<TimeEntry, Void, Boolean> {
 
     private final Listener mListener;
 
@@ -18,9 +18,9 @@ public class DeleteEntryTask extends AsyncTask<TimeSheetEntry, Void, Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(TimeSheetEntry... params) {
+    protected Boolean doInBackground(TimeEntry... params) {
         if (null == params || params.length < 1) {
-            throw new NullPointerException("Missing TimeSheetEntry parameter");
+            throw new NullPointerException("Missing TimeEntry parameter");
         }
 
         try {

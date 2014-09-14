@@ -2,14 +2,14 @@ package com.xebia.xtime.editor.save;
 
 import android.os.AsyncTask;
 
-import com.xebia.xtime.shared.model.TimeSheetEntry;
+import com.xebia.xtime.shared.model.TimeEntry;
 
 import org.apache.http.auth.AuthenticationException;
 
 /**
  * Asynchronous task to save the changes to a time sheet entry
  */
-public class SaveEntryTask extends AsyncTask<TimeSheetEntry, Void, Boolean> {
+public class SaveEntryTask extends AsyncTask<TimeEntry, Void, Boolean> {
 
     private final Listener mListener;
 
@@ -18,14 +18,14 @@ public class SaveEntryTask extends AsyncTask<TimeSheetEntry, Void, Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(TimeSheetEntry... params) {
+    protected Boolean doInBackground(TimeEntry... params) {
         if (null == params || params.length < 1) {
             throw new NullPointerException("Missing TimeSheetEntry parameter");
         }
 
         String response;
         try {
-            response = new SaveTimeSheetRequest(params[0]).submit();
+            response = new SaveEntryRequest(params[0]).submit();
         } catch (AuthenticationException e) {
             return null;
         }

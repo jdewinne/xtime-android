@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.xebia.xtime.editor.EditTimeSheetFragment">
+    tools:context="com.xebia.xtime.editor.EditTimeEntryFragment">
     <!-- Busy indicator -->
     <LinearLayout
         android:id="@+id/busy_indicator"

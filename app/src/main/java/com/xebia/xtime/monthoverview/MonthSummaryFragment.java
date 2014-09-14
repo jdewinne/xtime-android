@@ -22,9 +22,6 @@ import com.xebia.xtime.R;
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
 import com.xebia.xtime.monthoverview.approve.ApproveConfirmDialog;
 import com.xebia.xtime.monthoverview.approve.ApproveTask;
-import com.xebia.xtime.shared.TimeSheetUtils;
-import com.xebia.xtime.shared.model.TimeSheetRow;
-import com.xebia.xtime.shared.model.XTimeOverview;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -37,8 +34,7 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
 
     private static final String ARG_MONTH = "month";
     private static final String TAG = "MonthSummaryFragment";
-    private XTimeOverview mOverview;
-    private List<TimeSheetRow> mRows;
+    private List<TaskOverview> mTaskOverviews;
     private Date mMonth;
     private View mFooterView;
 
@@ -58,16 +54,16 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
         return fragment;
     }
 
-    private void showList() {
-        if (null == mRows) {
-            mRows = new ArrayList<>();
-            setListAdapter(new TimeSheetRowAdapter(getActivity(), mRows));
+    private void showList(List<TaskOverview> taskOverviews) {
+        if (null == mTaskOverviews) {
+            mTaskOverviews = new ArrayList<>();
+            setListAdapter(new TaskOverviewAdapter(getActivity(), mTaskOverviews));
         } else {
-            mRows.clear();
+            mTaskOverviews.clear();
         }
 
-        if (null != mOverview && null != mOverview.getTimeSheetRows()) {
-            mRows.addAll(mOverview.getTimeSheetRows());
+        if (null != taskOverviews) {
+            mTaskOverviews.addAll(taskOverviews);
         }
         showGrandTotal();
         showApproveButton();
@@ -76,17 +72,17 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
     }
 
     private void showGrandTotal() {
-        mFooterView.setVisibility(null != mRows && mRows.size() > 0 ? View.VISIBLE : View.GONE);
-        if (null != mOverview) {
-            double grandTotal = MonthOverviewUtils.getGrandTotalHours(mOverview);
+        mFooterView.setVisibility(null != mTaskOverviews && mTaskOverviews.size() > 0 ? View.VISIBLE : View.GONE);
+        if (null != mTaskOverviews) {
+            double grandTotal = MonthOverviewUtils.getGrandTotalHours(mTaskOverviews);
             ((TextView) mFooterView.findViewById(R.id.grand_total)).setText(NumberFormat
                     .getNumberInstance().format(grandTotal));
         }
     }
 
     private void showApproveButton() {
-        // only show options menu if the monthly data is not approved yet
-        setHasOptionsMenu(null != mOverview && !mOverview.isMonthlyDataApproved());
+        // TODO: only show options menu if the monthly data is not approved yet
+        setHasOptionsMenu(true);
     }
 
     private void onApproveClick() {
@@ -98,7 +94,7 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
     @Override
     public void onApproveConfirmed() {
         setListShown(false);
-        double grandTotal = MonthOverviewUtils.getGrandTotalHours(mOverview);
+        double grandTotal = MonthOverviewUtils.getGrandTotalHours(mTaskOverviews);
         new ApproveTask(this).execute(grandTotal, (double) mMonth.getTime());
     }
 
@@ -169,16 +165,14 @@ public class MonthSummaryFragment extends ListFragment implements LoaderManager
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.d(TAG, "load finished");
-        if (data != null && data.getCount() > 0) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(mMonth);
-            int month = calendar.get(Calendar.MONTH) + 1;
-            Log.d(TAG, "Loaded " + data.getCount() + " time registrations for month " + month);
-            mOverview = TimeSheetUtils.cursorToOverview(data);
+        if (data == null) {
+            Log.w(TAG, "Failed to load data");
+            showList(null);
+        } else if (data.getCount() > 0) {
+            showList(MonthOverviewUtils.aggregateTimeCells(data));
         } else {
-            Log.d(TAG, "No time registrations loaded");
+            showList(new ArrayList<TaskOverview>());
         }
-        showList();
     }
 
     @Override

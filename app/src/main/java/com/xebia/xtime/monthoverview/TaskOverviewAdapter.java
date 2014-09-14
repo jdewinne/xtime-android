@@ -10,21 +10,21 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.xebia.xtime.R;
-import com.xebia.xtime.shared.model.TimeSheetRow;
 
 import java.text.NumberFormat;
 import java.util.List;
 
 /**
  * List adapter that takes a list of time sheet rows and shows a summary of each row in the view.
- * <p/>
+ * <p>
  * The summary contains the project name, work type and optional description,
  * along with the total number of hours that were spent on the project.
+ * </p>
  */
-public class TimeSheetRowAdapter extends ArrayAdapter<TimeSheetRow> {
+public class TaskOverviewAdapter extends ArrayAdapter<TaskOverview> {
 
-    public TimeSheetRowAdapter(Context context, List<TimeSheetRow> objects) {
-        super(context, R.layout.row_time_sheet_entry, 0, objects);
+    public TaskOverviewAdapter(Context context, List<TaskOverview> objects) {
+        super(context, R.layout.row_time_entry, 0, objects);
     }
 
     @Override
@@ -34,26 +34,25 @@ public class TimeSheetRowAdapter extends ArrayAdapter<TimeSheetRow> {
         View row = convertView;
         if (row == null) {
             LayoutInflater inflater = ((Activity) getContext()).getLayoutInflater();
-            row = inflater.inflate(R.layout.row_time_sheet_entry, parent, false);
+            row = inflater.inflate(R.layout.row_time_entry, parent, false);
         }
 
         // update the view content
-        TimeSheetRow item = getItem(position);
+        TaskOverview item = getItem(position);
         if (row != null) {
             TextView projectView = (TextView) row.findViewById(R.id.project);
-            projectView.setText(item.getProject().getName());
+            projectView.setText(item.getTask().getProject().getName());
 
             TextView workTypeView = (TextView) row.findViewById(R.id.work_type);
-            workTypeView.setText(item.getWorkType().getDescription());
+            workTypeView.setText(item.getTask().getWorkType().getDescription());
 
             TextView descriptionView = (TextView) row.findViewById(R.id.description);
-            descriptionView.setText(item.getDescription());
-            descriptionView.setVisibility(TextUtils.isEmpty(item.getDescription()) ? View.GONE :
-                    View.VISIBLE);
+            descriptionView.setText(item.getTask().getDescription());
+            descriptionView.setVisibility(TextUtils.isEmpty(
+                    item.getTask().getDescription()) ? View.GONE : View.VISIBLE);
 
             TextView hoursView = (TextView) row.findViewById(R.id.hours);
-            double hours = MonthOverviewUtils.getTotalHours(item);
-            hoursView.setText(NumberFormat.getNumberInstance().format(hours));
+            hoursView.setText(NumberFormat.getNumberInstance().format(item.getTotalHours()));
         }
 
         return row;

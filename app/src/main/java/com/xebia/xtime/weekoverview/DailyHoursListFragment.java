@@ -15,9 +15,8 @@ import android.widget.ListView;
 
 import com.xebia.xtime.R;
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
-import com.xebia.xtime.shared.TimeSheetUtils;
 import com.xebia.xtime.shared.model.DayOverview;
-import com.xebia.xtime.shared.model.XTimeOverview;
+import com.xebia.xtime.shared.model.TimeEntry;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -42,7 +41,6 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     public static final String TAG = "DailyHoursListFragment";
     private static final String ARG_START_DATE = "start_date";
     private Date mStartDate;
-    private XTimeOverview mOverview;
     private Listener mListener;
     private List<DayOverview> mDays;
 
@@ -120,21 +118,18 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        Log.d(TAG, "load finished");
-        if (null != cursor && cursor.getCount() > 0) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(mStartDate);
-            int week = calendar.get(Calendar.WEEK_OF_YEAR);
-            Log.d(TAG, "Loaded " + cursor.getCount() + " time registrations for week " + week);
-            mOverview = TimeSheetUtils.cursorToOverview(cursor);
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (null == data) {
+            Log.w(TAG, "Failed to load data");
+            updateList(null);
+        } else if (data.getCount() > 0) {
+            updateList(WeekOverviewUtils.cursorToTimeCells(data));
         } else {
-            Log.d(TAG, "No time registrations loaded");
+            updateList(new ArrayList<TimeEntry>());
         }
-        updateList();
     }
 
-    private void updateList() {
+    private void updateList(final List<TimeEntry> timeEntries) {
         if (null == mDays) {
             mDays = new ArrayList<>();
             setListAdapter(new DailyHoursListAdapter(getActivity(), mDays));
@@ -142,8 +137,8 @@ public class DailyHoursListFragment extends ListFragment implements LoaderManage
             mDays.clear();
         }
 
-        if (null != mOverview && null != mOverview.getTimeSheetRows()) {
-            mDays.addAll(WeekOverviewUtils.weekToDays(mOverview, mStartDate));
+        if (null != timeEntries) {
+            mDays.addAll(WeekOverviewUtils.aggregate(timeEntries, mStartDate));
         }
         ((ArrayAdapter) getListAdapter()).notifyDataSetChanged();
     }
