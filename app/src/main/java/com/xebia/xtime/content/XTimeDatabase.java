@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.xebia.xtime.content.XTimeContract.ProjectColumns;
 import com.xebia.xtime.content.XTimeContract.TaskColumns;
 import com.xebia.xtime.content.XTimeContract.TimeEntryColumns;
 
@@ -26,13 +27,18 @@ class XTimeDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         Log.d(TAG, "Create database");
+        db.execSQL("CREATE TABLE " + Tables.PROJECTS + " ("
+                + ProjectColumns._ID + " INTEGER PRIMARY KEY" + COMMA
+                + ProjectColumns.ID + TEXT_TYPE + NOT_NULL + COMMA
+                + ProjectColumns.NAME + TEXT_TYPE + NOT_NULL + COMMA
+                + "UNIQUE (" + ProjectColumns.ID + ") ON CONFLICT REPLACE)");
         db.execSQL("CREATE TABLE " + Tables.TASKS + " ("
                 + TaskColumns._ID + " INTEGER PRIMARY KEY" + COMMA
                 + TaskColumns.DESCRIPTION + TEXT_TYPE + COMMA
                 + TaskColumns.PROJECT_ID + TEXT_TYPE + COMMA
                 + TaskColumns.PROJECT_NAME + TEXT_TYPE + COMMA
                 + TaskColumns.WORKTYPE_ID + TEXT_TYPE + COMMA
-                + TaskColumns.WORKTYPE_NAME + TEXT_TYPE
+                + TaskColumns.WORKTYPE_DESCRIPTION + TEXT_TYPE
                 + ")");
         db.execSQL("CREATE TABLE " + Tables.TIME_ENTRIES + " ("
                 + TimeEntryColumns._ID + " INTEGER PRIMARY KEY" + COMMA
@@ -54,6 +60,7 @@ class XTimeDatabase extends SQLiteOpenHelper {
         Log.d(TAG, "Update database: " + oldVersion + " -> " + newVersion);
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
+        db.execSQL("DROP TABLE IF EXISTS " + Tables.PROJECTS + ";");
         db.execSQL("DROP TABLE IF EXISTS " + Tables.TASKS + ";");
         db.execSQL("DROP TABLE IF EXISTS " + Tables.TIME_ENTRIES + ";");
         onCreate(db);
@@ -66,6 +73,7 @@ class XTimeDatabase extends SQLiteOpenHelper {
     }
 
     interface Tables {
+        String PROJECTS = "projects";
         String TASKS = "tasks";
         String TIME_ENTRIES = "time_entries";
         String TIME_ENTRIES_JOIN_TASKS = TIME_ENTRIES

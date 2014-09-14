@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.xebia.xtime.content.XTimeContract.Projects;
 import com.xebia.xtime.content.XTimeContract.Tasks;
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
 import com.xebia.xtime.content.XTimeDatabase.Tables;
@@ -31,8 +32,11 @@ public class XTimeProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = XTimeContract.CONTENT_AUTHORITY;
 
-        matcher.addURI(authority, Tables.TASKS, UriCodes.TIME_SHEET_ROWS);
-        matcher.addURI(authority, Tables.TASKS + "/*", UriCodes.TIME_SHEET_ROW);
+        matcher.addURI(authority, Tables.PROJECTS, UriCodes.PROJECTS);
+        matcher.addURI(authority, Tables.PROJECTS + "/*", UriCodes.PROJECT);
+
+        matcher.addURI(authority, Tables.TASKS, UriCodes.TASKS);
+        matcher.addURI(authority, Tables.TASKS + "/*", UriCodes.TASK);
 
         matcher.addURI(authority, Tables.TIME_ENTRIES, UriCodes.TIME_ENTRIES);
         matcher.addURI(authority, Tables.TIME_ENTRIES + "/*", UriCodes.TIME_ENTRY);
@@ -55,9 +59,13 @@ public class XTimeProvider extends ContentProvider {
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case UriCodes.TIME_SHEET_ROWS:
+            case UriCodes.PROJECTS:
+                return Projects.CONTENT_TYPE;
+            case UriCodes.PROJECT:
+                return Projects.CONTENT_ITEM_TYPE;
+            case UriCodes.TASKS:
                 return Tasks.CONTENT_TYPE;
-            case UriCodes.TIME_SHEET_ROW:
+            case UriCodes.TASK:
                 return Tasks.CONTENT_ITEM_TYPE;
             case UriCodes.TIME_ENTRIES:
                 return TimeEntries.CONTENT_TYPE;
@@ -74,7 +82,12 @@ public class XTimeProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         Log.v(TAG, "insert(uri=" + uri + ", values=" + values + ")");
         switch (match) {
-            case UriCodes.TIME_SHEET_ROWS: {
+            case UriCodes.PROJECTS: {
+                db.insertOrThrow(Tables.PROJECTS, null, values);
+                notifyChange(uri);
+                return Projects.buildUri(values.getAsString(Projects.ID));
+            }
+            case UriCodes.TASKS: {
                 long id = db.insertOrThrow(Tables.TASKS, null, values);
                 notifyChange(uri);
                 return Tasks.buildUri(id);
@@ -152,10 +165,17 @@ public class XTimeProvider extends ContentProvider {
         final SelectionBuilder builder = new SelectionBuilder();
         final int match = sUriMatcher.match(uri);
         switch (match) {
-            case UriCodes.TIME_SHEET_ROWS: {
+            case UriCodes.PROJECTS: {
+                return builder.table(Tables.PROJECTS);
+            }
+            case UriCodes.PROJECT: {
+                final String id = Projects.getProjectId(uri);
+                return builder.table(Tables.PROJECTS).where(Projects.ID + "=?", id);
+            }
+            case UriCodes.TASKS: {
                 return builder.table(Tables.TASKS);
             }
-            case UriCodes.TIME_SHEET_ROW: {
+            case UriCodes.TASK: {
                 final String id = Long.toString(ContentUris.parseId(uri));
                 return builder.table(Tables.TASKS).where(Tasks._ID + "=?", id);
             }
@@ -180,10 +200,17 @@ public class XTimeProvider extends ContentProvider {
     private SelectionBuilder buildExpandedSelection(Uri uri, int match) {
         final SelectionBuilder builder = new SelectionBuilder();
         switch (match) {
-            case UriCodes.TIME_SHEET_ROWS: {
+            case UriCodes.PROJECTS: {
+                return builder.table(Tables.PROJECTS);
+            }
+            case UriCodes.PROJECT: {
+                final String id = Projects.getProjectId(uri);
+                return builder.table(Tables.PROJECTS).where(Projects.ID + "=?", id);
+            }
+            case UriCodes.TASKS: {
                 return builder.table(Tables.TASKS);
             }
-            case UriCodes.TIME_SHEET_ROW: {
+            case UriCodes.TASK: {
                 final String id = Long.toString(ContentUris.parseId(uri));
                 return builder.table(Tables.TASKS).where(Tasks._ID + "=?", id);
             }
@@ -201,8 +228,10 @@ public class XTimeProvider extends ContentProvider {
     }
 
     private interface UriCodes {
-        int TIME_SHEET_ROWS = 200;
-        int TIME_SHEET_ROW = 201;
+        int PROJECTS = 100;
+        int PROJECT = 101;
+        int TASKS = 200;
+        int TASK = 201;
         int TIME_ENTRIES = 300;
         int TIME_ENTRY = 301;
     }

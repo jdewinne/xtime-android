@@ -4,9 +4,11 @@ import android.content.ContentProviderClient;
 import android.content.ContentProviderOperation;
 import android.content.OperationApplicationException;
 import android.content.SyncResult;
+import android.net.Uri;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.xebia.xtime.content.XTimeContract;
 import com.xebia.xtime.content.XTimeContract.Tasks;
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
 import com.xebia.xtime.shared.model.Task;
@@ -22,23 +24,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-public class SyncHelper {
+public class TimeEntrySyncHelper {
 
-    /**
-     * The first time sheet to sync data for is 2 month old.
-     */
-    public static final int OLDEST_MONTH = -1;
-    /**
-     * The last time sheet to sync data for is 1 month in the future.
-     */
-    public static final int NEWEST_MONTH = 0;
-    private static final String TAG = "SyncHelper";
+    private static final int LAST_MONTH = -1;
+    private static final int THIS_MONTH = 0;
+    private static final Uri TASKS_URI = XTimeContract
+            .addCallerIsSyncAdapterParameter(Tasks.CONTENT_URI);
+    private static final Uri TIME_ENTRIES_URI = XTimeContract
+            .addCallerIsSyncAdapterParameter(TimeEntries.CONTENT_URI);
+    private static final String TAG = "TimeEntrySyncHelper";
 
     public void performSync(final String cookie, final ContentProviderClient provider,
                             final SyncResult syncResult) throws CookieExpiredException {
         try {
             List<XTimeOverview> overviews = new ArrayList<>();
-            for (int offset = OLDEST_MONTH; offset <= NEWEST_MONTH; offset++) {
+            for (int offset = LAST_MONTH; offset <= THIS_MONTH; offset++) {
                 XTimeOverview overview = requestMonthOverview(cookie, offset);
                 if (null != overview) {
                     Log.d(TAG, "Parsed overview");
@@ -64,7 +64,7 @@ public class SyncHelper {
     }
 
     private int storeTimeCells(final List<TimeEntry> timeEntries,
-                                final ContentProviderClient provider) throws
+                               final ContentProviderClient provider) throws
             RemoteException, OperationApplicationException {
         Log.d(TAG, "Store time sheets");
 
@@ -84,22 +84,22 @@ public class SyncHelper {
         ArrayList<ContentProviderOperation> batch = new ArrayList<>();
 
         // remove all local data
-        batch.add(ContentProviderOperation.newDelete(TimeEntries.CONTENT_URI).build());
-        batch.add(ContentProviderOperation.newDelete(Tasks.CONTENT_URI).build());
+        batch.add(ContentProviderOperation.newDelete(TIME_ENTRIES_URI).build());
+        batch.add(ContentProviderOperation.newDelete(TASKS_URI).build());
 
         for (Map.Entry<Task, List<TimeEntry>> entry : groupedByTask.entrySet()) {
             final Task task = entry.getKey();
-            batch.add(ContentProviderOperation.newInsert(Tasks.CONTENT_URI)
+            batch.add(ContentProviderOperation.newInsert(TASKS_URI)
                     .withValue(Tasks.DESCRIPTION, task.getDescription())
                     .withValue(Tasks.PROJECT_ID, task.getProject().getId())
                     .withValue(Tasks.PROJECT_NAME, task.getProject().getName())
                     .withValue(Tasks.WORKTYPE_ID, task.getWorkType().getId())
-                    .withValue(Tasks.WORKTYPE_NAME, task.getWorkType().getDescription())
+                    .withValue(Tasks.WORKTYPE_DESCRIPTION, task.getWorkType().getDescription())
                     .build());
             int taskIndex = batch.size() - 1;
 
             for (final TimeEntry timeEntry : entry.getValue()) {
-                batch.add(ContentProviderOperation.newInsert(TimeEntries.CONTENT_URI)
+                batch.add(ContentProviderOperation.newInsert(TIME_ENTRIES_URI)
                         .withValue(TimeEntries.HOURS, timeEntry.getHours())
                         .withValue(TimeEntries.ENTRY_DATE, timeEntry.getEntryDate().getTime())
                         .withValue(TimeEntries.APPROVED, timeEntry.isFromAfas())
@@ -127,9 +127,4 @@ public class SyncHelper {
         return DwrOverviewParser.parse(response);
     }
 
-    static class CookieExpiredException extends Exception {
-        public CookieExpiredException(String message) {
-            super(message);
-        }
-    }
 }

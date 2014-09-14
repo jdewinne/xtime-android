@@ -4,7 +4,8 @@ import android.database.Cursor;
 import android.text.format.DateUtils;
 import android.util.SparseArray;
 
-import com.xebia.xtime.content.XTimeContract;
+import com.xebia.xtime.content.XTimeContract.Tasks;
+import com.xebia.xtime.content.XTimeContract.TimeEntries;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.Project;
 import com.xebia.xtime.shared.model.Task;
@@ -32,7 +33,7 @@ public final class WeekOverviewUtils {
      * one for each day of the week.
      *
      * @param timeEntries TimeEntry list to aggregateTimeCells
-     * @param startDate The date of the first day of the week
+     * @param startDate   The date of the first day of the week
      * @return A list of 7 day overviews
      */
     public static List<DayOverview> aggregate(List<TimeEntry> timeEntries, Date startDate) {
@@ -74,25 +75,25 @@ public final class WeekOverviewUtils {
         Task task = null;
         while (!cursor.isAfterLast()) {
             // task details
-            long taskId = cursor.getLong(cursor.getColumnIndex(XTimeContract.TimeEntries.TASK_ID));
+            long taskId = cursor.getLong(cursor.getColumnIndex(TimeEntries.TASK_ID));
             if (taskId != lastTaskId) {
                 task = new Task.Builder()
-                        .setDescription(
-                                cursor.getString(cursor.getColumnIndex(XTimeContract.Tasks.DESCRIPTION)))
+                        .setDescription(cursor.getString(cursor.getColumnIndex(Tasks.DESCRIPTION)))
                         .setProject(new Project(
-                                cursor.getString(cursor.getColumnIndex(XTimeContract.Tasks.PROJECT_ID)),
-                                cursor.getString(cursor.getColumnIndex(XTimeContract.Tasks.PROJECT_NAME))))
+                                cursor.getString(cursor.getColumnIndex(Tasks.PROJECT_ID)),
+                                cursor.getString(cursor.getColumnIndex(Tasks.PROJECT_NAME))))
                         .setWorkType(new WorkType(
-                                cursor.getString(cursor.getColumnIndex(XTimeContract.Tasks.WORKTYPE_ID)),
-                                cursor.getString(cursor.getColumnIndex(XTimeContract.Tasks.WORKTYPE_NAME))))
+                                cursor.getString(cursor.getColumnIndex(Tasks.WORKTYPE_ID)),
+                                cursor.getString(cursor.getColumnIndex(
+                                        Tasks.WORKTYPE_DESCRIPTION))))
                         .build();
                 lastTaskId = taskId;
             }
 
             // time entry details
-            double hours = cursor.getDouble(cursor.getColumnIndex(XTimeContract.TimeEntries.HOURS));
-            boolean approved = cursor.getLong(cursor.getColumnIndex(XTimeContract.TimeEntries.APPROVED)) == 1;
-            long entryDate = cursor.getLong(cursor.getColumnIndex(XTimeContract.TimeEntries.ENTRY_DATE));
+            double hours = cursor.getDouble(cursor.getColumnIndex(TimeEntries.HOURS));
+            boolean approved = cursor.getLong(cursor.getColumnIndex(TimeEntries.APPROVED)) == 1;
+            long entryDate = cursor.getLong(cursor.getColumnIndex(TimeEntries.ENTRY_DATE));
             timeEntries.add(new TimeEntry(task, new Date(entryDate), hours, approved));
 
             cursor.moveToNext();

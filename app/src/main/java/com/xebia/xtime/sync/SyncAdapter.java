@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.xebia.xtime.authenticator.Authenticator;
+import com.xebia.xtime.content.XTimeContract.Projects;
 import com.xebia.xtime.content.XTimeContract.Tasks;
 import com.xebia.xtime.content.XTimeContract.TimeEntries;
 
@@ -39,11 +40,13 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         String cookie = "";
         try {
             cookie = getCookie(account);
-            new SyncHelper().performSync(cookie, provider, syncResult);
 
-            // notify any listeners that the sync is done
+            new TimeEntrySyncHelper().performSync(cookie, provider, syncResult);
             getContext().getContentResolver().notifyChange(TimeEntries.CONTENT_URI, null);
             getContext().getContentResolver().notifyChange(Tasks.CONTENT_URI, null);
+
+            new ProjectSyncHelper().performSync(cookie, provider, syncResult);
+            getContext().getContentResolver().notifyChange(Projects.CONTENT_URI, null);
 
         } catch (IOException e) {
             Log.w(TAG, "Failed to authenticate! Connection error: '" + e.getMessage() + "'");
@@ -51,7 +54,7 @@ public class SyncAdapter extends AbstractThreadedSyncAdapter {
         } catch (OperationCanceledException | AuthenticatorException e) {
             Log.w(TAG, "Failed to sync! Authentication error: '" + e.getMessage() + "'");
             syncResult.stats.numAuthExceptions++;
-        } catch (SyncHelper.CookieExpiredException e) {
+        } catch (CookieExpiredException e) {
             Log.w(TAG, "Cookie expired!");
             AccountManager accountManager = AccountManager.get(getContext());
             accountManager.invalidateAuthToken(Authenticator.ACCOUNT_TYPE, cookie);

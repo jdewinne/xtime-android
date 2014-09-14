@@ -38,7 +38,8 @@ public final class MonthOverviewUtils {
                                 cursor.getString(cursor.getColumnIndex(Tasks.PROJECT_NAME))))
                         .setWorkType(new WorkType(
                                 cursor.getString(cursor.getColumnIndex(Tasks.WORKTYPE_ID)),
-                                cursor.getString(cursor.getColumnIndex(Tasks.WORKTYPE_NAME))))
+                                cursor.getString(cursor.getColumnIndex(Tasks
+                                        .WORKTYPE_DESCRIPTION))))
                         .build();
                 overview = new TaskOverview(task);
             }
@@ -47,7 +48,8 @@ public final class MonthOverviewUtils {
             double hours = cursor.getDouble(cursor.getColumnIndex(TimeEntries.HOURS));
             boolean approved = cursor.getLong(cursor.getColumnIndex(TimeEntries.APPROVED)) == 1;
             long entryDate = cursor.getLong(cursor.getColumnIndex(TimeEntries.ENTRY_DATE));
-            overview.getTimeEntries().add(new TimeEntry(task, new Date(entryDate), hours, approved));
+            overview.getTimeEntries().add(new TimeEntry(task, new Date(entryDate), hours,
+                    approved));
 
             overviewMap.put(taskId, overview);
 
