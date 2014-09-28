@@ -1,4 +1,4 @@
-package com.xebia.xtime.webservice;
+package com.xebia.xtime.webservice.requestbuilder;
 
 import com.squareup.okhttp.RequestBody;
 
@@ -8,27 +8,28 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class GetMonthOverviewRequestBuilder {
+public class GetWeekOverviewRequestBuilder {
 
-    private String mMonthString;
+    private String mWeekString;
 
-    public GetMonthOverviewRequestBuilder month(final Date month) {
+    public GetWeekOverviewRequestBuilder week(final Date week) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
-        mMonthString = dateFormat.format(month);
+        mWeekString = dateFormat.format(week);
         return this;
     }
 
     public RequestBody build() {
         final String body = "callCount=1\n" +
-                "page=/xtime/monthlyApprove.html\n" +
+                "page=/xtime/entryform.html\n" +
                 "httpSessionId=\n" +
                 "scriptSessionId=\n" +
                 "c0-scriptName=TimeEntryServiceBean\n" +
-                "c0-methodName=getMonthOverview\n" +
-                "c0-id=0\n" +
-                "c0-param0=string:" + mMonthString + "\n" +
-                "batchId=0";
+                "c0-methodName=getWeekOverview\n" +
+                "c0-id=0\n" + // only used for JSONP callback
+                "c0-param0=string:" + mWeekString + "\n" +
+                "c0-param1=boolean:true\n" + // not used?
+                "batchId=0\n"; // only used for JSONP callback
         return RequestBody.create(MediaTypes.TEXT_PLAIN, body);
     }
 }

@@ -329,7 +329,7 @@ public class EditTimeEntryFragment extends Fragment implements LoaderManager
 
     private void onDeleteClick() {
         showBusyIndicator(true);
-        new DeleteEntryTask(this).execute(mTimeEntry);
+        new DeleteEntryTask(getActivity(), this).execute(mTimeEntry);
     }
 
     private double getTimeInput() {

@@ -9,6 +9,13 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import com.xebia.xtime.BuildConfig;
 import com.xebia.xtime.shared.model.Project;
+import com.xebia.xtime.shared.model.TimeEntry;
+import com.xebia.xtime.webservice.requestbuilder.ApproveRequestBuilder;
+import com.xebia.xtime.webservice.requestbuilder.DeleteEntryRequestBuilder;
+import com.xebia.xtime.webservice.requestbuilder.GetMonthOverviewRequestBuilder;
+import com.xebia.xtime.webservice.requestbuilder.GetWeekOverviewRequestBuilder;
+import com.xebia.xtime.webservice.requestbuilder.LoginRequestBuilder;
+import com.xebia.xtime.webservice.requestbuilder.WorkTypesForProjectRequestBuilder;
 
 import java.io.IOException;
 import java.net.CookieManager;
@@ -106,6 +113,20 @@ public class XTimeWebService {
                 .build();
         Response response = doRequest(body, "dwr/call/plaincall/"
                 + "TimeEntryServiceBean.getWorkTypesListForProjectInRange.dwr", cookie);
+        return response.isSuccessful() ? response.body().string() : null;
+    }
+
+    public String deleteEntry(final TimeEntry timeEntry, final String cookie) throws IOException {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Delete entry " + timeEntry);
+        }
+        RequestBody body = new DeleteEntryRequestBuilder()
+                .project(timeEntry.getTask().getProject())
+                .workType(timeEntry.getTask().getWorkType())
+                .description(timeEntry.getTask().getDescription())
+                .entryDate(timeEntry.getEntryDate()).build();
+        Response response = doRequest(body, "dwr/call/plaincall/"
+                + "TimeEntryServiceBean.deleteTimeSheetEntries.dwr", cookie);
         return response.isSuccessful() ? response.body().string() : null;
     }
 
