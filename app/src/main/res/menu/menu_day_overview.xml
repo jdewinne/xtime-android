@@ -3,6 +3,16 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".dayoverview.DayOverviewActivity">
     <item
+        android:id="@+id/punchIn"
+        android:icon="@android:drawable/ic_media_play"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_punch_in"/>
+    <item
+        android:id="@+id/punchOut"
+        android:icon="@android:drawable/ic_media_pause"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/action_punch_out"/>
+    <item
         android:id="@+id/newItem"
         android:icon="@android:drawable/ic_menu_add"
         android:showAsAction="ifRoom|withText"

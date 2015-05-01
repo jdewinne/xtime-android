@@ -20,6 +20,8 @@
     <!-- day overview activity -->
     <string name="title_activity_day_overview">Day Overview</string>
     <string name="empty_day_overview">Empty time sheet</string>
+    <string name="action_punch_in">Punch In</string>
+    <string name="action_punch_out">Punch Out</string>
     <string name="action_new">New</string>
     <!-- Strings related to time cell editor -->
     <string name="title_activity_edit_time_cell">Edit</string>

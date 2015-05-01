@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,9 +16,15 @@ import com.xebia.xtime.editor.EditTimeEntryActivity;
 import com.xebia.xtime.shared.model.DayOverview;
 import com.xebia.xtime.shared.model.TimeEntry;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -36,6 +43,7 @@ public class DayOverviewActivity extends Activity implements DailyTimeEntryFragm
     public static final String EXTRA_DAY_OVERVIEW = "day_overview";
     private static final int REQ_CODE_EDIT = 1;
     private static final int REQ_CODE_CREATE = 2;
+    private static final String PUNCH_IN_FILENAME = "punch_in_file";
     private DayOverview mOverview;
     private TimeEntry mSelectedEntry;
 
@@ -77,6 +85,17 @@ public class DayOverviewActivity extends Activity implements DailyTimeEntryFragm
             startEditor(null, REQ_CODE_CREATE);
             return true;
         }
+        if (item.getItemId() == R.id.punchIn) {
+            // Register time
+            registerTime();
+            return true;
+        }
+        if (item.getItemId() == R.id.punchOut) {
+            // Fetch time
+            Double duration = getTimeSpan();
+            startEditor(new TimeEntry(null, null, duration, false), REQ_CODE_CREATE);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -94,6 +113,44 @@ public class DayOverviewActivity extends Activity implements DailyTimeEntryFragm
         editor.putExtra(EditTimeEntryActivity.EXTRA_TIME_CELL, entry);
         startActivityForResult(editor, requestCode);
     }
+
+    private void registerTime() {
+        Long time = getCurrentTimeInMillis();
+        writeTimeToFile(time);
+    }
+
+    private void writeTimeToFile(Long time) {
+        try (FileOutputStream fos = openFileOutput(PUNCH_IN_FILENAME, Context.MODE_PRIVATE);
+             DataOutputStream dos = new DataOutputStream(fos);) {
+            dos.writeLong(time);
+            dos.flush();
+        } catch(IOException e){
+            //
+        }
+    }
+
+    private Double getTimeSpan() {
+        Long newTime = getCurrentTimeInMillis();
+        Long oldTime = readTimeFromFile();
+        Double hours = ((double)(newTime - oldTime))/(1000*3600);
+        return Math.round(hours*4)/4d;
+    }
+
+    private Long getCurrentTimeInMillis() {
+        Calendar c = Calendar.getInstance();
+        Long time = Long.valueOf(c.getTimeInMillis());
+        return time;
+    }
+
+    private Long readTimeFromFile() {
+        try ( FileInputStream fin = openFileInput(PUNCH_IN_FILENAME);
+              DataInputStream din = new DataInputStream(fin); ) {
+            return Long.valueOf(din.readLong());
+        } catch(IOException e){
+            return Long.valueOf(0);
+        }
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
